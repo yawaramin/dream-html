@@ -70,15 +70,15 @@ let s = Printf.sprintf
 
 let string_attr name value = { name; value = Dream.html_escape value }
 let int_attr name value = string_attr name (string_of_int value)
-let null_attr = string_attr "" ""
 
 let tag name attrs children = Tag { name; attrs; children = Some children }
 let void_tag name attrs = Tag { name; attrs; children = None }
-let null_tag = tag "" []
 let txt str = Txt (Dream.html_escape str)
 let raw str = Txt str
 
 module Attr = struct
+  let null = string_attr "" ""
+
   let action = string_attr"action"
   let autocomplete = string_attr"autocomplete"
   let autofocus = string_attr "autofocus" "true"
@@ -110,6 +110,8 @@ module Attr = struct
 end
 
 module Tag = struct
+  let null_tag = tag "" []
+
   let a = tag"a"
   let area = void_tag"area"
   let abbr = tag"abbr"

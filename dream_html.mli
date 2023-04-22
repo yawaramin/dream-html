@@ -45,18 +45,8 @@ val s : ('a, unit, string) format -> 'a
 
 val string_attr : string -> string_attr
 val int_attr : string -> int_attr
-
-val null_attr : attr
-(** An attribute that will not be rendered in the markup. Useful for conditional
-    logic where you sometimes want to render an attribute and sometimes not. *)
-
 val tag : string -> std_tag
 val void_tag : string -> void_tag
-
-val null_tag : node list -> node
-(** A tag that will not be rendered in the markup. Useful for containing a bunch
-    of child nodes inside a single node without having to litter the DOM with an
-    actual node. Also may be called 'splicing'. *)
 
 val txt : string -> node
 (** A text node inside the DOM e.g. the 'hi' in [<b>hi</b>]. *)
@@ -67,6 +57,10 @@ val raw : string -> node
     very careful with where you use this! *)
 
 module Attr : sig
+  val null : attr
+  (** An attribute that will not be rendered in the markup. Useful for conditional
+      logic where you sometimes want to render an attribute and sometimes not. *)
+
   val action : string_attr
   val autocomplete : string_attr
   val autofocus : attr
@@ -100,6 +94,11 @@ end
     with [_]. *)
 
 module Tag : sig
+  val null : node list -> node
+  (** A tag that will not be rendered in the markup. Useful for containing a bunch
+      of child nodes inside a single node without having to litter the DOM with an
+      actual node. Also may be called 'splicing'. *)
+
   val a : std_tag
   val area : void_tag
   val abbr : std_tag

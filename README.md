@@ -28,8 +28,8 @@ if you want but a lot of things are still missing.
 
 ## Why
 
-Having tried TyXML, I found that too complex. It is most similar in approach to
-Daniel Buenzli's
+Having tried TyXML, I found that too complex. Dream-html is most similar in
+approach to Daniel Buenzli's
 [Webs](https://erratique.ch/software/webs/doc/Webs_html/index.html) HTML library.
 However I decided on a slightly different usage. Let's compare how the following
 HTML would look in either of Webs or dream-html:
@@ -88,7 +88,7 @@ You can compose multiple HTML nodes together into a single node without an extra
 DOM node, like [React fragments](https://react.dev/reference/react/Fragment):
 
 ```ocaml
-let view = null_tag[
+let view = Tag.null[
   p[][txt"Hello"];
   p[][txt"World"]]
 ```
@@ -99,7 +99,7 @@ are statically enforced as childless:
 
 ```ocaml
 let entry = input[
-  if should_focus then autofocus else null_attr;
+  if should_focus then autofocus else Attr.null;
   id"email";
   name"email";
   value"Email address"]
