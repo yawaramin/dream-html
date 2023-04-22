@@ -23,8 +23,8 @@ my [Dream](https://aantron.github.io/dream) backend. It works pretty well but is
 incomplete (there are a lot of attributes and tags in HTML). PRs welcome to add
 more!
 
-Caveat: this is very alpha software. I am planning to add tests. You can use it
-if you want but a lot of things are still missing.
+Caveat: this is very alpha software. I am planning to use it on a side project.
+You can use it if you want but a lot of things are still missing.
 
 ## Why
 
@@ -104,3 +104,13 @@ let entry = input[
   name"email";
   value"Email address"]
 ```
+
+## Test
+
+Run the test and print out diff if it fails:
+
+    dune runtest # Will also exit 1 on failure
+
+Set the new version of the output as correct:
+
+    dune promote

@@ -71,6 +71,7 @@ module Attr : sig
   val for_ : string_attr
   val href : string_attr
   val id : string_attr
+  val lang : string_attr
   val list : string_attr
   val max : string_attr
   val maxlength : int_attr

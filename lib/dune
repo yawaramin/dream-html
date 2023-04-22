@@ -1,3 +1,4 @@
 (library
  (name dream_html)
+ (public_name dream_html)
  (libraries dream))

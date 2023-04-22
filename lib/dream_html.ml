@@ -54,7 +54,7 @@ let rec to_buffer buf =
     (if name = "html" then p "<!doctype html>\n");
     to_buffer buf (Tag { non_void with children = None });
     List.iter (to_buffer buf) children;
-    p "</"; p name; p ">"
+    p "</"; p name; p ">\n"
   | Txt str ->
     p str
 
@@ -89,6 +89,7 @@ module Attr = struct
   let for_ = string_attr"for"
   let href = string_attr"href"
   let id = string_attr"id"
+  let lang = string_attr"lang"
   let list = string_attr"list"
   let max = string_attr"max"
   let maxlength = int_attr"maxlength"
