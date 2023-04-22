@@ -1,0 +1,3 @@
+(library
+ (name dream_html)
+ (libraries dream))
