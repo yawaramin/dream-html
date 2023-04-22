@@ -28,7 +28,7 @@ let node = html[lang"en"][
         p[][txt"Test para 1."];
         p[][txt"Test para 2."]];
       Tag.null[
-        hr[];
-        hr[]]]]]
+        hr[if true then class_"super" else null];
+        hr[if false then autofocus else null]]]]]
 
 let () = node |> to_string |> print_endline
