@@ -28,6 +28,7 @@ let node = html[lang"en"][
         p[][txt"Test para 1."];
         p[][txt"Test para 2."]];
       Tag.null[
+        comment"embedded HTML comment";
         hr[if true then class_"super" else null];
         hr[if false then autofocus else null]]]]]
 

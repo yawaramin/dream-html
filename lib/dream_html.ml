@@ -17,13 +17,14 @@
 
 type attr = { name : string; value : string }
 type tag = { name : string; attrs : attr list; children : node list option }
-and node = Tag of tag | Txt of string
+and node = Tag of tag | Txt of string | Comment of string
 
 type string_attr = string -> attr
 type int_attr = int -> attr
 type std_tag = attr list -> node list -> node
 type void_tag = attr list -> node
 
+(* Loosely based on https://www.w3.org/TR/DOM-Parsing/ *)
 let rec to_buffer buf =
   let p = Buffer.add_string buf in
   function
@@ -48,12 +49,14 @@ let rec to_buffer buf =
     end;
     p ">"
   | Tag ({ name; children = Some children; _ } as non_void) ->
-    (if name = "html" then p "<!doctype html>\n");
+    (if name = "html" then p "<!DOCTYPE html>\n");
     to_buffer buf (Tag { non_void with children = None });
     List.iter (to_buffer buf) children;
     p "</"; p name; p ">\n"
   | Txt str ->
     p str
+  | Comment str ->
+    p "<!-- "; p str; p " -->\n"
 
 let to_string node =
   let buf = Buffer.create 256 in
@@ -71,6 +74,7 @@ let int_attr name value = string_attr name (string_of_int value)
 let tag name attrs children = Tag { name; attrs; children = Some children }
 let void_tag name attrs = Tag { name; attrs; children = None }
 let txt str = Txt (Dream.html_escape str)
+let comment str = Comment str
 let raw str = Txt str
 
 module Attr = struct

@@ -51,6 +51,9 @@ val void_tag : string -> void_tag
 val txt : string -> node
 (** A text node inside the DOM e.g. the 'hi' in [<b>hi</b>]. *)
 
+val comment : string -> node
+(** A comment that will be embedded in the rendered HTML, i.e. [<!-- comment -->]. *)
+
 val raw : string -> node
 [@@alert unsafe "Can lead to HTML injection."]
 (** Useful for injecting unsanitized content into the markup. Needless to say, be

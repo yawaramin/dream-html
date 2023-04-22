@@ -105,6 +105,14 @@ let entry = input[
   value"Email address"]
 ```
 
+You can also embed HTML comments in the generated document:
+
+```ocaml
+div[][
+  comment"TODO: xyz.";
+  p[][txt"Hello!"]]
+```
+
 ## Test
 
 Run the test and print out diff if it fails:
@@ -114,3 +122,11 @@ Run the test and print out diff if it fails:
 Set the new version of the output as correct:
 
     dune promote
+
+## Prior art/design notes
+
+Surface design obviously lifted straight from
+[elm-html](https://package.elm-lang.org/packages/elm/html/latest/).
+
+Implementation inspired by both elm-html and
+[Scalatags](https://com-lihaoyi.github.io/scalatags/).
