@@ -14,6 +14,5 @@
   (description "Write HTML directly in your OCaml source files with editor support.")
   (documentation "https://yawaramin.github.io/dream-html/api")
   (depends
-    (alcotest (and (>= 1.5.0) (< 2.0.0) :with-test))
     (ocaml (>= 4.08.0))
     dream))
