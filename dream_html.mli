@@ -122,7 +122,11 @@ module Tag : sig
   val head : std_tag
   val header : std_tag
   val hr : void_tag
+
   val html : std_tag
+  (** A <!doctype html> declaration is automatically prefixed when this tag is
+      printed. *)
+
   val img : void_tag
   val input : void_tag
   val label : std_tag
@@ -143,14 +147,14 @@ module Tag : sig
   val wbr : void_tag
 end
 
-module Htmx : sig
-  val hx_confirm : string_attr
-  val hx_delete : string_attr
-  val hx_get : string_attr
-  val hx_post : string_attr
-  val hx_swap : string_attr
-  val hx_swap_oob : attr
-  val hx_target : string_attr
-  val hx_trigger : string_attr
+module Hx : sig
+  val confirm : string_attr
+  val delete : string_attr
+  val get : string_attr
+  val post : string_attr
+  val swap : string_attr
+  val swap_oob : attr
+  val target : string_attr
+  val trigger : string_attr
 end
 (** Convenient helpers for building htmx interactions. *)

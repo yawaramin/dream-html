@@ -110,7 +110,7 @@ module Attr = struct
 end
 
 module Tag = struct
-  let null_tag = tag "" []
+  let null = tag "" []
 
   let a = tag"a"
   let area = void_tag"area"
@@ -156,13 +156,13 @@ module Tag = struct
   let wbr = void_tag"wbr"
 end
 
-module Htmx = struct
-  let hx_confirm = string_attr"data-hx-confirm"
-  let hx_delete = string_attr"data-hx-delete"
-  let hx_get = string_attr"data-hx-get"
-  let hx_post = string_attr"data-hx-post"
-  let hx_swap = string_attr"data-hx-swap"
-  let hx_swap_oob = string_attr"data-hx-swap-oob""true"
-  let hx_target = string_attr"data-hx-target"
-  let hx_trigger = string_attr"data-hx-trigger"
+module Hx = struct
+  let confirm = string_attr"data-hx-confirm"
+  let delete = string_attr"data-hx-delete"
+  let get = string_attr"data-hx-get"
+  let post = string_attr"data-hx-post"
+  let swap = string_attr"data-hx-swap"
+  let swap_oob = string_attr"data-hx-swap-oob""true"
+  let target = string_attr"data-hx-target"
+  let trigger = string_attr"data-hx-trigger"
 end
