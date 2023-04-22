@@ -154,7 +154,7 @@ module Hx : sig
   val get : string_attr
   val post : string_attr
   val swap : string_attr
-  val swap_oob : attr
+  val swap_oob : string_attr
   val target : string_attr
   val trigger : string_attr
 end

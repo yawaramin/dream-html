@@ -39,9 +39,6 @@ let rec to_buffer buf =
       List.iter (function
         | { name = ""; value = _ } ->
           ()
-        | { name; value = "true" } ->
-          p " ";
-          p name
         | { name; value } ->
           p " ";
           p name;
@@ -163,7 +160,7 @@ module Hx = struct
   let get = string_attr"data-hx-get"
   let post = string_attr"data-hx-post"
   let swap = string_attr"data-hx-swap"
-  let swap_oob = string_attr"data-hx-swap-oob""true"
+  let swap_oob = string_attr"data-hx-swap-oob"
   let target = string_attr"data-hx-target"
   let trigger = string_attr"data-hx-trigger"
 end
