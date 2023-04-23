@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en"><head><title>Dream_html Test</title>
 </head>
-<body id="test-content"><main><article id="article-1" class="story"><p>Test para 1.</p>
+<body id="test-content"><main><article id="article-1" class="story"><p data-hx-get="/p1">Test para 1.</p>
 <p>Test para 2.</p>
 </article>
 <!-- embedded HTML comment -->
+<textarea data-hx-trigger="keyup[target.value.trim() != &#x27;&#x27;]">super</textarea>
 <hr class="super"><hr></main>
 </body>
 </html>

@@ -17,20 +17,26 @@
 
 (** Constructing HTML tags. *)
 
+(** {2 Core types} *)
+
 type attr
 (** E.g. [id="toast"]. *)
 
-type 'a to_attr = 'a -> attr
-
 type node
 (** Either a tag, a comment, or text data in the markup. *)
+
+(** {2 Constructor types} *)
+
+type 'a to_attr = 'a -> attr
 
 type std_tag = attr list -> node list -> node
 (** A 'standard' tag with attributes and children. *)
 
 type void_tag = attr list -> node
 (** A 'void element':
-    https://developer.mozilla.org/en-US/docs/Glossary/Void_element *)
+    {: https://developer.mozilla.org/en-US/docs/Glossary/Void_element} *)
+
+(** {2 Output} *)
 
 val to_string : node -> string
 val pp : Format.formatter -> node -> unit
@@ -39,6 +45,8 @@ val respond :
   ?status:[< Dream.status] ->
   ?code:int ->
   ?headers:(string * string) list -> node -> Dream.response Lwt.t
+
+(** {2 Creating nodes, attributes, and interpolations} *)
 
 val s : ('a, unit, string) format -> 'a
 (** This is just [Stdlib.Printf.sprintf]. Needing to interpolate values in
@@ -94,7 +102,11 @@ module Attr : sig
   val style : string to_attr
   val tabindex : int to_attr
   val title : string to_attr
+
   val type_ : string to_attr
+  (** Note: this can't be restricted to just the allowed values for [<input type>],
+      because it's used on other elements e.g. [<link type>]. *)
+
   val value : string to_attr
 end
 (** Where an attribute name conflicts with an OCaml keyword, the name is suffixed
@@ -131,7 +143,7 @@ module Tag : sig
   val hr : void_tag
 
   val html : std_tag
-  (** A <!doctype html> declaration is automatically prefixed when this tag is
+  (** A <!DOCTYPE html> declaration is automatically prefixed when this tag is
       printed. *)
 
   val img : void_tag
@@ -155,13 +167,19 @@ module Tag : sig
 end
 
 module Hx : sig
+  val boost : bool to_attr
   val confirm : string to_attr
   val delete : string to_attr
   val get : string to_attr
+  val on : string to_attr
   val post : string to_attr
+  val push_url : string to_attr
+  val select : string to_attr
+  val select_oob : string to_attr
   val swap : string to_attr
   val swap_oob : string to_attr
   val target : string to_attr
   val trigger : string to_attr
+  val vals : string to_attr
 end
-(** Convenient helpers for building htmx interactions. *)
+(** htmx core attributes {: https://htmx.org/reference/#attributes} *)

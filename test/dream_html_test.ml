@@ -25,10 +25,11 @@ let node = html[lang"en"][
   body[id"test-content"][
     main[][
       article[id"article-1"; class_"story"][
-        p[][txt"Test para 1."];
+        p[Hx.get"/p1"][txt"Test para 1."];
         p[][txt"Test para 2."]];
       Tag.null[
         comment"embedded HTML comment";
+        textarea[Hx.trigger"keyup[target.value.trim() != '']"][txt"super"];
         hr[if true then class_"super" else null];
         hr[if false then autofocus else null]]]]]
 

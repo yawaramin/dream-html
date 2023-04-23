@@ -161,12 +161,18 @@ module Tag = struct
 end
 
 module Hx = struct
+  let boost = bool_attr"data-hx-boost"
   let confirm = string_attr"data-hx-confirm"
   let delete = string_attr"data-hx-delete"
   let get = string_attr"data-hx-get"
+  let on = string_attr"data-hx-on"
   let post = string_attr"data-hx-post"
+  let push_url = string_attr"data-hx-push-url"
+  let select = string_attr"data-hx-select"
+  let select_oob = string_attr"data-hx-select-oob"
   let swap = string_attr"data-hx-swap"
   let swap_oob = string_attr"data-hx-swap-oob"
   let target = string_attr"data-hx-target"
   let trigger = string_attr"data-hx-trigger"
+  let vals = string_attr"data-hx-vals"
 end
