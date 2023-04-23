@@ -20,8 +20,7 @@
 type attr
 (** E.g. [id="toast"]. *)
 
-type string_attr = string -> attr
-type int_attr = int -> attr
+type 'a to_attr = 'a -> attr
 
 type node
 (** Either a tag, a comment, or text data in the markup. *)
@@ -42,10 +41,13 @@ val respond :
   ?headers:(string * string) list -> node -> Dream.response Lwt.t
 
 val s : ('a, unit, string) format -> 'a
-(** This is just [Stdlib.Printf.sprintf]. *)
+(** This is just [Stdlib.Printf.sprintf]. Needing to interpolate values in
+    strings when building HTML is quite common. *)
 
-val string_attr : string -> string_attr
-val int_attr : string -> int_attr
+val string_attr : string -> string to_attr
+val int_attr : string -> int to_attr
+val bool_attr : string -> bool to_attr
+
 val tag : string -> std_tag
 val void_tag : string -> void_tag
 
@@ -65,35 +67,35 @@ module Attr : sig
   (** An attribute that will not be rendered in the markup. Useful for conditional
       logic where you sometimes want to render an attribute and sometimes not. *)
 
-  val action : string_attr
-  val autocomplete : string_attr
+  val action : string to_attr
+  val autocomplete : string to_attr
   val autofocus : attr
-  val charset : string_attr
-  val class_ : string_attr
-  val color : string_attr
-  val content : string_attr
-  val for_ : string_attr
-  val href : string_attr
-  val id : string_attr
-  val lang : string_attr
-  val list : string_attr
-  val max : string_attr
-  val maxlength : int_attr
-  val method_ : string_attr
-  val min : string_attr
-  val minlength : int_attr
-  val name : string_attr
-  val placeholder : string_attr
+  val charset : string to_attr
+  val class_ : string to_attr
+  val color : string to_attr
+  val content : string to_attr
+  val for_ : string to_attr
+  val href : string to_attr
+  val id : string to_attr
+  val lang : string to_attr
+  val list : string to_attr
+  val max : string to_attr
+  val maxlength : int to_attr
+  val method_ : [< `GET | `POST] to_attr
+  val min : string to_attr
+  val minlength : int to_attr
+  val name : string to_attr
+  val placeholder : string to_attr
   val required : attr
-  val rel : string_attr
-  val rows : int_attr
-  val sizes : string_attr
-  val src : string_attr
-  val style : string_attr
-  val tabindex : string_attr
-  val title : string_attr
-  val type_ : string_attr
-  val value : string_attr
+  val rel : string to_attr
+  val rows : int to_attr
+  val sizes : string to_attr
+  val src : string to_attr
+  val style : string to_attr
+  val tabindex : int to_attr
+  val title : string to_attr
+  val type_ : string to_attr
+  val value : string to_attr
 end
 (** Where an attribute name conflicts with an OCaml keyword, the name is suffixed
     with [_]. *)
@@ -153,13 +155,13 @@ module Tag : sig
 end
 
 module Hx : sig
-  val confirm : string_attr
-  val delete : string_attr
-  val get : string_attr
-  val post : string_attr
-  val swap : string_attr
-  val swap_oob : string_attr
-  val target : string_attr
-  val trigger : string_attr
+  val confirm : string to_attr
+  val delete : string to_attr
+  val get : string to_attr
+  val post : string to_attr
+  val swap : string to_attr
+  val swap_oob : string to_attr
+  val target : string to_attr
+  val trigger : string to_attr
 end
 (** Convenient helpers for building htmx interactions. *)

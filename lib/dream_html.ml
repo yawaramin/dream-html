@@ -19,8 +19,7 @@ type attr = { name : string; value : string }
 type tag = { name : string; attrs : attr list; children : node list option }
 and node = Tag of tag | Txt of string | Comment of string
 
-type string_attr = string -> attr
-type int_attr = int -> attr
+type 'a to_attr = 'a -> attr
 type std_tag = attr list -> node list -> node
 type void_tag = attr list -> node
 
@@ -71,7 +70,8 @@ let respond ?status ?code ?headers node =
 let s = Printf.sprintf
 
 let string_attr name value = { name; value = Dream.html_escape value }
-let int_attr name value = string_attr name (string_of_int value)
+let int_attr name value = { name; value = string_of_int value }
+let bool_attr name value = { name; value = string_of_bool value }
 
 let tag name attrs children = Tag { name; attrs; children = Some children }
 let void_tag name attrs = Tag { name; attrs; children = None }
@@ -84,7 +84,7 @@ module Attr = struct
 
   let action = string_attr"action"
   let autocomplete = string_attr"autocomplete"
-  let autofocus = string_attr "autofocus" "true"
+  let autofocus = bool_attr "autofocus" true
   let charset = string_attr"charset"
   let class_ = string_attr"class"
   let color = string_attr"color"
@@ -96,18 +96,18 @@ module Attr = struct
   let list = string_attr"list"
   let max = string_attr"max"
   let maxlength = int_attr"maxlength"
-  let method_ = string_attr"method"
+  let method_ value = { name = "method"; value = Dream.method_to_string value }
   let min = string_attr"min"
   let minlength = int_attr"minlength"
   let name = string_attr"name"
   let placeholder = string_attr"placeholder"
-  let required = string_attr "required" "true"
+  let required = bool_attr "required" true
   let rel = string_attr"rel"
   let rows = int_attr"rows"
   let sizes = string_attr"sizes"
   let src = string_attr"src"
   let style = string_attr"style"
-  let tabindex = string_attr"tabindex"
+  let tabindex = int_attr"tabindex"
   let title = string_attr"title"
   let type_ = string_attr"type"
   let value = string_attr"value"
