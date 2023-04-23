@@ -24,7 +24,7 @@ type string_attr = string -> attr
 type int_attr = int -> attr
 
 type node
-(** Either a tag or text data in the markup. *)
+(** Either a tag, a comment, or text data in the markup. *)
 
 type std_tag = attr list -> node list -> node
 (** A 'standard' tag with attributes and children. *)
