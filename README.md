@@ -121,6 +121,19 @@ div[][
   p[][txt"Hello!"]]
 ```
 
+## Explore in the REPL
+
+```
+$ utop
+utop # #require "dream_html";;
+utop # open Dream_html;;
+utop # open Tag;;
+utop # open Attr;;
+utop # #install_printer pp;;
+utop # p[class_"hello"][txt"world"];;
+- : node = <p class="hello">world</p>
+```
+
 ## Test
 
 Run the test and print out diff if it fails:

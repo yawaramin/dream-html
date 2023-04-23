@@ -63,6 +63,8 @@ let to_string node =
   to_buffer buf node;
   Buffer.contents buf
 
+let pp ppf node = node |> to_string |> Format.pp_print_string ppf
+
 let respond ?status ?code ?headers node =
   Dream.html ?status ?code ?headers @@ to_string node
 

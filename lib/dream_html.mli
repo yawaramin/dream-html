@@ -34,6 +34,7 @@ type void_tag = attr list -> node
     https://developer.mozilla.org/en-US/docs/Glossary/Void_element *)
 
 val to_string : node -> string
+val pp : Format.formatter -> node -> unit
 
 val respond :
   ?status:[< Dream.status] ->
