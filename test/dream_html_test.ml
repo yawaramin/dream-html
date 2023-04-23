@@ -19,6 +19,8 @@ open Dream_html
 open Tag
 open Attr
 
+let greet name = p[][txt"Hello, %s!" name]
+
 let node = html[lang"en"][
   head[][
     Tag.title[][txt"Dream_html Test"]];
@@ -31,6 +33,6 @@ let node = html[lang"en"][
         comment"embedded HTML comment";
         textarea[Hx.trigger"keyup[target.value.trim() != '']"][txt"super"];
         hr[if true then class_"super" else null];
-        hr[if false then autofocus else null]]]]]
+        greet "Bob"]]]]
 
 let () = node |> to_string |> print_endline

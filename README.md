@@ -86,6 +86,8 @@ utop # to_string safe;;
 "<p>&lt;script&gt;alert(&#x27;You have been pwned&#x27;)&lt;/script&gt;</p>"
 ```
 
+## Usage
+
 A convenience is provided to respond with an HTML node from a handler:
 
 ```ocaml
@@ -99,6 +101,12 @@ DOM node, like [React fragments](https://react.dev/reference/react/Fragment):
 let view = Tag.null[
   p[][txt"Hello"];
   p[][txt"World"]]
+```
+
+You can do string interpolation using the `txt` node constructor:
+
+```ocaml
+let greet name = p[][txt"Hello, %s!" name]
 ```
 
 You can conditionally render an attribute, and

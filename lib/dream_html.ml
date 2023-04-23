@@ -67,15 +67,15 @@ let pp ppf node = node |> to_string |> Format.pp_print_string ppf
 let respond ?status ?code ?headers node =
   Dream.html ?status ?code ?headers @@ to_string node
 
-let s = Printf.sprintf
-
 let string_attr name value = { name; value = Dream.html_escape value }
 let int_attr name value = { name; value = string_of_int value }
 let bool_attr name value = { name; value = string_of_bool value }
 
 let tag name attrs children = Tag { name; attrs; children = Some children }
 let void_tag name attrs = Tag { name; attrs; children = None }
-let txt str = Txt (Dream.html_escape str)
+
+let txt fmt = Printf.ksprintf (fun s -> Txt (Dream.html_escape s)) fmt
+
 let comment str = Comment str
 let raw str = Txt str
 

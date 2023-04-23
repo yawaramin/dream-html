@@ -15,7 +15,7 @@
    You should have received a copy of the GNU General Public License along with
    dream-html. If not, see <https://www.gnu.org/licenses/>. *)
 
-(** Constructing HTML tags. *)
+(** Constructing HTML. *)
 
 (** {2 Core types} *)
 
@@ -48,10 +48,6 @@ val respond :
 
 (** {2 Creating nodes, attributes, and interpolations} *)
 
-val s : ('a, unit, string) format -> 'a
-(** This is just [Stdlib.Printf.sprintf]. Needing to interpolate values in
-    strings when building HTML is quite common. *)
-
 val string_attr : string -> string to_attr
 val int_attr : string -> int to_attr
 val bool_attr : string -> bool to_attr
@@ -59,8 +55,9 @@ val bool_attr : string -> bool to_attr
 val tag : string -> std_tag
 val void_tag : string -> void_tag
 
-val txt : string -> node
-(** A text node inside the DOM e.g. the 'hi' in [<b>hi</b>]. *)
+val txt : ('a, unit, string, node) format4 -> 'a
+(** A text node inside the DOM e.g. the 'hi' in [<b>hi</b>]. Allows string
+    interpolation using the same formatting features as [Printf.sprintf]. *)
 
 val comment : string -> node
 (** A comment that will be embedded in the rendered HTML, i.e. [<!-- comment -->]. *)
