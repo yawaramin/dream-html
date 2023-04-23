@@ -28,11 +28,19 @@ You can use it if you want but a lot of things are still missing.
 
 ## Why
 
-Having tried TyXML, I found that too complex. Dream-html is most similar in
-approach to Daniel Buenzli's
-[Webs](https://erratique.ch/software/webs/doc/Webs_html/index.html) HTML library.
-However I decided on a slightly different usage. Let's compare how the following
-HTML would look in either of Webs or dream-html:
+Having tried TyXML, I found that too complex. Dream's built-in eml (Embedded ML)
+templating system has a few disadvantages, e.g. no editor support, somewhat
+quirky syntax that can be hard to debug when it starts erroring, and a rather
+large limitation that you need to manually set up a conversion rule in your `dune`
+file for each separate template file.
+
+Dream-html is most similar in approach to Daniel Buenzli's
+[Webs](https://erratique.ch/software/webs/doc/Webs_html/index.html) HTML library
+(in OCaml land, in other languages many people have published similar code-first
+approach libraries). The philosophy is to do some minimal type checking and not
+dive deep into a typed HTML rabbit hole like TyXML.
+
+Let's compare how the following HTML would look in either of Webs or dream-html:
 
 ```html
 <p class="text-lg" id="hello">Hello, World!</p>
@@ -128,5 +136,9 @@ Set the new version of the output as correct:
 Surface design obviously lifted straight from
 [elm-html](https://package.elm-lang.org/packages/elm/html/latest/).
 
+Similar to [Webs](https://erratique.ch/software/webs/doc/Webs_html/index.html) as
+mentioned earlier (it turns out there are only a limited number of ways to do
+this kind of library).
+)
 Implementation inspired by both elm-html and
 [Scalatags](https://com-lihaoyi.github.io/scalatags/).
