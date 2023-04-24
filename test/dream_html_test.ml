@@ -29,6 +29,7 @@ let node = html[lang"en"][
       article[id"article-1"; class_"story"][
         p[Hx.get"/p1"][txt"Test para 1."];
         p[][txt"Test para 2."]];
+      input[type_"text"; onblur"if (1 > 0) alert(this.value)"];
       Tag.null[
         comment"embedded HTML comment";
         textarea[Hx.trigger"keyup[target.value.trim() != '']"][txt"super"];

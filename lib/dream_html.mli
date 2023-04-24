@@ -99,6 +99,8 @@ module Attr : sig
   val min : _ string_attr
   val minlength : int to_attr
   val name : _ string_attr
+  val onblur : _ string_attr
+  val onclick : _ string_attr
   val placeholder : _ string_attr
   val required : attr
   val rel : _ string_attr
