@@ -103,10 +103,11 @@ let view = Tag.null[
   p[][txt"World"]]
 ```
 
-You can do string interpolation using the `txt` node constructor:
+You can do string interpolation using the `txt` node constructor and of any
+attribute which takes a string value:
 
 ```ocaml
-let greet name = p[][txt"Hello, %s!" name]
+let greet name = p[id"greet-%s" name][txt"Hello, %s!" name]
 ```
 
 You can conditionally render an attribute, and
@@ -115,7 +116,7 @@ are statically enforced as childless:
 
 ```ocaml
 let entry = input[
-  if should_focus then autofocus else Attr.null;
+  if should_focus then autofocus else null;
   id"email";
   name"email";
   value"Email address"]

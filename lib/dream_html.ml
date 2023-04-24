@@ -20,6 +20,7 @@ type tag = { name : string; attrs : attr list; children : node list option }
 and node = Tag of tag | Txt of string | Comment of string
 
 type 'a to_attr = 'a -> attr
+type 'a string_attr = ('a, unit, string, attr) format4 -> 'a
 type std_tag = attr list -> node list -> node
 type void_tag = attr list -> node
 
@@ -67,7 +68,9 @@ let pp ppf node = node |> to_string |> Format.pp_print_string ppf
 let respond ?status ?code ?headers node =
   Dream.html ?status ?code ?headers @@ to_string node
 
-let string_attr name value = { name; value = Dream.html_escape value }
+let string_attr name fmt =
+  Printf.ksprintf (fun s -> { name; value = Dream.html_escape s }) fmt
+
 let int_attr name value = { name; value = string_of_int value }
 let bool_attr name value = { name; value = string_of_bool value }
 
@@ -82,35 +85,35 @@ let raw str = Txt str
 module Attr = struct
   let null = string_attr "" ""
 
-  let action = string_attr"action"
-  let autocomplete = string_attr"autocomplete"
+  let action fmt = string_attr "action" fmt
+  let autocomplete fmt = string_attr "autocomplete" fmt
   let autofocus = bool_attr "autofocus" true
-  let charset = string_attr"charset"
-  let class_ = string_attr"class"
-  let color = string_attr"color"
-  let content = string_attr"content"
-  let for_ = string_attr"for"
-  let href = string_attr"href"
-  let id = string_attr"id"
-  let lang = string_attr"lang"
-  let list = string_attr"list"
-  let max = string_attr"max"
+  let charset fmt = string_attr "charset" fmt
+  let class_ fmt = string_attr "class" fmt
+  let color fmt = string_attr "color" fmt
+  let content fmt = string_attr "content" fmt
+  let for_ fmt = string_attr "for" fmt
+  let href fmt = string_attr "href" fmt
+  let id fmt = string_attr "id" fmt
+  let lang fmt = string_attr "lang" fmt
+  let list fmt = string_attr "list" fmt
+  let max fmt = string_attr "max" fmt
   let maxlength = int_attr"maxlength"
   let method_ value = { name = "method"; value = Dream.method_to_string value }
-  let min = string_attr"min"
+  let min fmt = string_attr "min" fmt
   let minlength = int_attr"minlength"
-  let name = string_attr"name"
-  let placeholder = string_attr"placeholder"
+  let name fmt = string_attr "name" fmt
+  let placeholder fmt = string_attr "placeholder" fmt
   let required = bool_attr "required" true
-  let rel = string_attr"rel"
+  let rel fmt = string_attr "rel" fmt
   let rows = int_attr"rows"
-  let sizes = string_attr"sizes"
-  let src = string_attr"src"
-  let style = string_attr"style"
+  let sizes fmt = string_attr "sizes" fmt
+  let src fmt = string_attr "src" fmt
+  let style fmt = string_attr "style" fmt
   let tabindex = int_attr"tabindex"
-  let title = string_attr"title"
-  let type_ = string_attr"type"
-  let value = string_attr"value"
+  let title fmt = string_attr "title" fmt
+  let type_ fmt = string_attr "type" fmt
+  let value fmt = string_attr "value" fmt
 end
 
 module Tag = struct
@@ -161,18 +164,21 @@ module Tag = struct
 end
 
 module Hx = struct
+  (* This is a boolean because it can be selectively switched off in some parts
+     of the page. *)
   let boost = bool_attr"data-hx-boost"
-  let confirm = string_attr"data-hx-confirm"
-  let delete = string_attr"data-hx-delete"
-  let get = string_attr"data-hx-get"
-  let on = string_attr"data-hx-on"
-  let post = string_attr"data-hx-post"
-  let push_url = string_attr"data-hx-push-url"
-  let select = string_attr"data-hx-select"
-  let select_oob = string_attr"data-hx-select-oob"
-  let swap = string_attr"data-hx-swap"
-  let swap_oob = string_attr"data-hx-swap-oob"
-  let target = string_attr"data-hx-target"
-  let trigger = string_attr"data-hx-trigger"
-  let vals = string_attr"data-hx-vals"
+
+  let confirm fmt = string_attr "data-hx-confirm" fmt
+  let delete fmt = string_attr "data-hx-delete" fmt
+  let get fmt = string_attr "data-hx-get" fmt
+  let on fmt = string_attr "data-hx-on" fmt
+  let post fmt = string_attr "data-hx-post" fmt
+  let push_url fmt = string_attr "data-hx-push-url" fmt
+  let select fmt = string_attr "data-hx-select" fmt
+  let select_oob fmt = string_attr "data-hx-select-oob" fmt
+  let swap fmt = string_attr "data-hx-swap" fmt
+  let swap_oob fmt = string_attr "data-hx-swap-oob" fmt
+  let target fmt = string_attr "data-hx-target" fmt
+  let trigger fmt = string_attr "data-hx-trigger" fmt
+  let vals fmt = string_attr "data-hx-vals" fmt
 end

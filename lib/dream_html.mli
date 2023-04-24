@@ -29,6 +29,10 @@ type node
 
 type 'a to_attr = 'a -> attr
 
+type 'a string_attr = ('a, unit, string, attr) format4 -> 'a
+(** Special handling for string-value attributes so they can use string
+    interpolation. *)
+
 type std_tag = attr list -> node list -> node
 (** A 'standard' tag with attributes and children. *)
 
@@ -48,7 +52,7 @@ val respond :
 
 (** {2 Creating nodes, attributes, and interpolations} *)
 
-val string_attr : string -> string to_attr
+val string_attr : string -> ('a, unit, string, attr) format4 -> 'a
 val int_attr : string -> int to_attr
 val bool_attr : string -> bool to_attr
 
@@ -72,39 +76,39 @@ module Attr : sig
   (** An attribute that will not be rendered in the markup. Useful for conditional
       logic where you sometimes want to render an attribute and sometimes not. *)
 
-  val action : string to_attr
-  val autocomplete : string to_attr
+  val action : _ string_attr
+  val autocomplete : _ string_attr
   val autofocus : attr
-  val charset : string to_attr
-  val class_ : string to_attr
-  val color : string to_attr
-  val content : string to_attr
-  val for_ : string to_attr
-  val href : string to_attr
-  val id : string to_attr
-  val lang : string to_attr
-  val list : string to_attr
-  val max : string to_attr
+  val charset : _ string_attr
+  val class_ : _ string_attr
+  val color : _ string_attr
+  val content : _ string_attr
+  val for_ : _ string_attr
+  val href : _ string_attr
+  val id : _ string_attr
+  val lang : _ string_attr
+  val list : _ string_attr
+  val max : _ string_attr
   val maxlength : int to_attr
   val method_ : [< `GET | `POST] to_attr
-  val min : string to_attr
+  val min : _ string_attr
   val minlength : int to_attr
-  val name : string to_attr
-  val placeholder : string to_attr
+  val name : _ string_attr
+  val placeholder : _ string_attr
   val required : attr
-  val rel : string to_attr
+  val rel : _ string_attr
   val rows : int to_attr
-  val sizes : string to_attr
-  val src : string to_attr
-  val style : string to_attr
+  val sizes : _ string_attr
+  val src : _ string_attr
+  val style : _ string_attr
   val tabindex : int to_attr
-  val title : string to_attr
+  val title : _ string_attr
 
-  val type_ : string to_attr
+  val type_ : _ string_attr
   (** Note: this can't be restricted to just the allowed values for [<input type>],
       because it's used on other elements e.g. [<link type>]. *)
 
-  val value : string to_attr
+  val value : _ string_attr
 end
 (** Where an attribute name conflicts with an OCaml keyword, the name is suffixed
     with [_]. *)
@@ -165,18 +169,18 @@ end
 
 module Hx : sig
   val boost : bool to_attr
-  val confirm : string to_attr
-  val delete : string to_attr
-  val get : string to_attr
-  val on : string to_attr
-  val post : string to_attr
-  val push_url : string to_attr
-  val select : string to_attr
-  val select_oob : string to_attr
-  val swap : string to_attr
-  val swap_oob : string to_attr
-  val target : string to_attr
-  val trigger : string to_attr
-  val vals : string to_attr
+  val confirm : _ string_attr
+  val delete : _ string_attr
+  val get : _ string_attr
+  val on : _ string_attr
+  val post : _ string_attr
+  val push_url : _ string_attr
+  val select : _ string_attr
+  val select_oob : _ string_attr
+  val swap : _ string_attr
+  val swap_oob : _ string_attr
+  val target : _ string_attr
+  val trigger : _ string_attr
+  val vals : _ string_attr
 end
 (** htmx core attributes {: https://htmx.org/reference/#attributes} *)

@@ -19,7 +19,7 @@ open Dream_html
 open Tag
 open Attr
 
-let greet name = p[][txt"Hello, %s!" name]
+let greet name = p[id"greet-%s" name][txt"Hello, %s!" name]
 
 let node = html[lang"en"][
   head[][
