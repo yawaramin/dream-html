@@ -19,21 +19,21 @@ open Dream_html
 open Tag
 open Attr
 
-let greet name = p[id"greet-%s" name][txt"Hello, %s!" name]
+let greet name = p[id "greet-%s" name][txt "Hello, %s!" name]
 
-let node = html[lang"en"][
+let node = html[lang "en"][
   head[][
-    Tag.title[][txt"Dream_html Test"]];
-  body[id"test-content"][
+    Tag.title[][txt "Dream_html Test"]];
+  body[id "test-content"][
     main[][
-      article[id"article-1"; class_"story"][
-        p[Hx.get"/p1"][txt"Test para 1."];
-        p[][txt"Test para 2."]];
-      input[type_"text"; onblur"if (1 > 0) alert(this.value)"];
+      article[id "article-1"; class_ "story"][
+        p[Hx.get "/p1"][txt "Test para 1."];
+        p[][txt "Test para 2."]];
+      input[type_ "text"; onblur "if (1 > 0) alert(this.value)"];
       Tag.null[
-        comment"embedded HTML comment";
-        textarea[Hx.trigger"keyup[target.value.trim() != '']"][txt"super"];
-        hr[if true then class_"super" else null];
+        comment "embedded HTML comment";
+        textarea[Hx.trigger "keyup[target.value.trim() != '']"][txt "super"];
+        hr[if true then class_ "super" else null];
         greet "Bob"]]]]
 
 let () = node |> to_string |> print_endline

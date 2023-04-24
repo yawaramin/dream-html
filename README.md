@@ -63,7 +63,7 @@ open Dream_html
 open Tag
 open Attr
 
-let greeting = p[class_"text-lg"; id"hello"][txt"Hello, World!"]
+let greeting = p[class_ "text-lg"; id "hello"][txt "Hello, World!"]
 ```
 
 Note, this is not meant to be a demonstration of how many characters you're
@@ -80,7 +80,7 @@ Attribute and text values are escaped using
 utop # open Dream_html;;
 utop # let user_input = "<script>alert('You have been pwned')</script>";;
 utop # open Tag;;
-utop # let safe = p[][txt user_input];;
+utop # let safe = p[][txt "%s" user_input];;
 utop # to_string safe;;
 - : string =
 "<p>&lt;script&gt;alert(&#x27;You have been pwned&#x27;)&lt;/script&gt;</p>"
@@ -99,15 +99,15 @@ DOM node, like [React fragments](https://react.dev/reference/react/Fragment):
 
 ```ocaml
 let view = Tag.null[
-  p[][txt"Hello"];
-  p[][txt"World"]]
+  p[][txt "Hello"];
+  p[][txt "World"]]
 ```
 
 You can do string interpolation using the `txt` node constructor and of any
 attribute which takes a string value:
 
 ```ocaml
-let greet name = p[id"greet-%s" name][txt"Hello, %s!" name]
+let greet name = p[id "greet-%s" name][txt "Hello, %s!" name]
 ```
 
 You can conditionally render an attribute, and
@@ -117,17 +117,17 @@ are statically enforced as childless:
 ```ocaml
 let entry = input[
   if should_focus then autofocus else null;
-  id"email";
-  name"email";
-  value"Email address"]
+  id "email";
+  name "email";
+  value "Email address"]
 ```
 
 You can also embed HTML comments in the generated document:
 
 ```ocaml
 div[][
-  comment"TODO: xyz.";
-  p[][txt"Hello!"]]
+  comment "TODO: xyz.";
+  p[][txt "Hello!"]]
 ```
 
 ## Explore in the REPL
@@ -139,7 +139,7 @@ utop # open Dream_html;;
 utop # open Tag;;
 utop # open Attr;;
 utop # #install_printer pp;;
-utop # p[class_"hello"][txt"world"];;
+utop # p[class_ "hello"][txt "world"];;
 - : node = <p class="hello">world</p>
 ```
 
@@ -161,6 +161,6 @@ Surface design obviously lifted straight from
 Similar to [Webs](https://erratique.ch/software/webs/doc/Webs_html/index.html) as
 mentioned earlier (it turns out there are only a limited number of ways to do
 this kind of library).
-)
+
 Implementation inspired by both elm-html and
 [Scalatags](https://com-lihaoyi.github.io/scalatags/).

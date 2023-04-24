@@ -25,11 +25,9 @@ type std_tag = attr list -> node list -> node
 type void_tag = attr list -> node
 
 (* Loosely based on https://www.w3.org/TR/DOM-Parsing/ *)
-let rec to_buffer buf =
-  let p = Buffer.add_string buf in
-  function
+let rec write p = function
   | Tag { name = ""; children = Some children; _ } ->
-    List.iter (to_buffer buf) children
+    List.iter (write p) children
   | Tag { name; attrs; children = None } ->
     p "<";
     p name;
@@ -50,8 +48,8 @@ let rec to_buffer buf =
     p ">"
   | Tag ({ name; children = Some children; _ } as non_void) ->
     (if name = "html" then p "<!DOCTYPE html>\n");
-    to_buffer buf (Tag { non_void with children = None });
-    List.iter (to_buffer buf) children;
+    write p (Tag { non_void with children = None });
+    List.iter (write p) children;
     p "</"; p name; p ">\n"
   | Txt str ->
     p str
@@ -60,7 +58,7 @@ let rec to_buffer buf =
 
 let to_string node =
   let buf = Buffer.create 256 in
-  to_buffer buf node;
+  write (Buffer.add_string buf) node;
   Buffer.contents buf
 
 let pp ppf node = node |> to_string |> Format.pp_print_string ppf
@@ -101,34 +99,34 @@ module Attr = struct
   let disabled = bool_attr "disabled" true
   let for_ fmt = string_attr "for" fmt
   let height fmt = string_attr "height" fmt
-  let high = float_attr"high"
+  let high = float_attr "high"
   let href fmt = string_attr "href" fmt
   let id fmt = string_attr "id" fmt
   let lang fmt = string_attr "lang" fmt
   let list fmt = string_attr "list" fmt
-  let low = float_attr"low"
+  let low = float_attr "low"
   let max fmt = string_attr "max" fmt
-  let maxlength = int_attr"maxlength"
+  let maxlength = int_attr "maxlength"
   let method_ value = { name = "method"; value = Dream.method_to_string value }
   let min fmt = string_attr "min" fmt
-  let minlength = int_attr"minlength"
+  let minlength = int_attr "minlength"
   let multiple = bool_attr "multiple" true
   let name fmt = string_attr "name" fmt
   let onblur fmt = string_attr "onblur" fmt
   let onclick fmt = string_attr "onclick" fmt
-  let optimum = float_attr"optimum"
+  let optimum = float_attr "optimum"
   let pattern fmt = string_attr "pattern" fmt
   let placeholder fmt = string_attr "placeholder" fmt
   let readonly = bool_attr "readonly" true
   let required = bool_attr "required" true
   let rel fmt = string_attr "rel" fmt
-  let rows = int_attr"rows"
+  let rows = int_attr "rows"
   let size fmt = string_attr "size" fmt
   let sizes fmt = string_attr "sizes" fmt
   let src fmt = string_attr "src" fmt
   let step fmt = string_attr "step" fmt
   let style fmt = string_attr "style" fmt
-  let tabindex = int_attr"tabindex"
+  let tabindex = int_attr "tabindex"
   let title fmt = string_attr "title" fmt
   let type_ fmt = string_attr "type" fmt
   let value fmt = string_attr "value" fmt
@@ -138,56 +136,56 @@ end
 module Tag = struct
   let null = tag "" []
 
-  let a = tag"a"
-  let area = void_tag"area"
-  let abbr = tag"abbr"
-  let article = tag"article"
-  let b = tag"b"
-  let base = void_tag"base"
-  let br = void_tag"br"
-  let body = tag"body"
-  let button = tag"button"
-  let col = void_tag"col"
-  let datalist = tag"datalist"
-  let details = tag"details"
-  let del = tag"del"
-  let div = tag"div"
-  let embed = void_tag"embed"
-  let form = tag"form"
-  let h1 = tag"h1"
-  let h2 = tag"h2"
-  let h3 = tag"h3"
-  let h4 = tag"h4"
-  let head = tag"head"
-  let header = tag"header"
-  let hr = void_tag"hr"
-  let html = tag"html"
-  let img = void_tag"img"
-  let input = void_tag"input"
-  let label = tag"label"
-  let li = tag"li"
-  let link = void_tag"link"
-  let main = tag"main"
-  let meta = void_tag"meta"
-  let meter = tag"meter"
-  let option = tag"option"
-  let p = tag"p"
-  let progress = tag"progress"
-  let script = tag"script"
-  let source = void_tag"source"
-  let span = tag"span"
-  let summary = tag"summary"
-  let textarea = tag"textarea"
-  let track = void_tag"track"
-  let title = tag"title"
-  let ul = tag"ul"
-  let wbr = void_tag"wbr"
+  let a = tag "a"
+  let area = void_tag "area"
+  let abbr = tag "abbr"
+  let article = tag "article"
+  let b = tag "b"
+  let base = void_tag "base"
+  let br = void_tag "br"
+  let body = tag "body"
+  let button = tag "button"
+  let col = void_tag "col"
+  let datalist = tag "datalist"
+  let details = tag "details"
+  let del = tag "del"
+  let div = tag "div"
+  let embed = void_tag "embed"
+  let form = tag "form"
+  let h1 = tag "h1"
+  let h2 = tag "h2"
+  let h3 = tag "h3"
+  let h4 = tag "h4"
+  let head = tag "head"
+  let header = tag "header"
+  let hr = void_tag "hr"
+  let html = tag "html"
+  let img = void_tag "img"
+  let input = void_tag "input"
+  let label = tag "label"
+  let li = tag "li"
+  let link = void_tag "link"
+  let main = tag "main"
+  let meta = void_tag "meta"
+  let meter = tag "meter"
+  let option = tag "option"
+  let p = tag "p"
+  let progress = tag "progress"
+  let script = tag "script"
+  let source = void_tag "source"
+  let span = tag "span"
+  let summary = tag "summary"
+  let textarea = tag "textarea"
+  let track = void_tag "track"
+  let title = tag "title"
+  let ul = tag "ul"
+  let wbr = void_tag "wbr"
 end
 
 module Hx = struct
   (* This is a boolean because it can be selectively switched off in some parts
      of the page. *)
-  let boost = bool_attr"data-hx-boost"
+  let boost = bool_attr "data-hx-boost"
 
   let confirm fmt = string_attr "data-hx-confirm" fmt
   let delete fmt = string_attr "data-hx-delete" fmt
