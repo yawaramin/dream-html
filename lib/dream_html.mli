@@ -57,8 +57,9 @@ val string_attr : string -> ('a, unit, string, attr) format4 -> 'a
     formatting of the value, and then HTML-escapes it using [Dream.html_escape].
     Note, the [fmt] argument is required due to the value restriction. *)
 
-val int_attr : string -> int to_attr
 val bool_attr : string -> bool to_attr
+val float_attr : string -> float to_attr
+val int_attr : string -> int to_attr
 
 val tag : string -> std_tag
 val void_tag : string -> void_tag
@@ -81,32 +82,47 @@ module Attr : sig
   (** An attribute that will not be rendered in the markup. Useful for conditional
       logic where you sometimes want to render an attribute and sometimes not. *)
 
+  val accept : _ string_attr
   val action : _ string_attr
+  val alt : _ string_attr
   val autocomplete : _ string_attr
   val autofocus : attr
+  val capture : _ string_attr
   val charset : _ string_attr
+  val checked : attr
   val class_ : _ string_attr
   val color : _ string_attr
   val content : _ string_attr
+  val dirname : _ string_attr
+  val disabled : attr
   val for_ : _ string_attr
+  val height : _ string_attr
+  val high : float to_attr
   val href : _ string_attr
   val id : _ string_attr
   val lang : _ string_attr
   val list : _ string_attr
+  val low : float to_attr
   val max : _ string_attr
   val maxlength : int to_attr
   val method_ : [< `GET | `POST] to_attr
   val min : _ string_attr
   val minlength : int to_attr
+  val multiple : attr
   val name : _ string_attr
   val onblur : _ string_attr
   val onclick : _ string_attr
+  val optimum : float to_attr
+  val pattern : _ string_attr
   val placeholder : _ string_attr
+  val readonly : attr
   val required : attr
   val rel : _ string_attr
   val rows : int to_attr
+  val size : _ string_attr
   val sizes : _ string_attr
   val src : _ string_attr
+  val step : _ string_attr
   val style : _ string_attr
   val tabindex : int to_attr
   val title : _ string_attr
@@ -116,6 +132,7 @@ module Attr : sig
       because it's used on other elements e.g. [<link type>]. *)
 
   val value : _ string_attr
+  val width : _ string_attr
 end
 (** Where an attribute name conflicts with an OCaml keyword, the name is suffixed
     with [_]. *)
@@ -161,8 +178,10 @@ module Tag : sig
   val link : void_tag
   val main : std_tag
   val meta : void_tag
+  val meter : std_tag
   val option : std_tag
   val p : std_tag
+  val progress : std_tag
   val script : std_tag
   val source : void_tag
   val span : std_tag

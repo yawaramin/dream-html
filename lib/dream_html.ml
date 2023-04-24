@@ -71,8 +71,9 @@ let respond ?status ?code ?headers node =
 let string_attr name fmt =
   Printf.ksprintf (fun s -> { name; value = Dream.html_escape s }) fmt
 
-let int_attr name value = { name; value = string_of_int value }
 let bool_attr name value = { name; value = string_of_bool value }
+let float_attr name value = { name; value = Printf.sprintf "%f" value }
+let int_attr name value = { name; value = string_of_int value }
 
 let tag name attrs children = Tag { name; attrs; children = Some children }
 let void_tag name attrs = Tag { name; attrs; children = None }
@@ -85,37 +86,53 @@ let raw str = Txt str
 module Attr = struct
   let null = string_attr "" ""
 
+  let accept fmt = string_attr "accept" fmt
   let action fmt = string_attr "action" fmt
+  let alt fmt = string_attr "alt" fmt
   let autocomplete fmt = string_attr "autocomplete" fmt
   let autofocus = bool_attr "autofocus" true
+  let capture fmt = string_attr "capture" fmt
   let charset fmt = string_attr "charset" fmt
+  let checked = bool_attr "checked" true
   let class_ fmt = string_attr "class" fmt
   let color fmt = string_attr "color" fmt
   let content fmt = string_attr "content" fmt
+  let dirname fmt = string_attr "dirname" fmt
+  let disabled = bool_attr "disabled" true
   let for_ fmt = string_attr "for" fmt
+  let height fmt = string_attr "height" fmt
+  let high = float_attr"high"
   let href fmt = string_attr "href" fmt
   let id fmt = string_attr "id" fmt
   let lang fmt = string_attr "lang" fmt
   let list fmt = string_attr "list" fmt
+  let low = float_attr"low"
   let max fmt = string_attr "max" fmt
   let maxlength = int_attr"maxlength"
   let method_ value = { name = "method"; value = Dream.method_to_string value }
   let min fmt = string_attr "min" fmt
   let minlength = int_attr"minlength"
+  let multiple = bool_attr "multiple" true
   let name fmt = string_attr "name" fmt
   let onblur fmt = string_attr "onblur" fmt
   let onclick fmt = string_attr "onclick" fmt
+  let optimum = float_attr"optimum"
+  let pattern fmt = string_attr "pattern" fmt
   let placeholder fmt = string_attr "placeholder" fmt
+  let readonly = bool_attr "readonly" true
   let required = bool_attr "required" true
   let rel fmt = string_attr "rel" fmt
   let rows = int_attr"rows"
+  let size fmt = string_attr "size" fmt
   let sizes fmt = string_attr "sizes" fmt
   let src fmt = string_attr "src" fmt
+  let step fmt = string_attr "step" fmt
   let style fmt = string_attr "style" fmt
   let tabindex = int_attr"tabindex"
   let title fmt = string_attr "title" fmt
   let type_ fmt = string_attr "type" fmt
   let value fmt = string_attr "value" fmt
+  let width fmt = string_attr "width" fmt
 end
 
 module Tag = struct
@@ -152,8 +169,10 @@ module Tag = struct
   let link = void_tag"link"
   let main = tag"main"
   let meta = void_tag"meta"
+  let meter = tag"meter"
   let option = tag"option"
   let p = tag"p"
+  let progress = tag"progress"
   let script = tag"script"
   let source = void_tag"source"
   let span = tag"span"
