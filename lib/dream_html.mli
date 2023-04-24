@@ -53,6 +53,10 @@ val respond :
 (** {2 Creating nodes, attributes, and interpolations} *)
 
 val string_attr : string -> ('a, unit, string, attr) format4 -> 'a
+(** [string_attr name fmt] is a new string-valued attribute which allows
+    formatting of the value, and then HTML-escapes it using [Dream.html_escape].
+    Note, the [fmt] argument is required due to the value restriction. *)
+
 val int_attr : string -> int to_attr
 val bool_attr : string -> bool to_attr
 
@@ -61,15 +65,16 @@ val void_tag : string -> void_tag
 
 val txt : ('a, unit, string, node) format4 -> 'a
 (** A text node inside the DOM e.g. the 'hi' in [<b>hi</b>]. Allows string
-    interpolation using the same formatting features as [Printf.sprintf]. *)
+    interpolation using the same formatting features as [Printf.sprintf]. HTML-
+    escapes the text value using [Dream.html_escape]. *)
 
 val comment : string -> node
 (** A comment that will be embedded in the rendered HTML, i.e. [<!-- comment -->]. *)
 
 val raw : string -> node
 [@@alert unsafe "Can lead to HTML injection."]
-(** Useful for injecting unsanitized content into the markup. Needless to say, be
-    very careful with where you use this! *)
+(** Useful for injecting unsanitized content into the markup. The text value is
+    not HTML-escaped. Needless to say, be very careful with where you use this! *)
 
 module Attr : sig
   val null : attr
