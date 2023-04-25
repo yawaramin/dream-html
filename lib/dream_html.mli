@@ -144,52 +144,117 @@ module Tag : sig
       actual node. Also may be called 'splicing'. *)
 
   val a : std_tag
+  val address : std_tag
   val area : void_tag
   val abbr : std_tag
   val article : std_tag
+  val aside : std_tag
+  val audio : std_tag
   val b : std_tag
   val base : void_tag
-  val br : void_tag
+  val bdi : std_tag
+  val bdo : std_tag
+  val blockquote : std_tag
   val body : std_tag
+  val br : void_tag
   val button : std_tag
+  val canvas : std_tag
+  val caption : std_tag
+  val cite : std_tag
+  val code : std_tag
   val col : void_tag
+  val colgroup : std_tag
+  val data : std_tag
   val datalist : std_tag
-  val details : std_tag
+  val dd : std_tag
   val del : std_tag
+  val details : std_tag
+  val dfn : std_tag
+  val dialog : std_tag
   val div : std_tag
+  val dl : std_tag
+  val dt : std_tag
+  val em : std_tag
   val embed : void_tag
+  val fieldset : std_tag
+  val figcaption : std_tag
+  val figure : std_tag
   val form : std_tag
+  val footer : std_tag
   val h1 : std_tag
   val h2 : std_tag
   val h3 : std_tag
   val h4 : std_tag
   val head : std_tag
   val header : std_tag
+  val hgroup : std_tag
   val hr : void_tag
 
   val html : std_tag
   (** A <!DOCTYPE html> declaration is automatically prefixed when this tag is
       printed. *)
 
+  val i : std_tag
+  val iframe : std_tag
   val img : void_tag
   val input : void_tag
+  val ins : std_tag
+  val kbd : std_tag
   val label : std_tag
+  val legend : std_tag
   val li : std_tag
   val link : void_tag
   val main : std_tag
+  val map : std_tag
+  val mark : std_tag
+  val menu : std_tag
   val meta : void_tag
   val meter : std_tag
+  val nav : std_tag
+  val noscript : std_tag
+  val object_ : std_tag
+  val ol : std_tag
+  val optgroup : std_tag
   val option : std_tag
+  val output : std_tag
   val p : std_tag
+  val picture : std_tag
+  val pre : std_tag
   val progress : std_tag
+  val q : std_tag
+  val rp : std_tag
+  val rt : std_tag
+  val ruby : std_tag
+  val s : std_tag
+  val samp : std_tag
   val script : std_tag
+  val section : std_tag
+  val select : std_tag
+  val slot : std_tag
+  val small : std_tag
   val source : void_tag
   val span : std_tag
+  val strong : std_tag
+  val style : std_tag
+  val sub : std_tag
   val summary : std_tag
+  val sup : std_tag
+  val table : std_tag
+  val tbody : std_tag
+  val td : std_tag
+  val template : std_tag
   val textarea : std_tag
+  val tfoot : std_tag
+  val th : std_tag
+  val thead : std_tag
+  val time : std_tag
+  val tr : std_tag
   val track : void_tag
   val title : std_tag
+  val u : std_tag
   val ul : std_tag
+  val var : std_tag
+  val video : std_tag
   val wbr : void_tag
 end
 
