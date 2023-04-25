@@ -32,7 +32,9 @@ let node = html[lang "en"][
       input[type_ "text"; onblur "if (1 > 0) alert(this.value)"];
       Tag.null[
         comment "embedded HTML comment";
-        textarea[Hx.trigger "keyup[target.value.trim() != '']"][txt "super"];
+        textarea[
+          Hx.trigger "keyup[target.value.trim() != '']";
+          autocapitalize `words][txt "super"];
         hr[if true then class_ "super" else null];
         greet "Bob"]]]]
 
