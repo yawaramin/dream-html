@@ -19,12 +19,15 @@ dream-html. If not, see <https://www.gnu.org/licenses/>.
 ## What
 
 This is a set of helper functions I am using to generate HTML markup from inside
-my [Dream](https://aantron.github.io/dream) backend. It works pretty well but is
-incomplete (there are a lot of attributes and tags in HTML). PRs welcome to add
-more!
+my [Dream](https://aantron.github.io/dream) backend. It works pretty well but has
+not been proven at large scale or anything like that.
 
-Caveat: this is very alpha software. I am planning to use it on a side project.
-You can use it if you want but a lot of things are still missing.
+Most HTML elements and attributes from the
+[Mozilla Developer Network references](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference)
+are now implemented. I have deliberately left out almost all non-standard or
+deprecated tags/attributes. Also, supporting CSS is out of scope for this library.
+However, I have included the core [htmx](https://htmx.org/) attributes as I am
+personally using them.
 
 ## Why
 
