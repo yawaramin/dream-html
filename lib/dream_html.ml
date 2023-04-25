@@ -24,32 +24,32 @@ type 'a string_attr = ('a, unit, string, attr) format4 -> 'a
 type std_tag = attr list -> node list -> node
 type void_tag = attr list -> node
 
+let write_attr p = function
+  | { name = ""; value = _ } ->
+    ()
+  | { name; value } ->
+    p " ";
+    p name;
+    p {|="|};
+    p value;
+    p {|"|}
+
 (* Loosely based on https://www.w3.org/TR/DOM-Parsing/ *)
-let rec write p = function
+let rec write_tag p = function
   | Tag { name = ""; children = Some children; _ } ->
-    List.iter (write p) children
+    List.iter (write_tag p) children
   | Tag { name; attrs; children = None } ->
     p "<";
     p name;
     begin match attrs with
-    | [] ->
-      ()
-    | _ ->
-      List.iter (function
-        | { name = ""; value = _ } ->
-          ()
-        | { name; value } ->
-          p " ";
-          p name;
-          p {|="|};
-          p value;
-          p {|"|}) attrs;
+    | [] -> ()
+    | _ -> List.iter (write_attr p) attrs
     end;
     p ">"
   | Tag ({ name; children = Some children; _ } as non_void) ->
     (if name = "html" then p "<!DOCTYPE html>\n");
-    write p (Tag { non_void with children = None });
-    List.iter (write p) children;
+    write_tag p (Tag { non_void with children = None });
+    List.iter (write_tag p) children;
     p "</"; p name; p ">\n"
   | Txt str ->
     p str
@@ -58,7 +58,7 @@ let rec write p = function
 
 let to_string node =
   let buf = Buffer.create 256 in
-  write (Buffer.add_string buf) node;
+  write_tag (Buffer.add_string buf) node;
   Buffer.contents buf
 
 let pp ppf node = node |> to_string |> Format.pp_print_string ppf
