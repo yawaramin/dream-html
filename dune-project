@@ -1,6 +1,6 @@
 (lang dune 2.7)
 
-(name dream_html)
+(name dream-html)
 (version v0.0.1)
 (generate_opam_files true)
 (license GPL-3.0-or-later)
@@ -9,7 +9,7 @@
 (source (github yawaramin/dream-html))
 
 (package
-  (name dream_html)
+  (name dream-html)
   (synopsis "HTML generator eDSL for Dream")
   (description "Write HTML directly in your OCaml source files with editor support.")
   (documentation "https://yawaramin.github.io/dream-html/api")
