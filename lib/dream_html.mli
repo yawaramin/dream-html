@@ -78,63 +78,138 @@ val raw : string -> node
     not HTML-escaped. Needless to say, be very careful with where you use this! *)
 
 module Attr : sig
+  type enctype = [`urlencoded | `formdata | `text_plain]
+  type method_ = [`GET | `POST]
+
   val null : attr
   (** An attribute that will not be rendered in the markup. Useful for conditional
       logic where you sometimes want to render an attribute and sometimes not. *)
 
   val accept : _ string_attr
+  val accept_charset : _ string_attr
+  val accesskey : _ string_attr
   val action : _ string_attr
+  val align : _ string_attr
+  val allow : _ string_attr
   val alt : _ string_attr
+  val async : attr
+  val autocapitalize : [< `off | `none | `on | `sentences | `words | `characters] to_attr
   val autocomplete : _ string_attr
   val autofocus : attr
+  val autoplay : attr
+  val buffered : _ string_attr
   val capture : _ string_attr
   val charset : _ string_attr
   val checked : attr
+  val cite : _ string_attr
   val class_ : _ string_attr
   val color : _ string_attr
+  val cols : int to_attr
+  val colspan : int to_attr
   val content : _ string_attr
+  val contenteditable : bool to_attr
+  val contextmenu : _ string_attr
+  val controls : attr
+  val coords : _ string_attr
+  val crossorigin : [< `anonymous | `use_credentials] to_attr
+  val data : _ string_attr
+  val datetime : _ string_attr
+  val decoding : [< `sync | `async | `auto] to_attr
+  val default : attr
+  val defer : attr
+  val dir : [< `ltr | `rtl | `auto] to_attr
   val dirname : _ string_attr
   val disabled : attr
+  val download : _ string_attr
+  val draggable : attr
+  val enctype : [< enctype] to_attr
   val for_ : _ string_attr
+  val form : _ string_attr
+  val formaction : _ string_attr
+  val formenctype : [< enctype] to_attr
+  val formmethod : [< method_] to_attr
+  val formnovalidate : attr
+  val formtarget : _ string_attr
+  val headers : _ string_attr
   val height : _ string_attr
+  val hidden : [< `hidden | `until_found] to_attr
   val high : float to_attr
   val href : _ string_attr
+  val hreflang : _ string_attr
+  val http_equiv : [< `content_security_policy | `content_type | `default_style | `x_ua_compatible | `refresh] to_attr
   val id : _ string_attr
+  val integrity : _ string_attr
+  val inputmode : [< `none | `text | `decimal | `numeric | `tel | `search | `email | `url] to_attr
+  val ismap : attr
+  val itemprop : _ string_attr
+  val kind : [< `subtitles | `captions | `descriptions | `chapters | `metadata] to_attr
+  val label : _ string_attr
   val lang : _ string_attr
   val list : _ string_attr
+  val loop : attr
   val low : float to_attr
   val max : _ string_attr
   val maxlength : int to_attr
-  val method_ : [< `GET | `POST] to_attr
+  val media : _ string_attr
+  val method_ : [< method_] to_attr
   val min : _ string_attr
   val minlength : int to_attr
   val multiple : attr
+  val muted : attr
   val name : _ string_attr
+  val novalidate : attr
   val onblur : _ string_attr
   val onclick : _ string_attr
+  val open_ : attr
   val optimum : float to_attr
   val pattern : _ string_attr
+  val ping : _ string_attr
   val placeholder : _ string_attr
+  val playsinline : attr
+  val poster : _ string_attr
+  val preload : [< `none | `metadata | `auto] to_attr
   val readonly : attr
-  val required : attr
+  val referrerpolicy : _ string_attr
   val rel : _ string_attr
+  val required : attr
+  val reversed : attr
+  val role : _ string_attr
   val rows : int to_attr
+  val rowspan : int to_attr
+  val sandbox : _ string_attr
+  val scope : _ string_attr
+  val selected : attr
+  val shape : _ string_attr
   val size : _ string_attr
   val sizes : _ string_attr
+  val slot : _ string_attr
+  val span : int to_attr
+  val spellcheck : bool to_attr
   val src : _ string_attr
+  val srcdoc : _ string_attr
+  val srclang : _ string_attr
+  val srcset : _ string_attr
+  val start : int to_attr
   val step : _ string_attr
   val style : _ string_attr
   val tabindex : int to_attr
+  val target : _ string_attr
   val title : _ string_attr
+  val translate : [< `yes | `no] to_attr
 
   val type_ : _ string_attr
   (** Note: this can't be restricted to just the allowed values for [<input type>],
       because it's used on other elements e.g. [<link type>]. *)
 
+  val usemap : _ string_attr
   val value : _ string_attr
   val width : _ string_attr
+  val wrap : [< `hard | `soft] to_attr
 end
-(** Where an attribute name conflicts with an OCaml keyword, the name is suffixed
+(** Standard, most non-deprecated attributes from
+    {: https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}.
+
+    Where an attribute name conflicts with an OCaml keyword, the name is suffixed
     with [_]. *)
 
 module Tag : sig

@@ -82,19 +82,48 @@ let comment str = Comment str
 let raw str = Txt str
 
 module Attr = struct
+  type enctype = [`urlencoded | `formdata | `text_plain]
+  type method_ = [`GET | `POST]
+
   let null = string_attr "" ""
 
   let accept fmt = string_attr "accept" fmt
+  let accept_charset fmt = string_attr "accept-charset" fmt
+  let accesskey fmt = string_attr "accesskey" fmt
   let action fmt = string_attr "action" fmt
+  let align fmt = string_attr "align" fmt
+  let allow fmt = string_attr "allow" fmt
   let alt fmt = string_attr "alt" fmt
+  let async = bool_attr "async" true
+
+  let autocapitalize value = {
+    name = "autocapitalize";
+    value = match value with
+      | `off -> "off"
+      | `none -> "none"
+      | `on -> "on"
+      | `sentences -> "sentences"
+      | `words -> "words"
+      | `characters -> "characters"
+  }
+
   let autocomplete fmt = string_attr "autocomplete" fmt
   let autofocus = bool_attr "autofocus" true
+  let autoplay = bool_attr "autoplay" true
+  let buffered fmt = string_attr "buffered" fmt
   let capture fmt = string_attr "capture" fmt
   let charset fmt = string_attr "charset" fmt
   let checked = bool_attr "checked" true
+  let cite fmt = string_attr "cite" fmt
   let class_ fmt = string_attr "class" fmt
   let color fmt = string_attr "color" fmt
+  let cols = int_attr "cols"
+  let colspan = int_attr "cols"
   let content fmt = string_attr "content" fmt
+  let contenteditable = bool_attr "contenteditable" true
+  let contextmenu fmt = string_attr "contextmenu" fmt
+  let controls = bool_attr "controls" true
+  let coords fmt = string_attr "coords" fmt
   let dirname fmt = string_attr "dirname" fmt
   let disabled = bool_attr "disabled" true
   let for_ fmt = string_attr "for" fmt
