@@ -23,6 +23,7 @@ type 'a to_attr = 'a -> attr
 type 'a string_attr = ('a, unit, string, attr) format4 -> 'a
 type std_tag = attr list -> node list -> node
 type void_tag = attr list -> node
+type 'a text_tag = attr list -> ('a, unit, string, node) format4 -> 'a
 
 let write_attr p = function
   | { name = ""; value = _ } ->
@@ -75,6 +76,11 @@ let int_attr name value = { name; value = string_of_int value }
 
 let tag name attrs children = Tag { name; attrs; children = Some children }
 let void_tag name attrs = Tag { name; attrs; children = None }
+
+let text_tag name attrs fmt =
+  Printf.ksprintf
+  (fun s -> Tag { name; attrs; children = Some [Txt (Dream.html_escape s)]})
+  fmt
 
 let txt fmt = Printf.ksprintf (fun s -> Txt (Dream.html_escape s)) fmt
 
@@ -377,7 +383,7 @@ module Tag = struct
   let object_ = tag "object"
   let ol = tag "ol"
   let optgroup = tag "optgroup"
-  let option = tag "option"
+  let option attrs fmt = text_tag "option" attrs fmt
   let output = tag "output"
   let p = tag "p"
   let picture = tag "picture"
@@ -389,7 +395,7 @@ module Tag = struct
   let ruby = tag "ruby"
   let s = tag "s"
   let samp = tag "samp"
-  let script = tag "script"
+  let script attrs fmt = text_tag "script" attrs fmt
   let section = tag "section"
   let select = tag "select"
   let slot = tag "slot"
@@ -397,7 +403,7 @@ module Tag = struct
   let source = void_tag "source"
   let span = tag "span"
   let strong = tag "strong"
-  let style = tag "style"
+  let style attrs fmt = text_tag "style" attrs fmt
   let sub = tag "sub"
   let sup = tag "sup"
   let summary = tag "summary"
@@ -405,14 +411,14 @@ module Tag = struct
   let tbody = tag "tbody"
   let td = tag "td"
   let template = tag "template"
-  let textarea = tag "textarea"
+  let textarea attrs fmt = text_tag "textarea" attrs fmt
   let tfoot = tag "tfoot"
   let th = tag "th"
   let thead = tag "thead"
   let time = tag "time"
+  let title attrs fmt = text_tag "title" attrs fmt
   let tr = tag "tr"
   let track = void_tag "track"
-  let title = tag "title"
   let u = tag "u"
   let ul = tag "ul"
   let var = tag "var"

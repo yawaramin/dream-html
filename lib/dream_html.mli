@@ -15,7 +15,28 @@
    You should have received a copy of the GNU General Public License along with
    dream-html. If not, see <https://www.gnu.org/licenses/>. *)
 
-(** Constructing HTML. *)
+(** Constructing HTML. Detailed explanation in
+    {: https://github.com/yawaramin/dream-html}.
+
+    Quick example:
+
+    {[open Dream_html
+      open Tag
+      open Attr
+
+      let greet name = p[class_ "greeting"][txt "Hello, %s!" name]
+
+      html[][
+        head[][
+          (* Disambiguate from title attribute *)
+          Tag.title[] "Hello"];
+        body[][
+          main[][
+            comment "HTML comment!";
+            greet "Yawar";
+            h1[][txt "HTML"];
+            p[][txt "Is really cool"]]]]
+    ]} *)
 
 (** {2 Core types} *)
 
@@ -40,6 +61,9 @@ type void_tag = attr list -> node
 (** A 'void element':
     {: https://developer.mozilla.org/en-US/docs/Glossary/Void_element} *)
 
+type 'a text_tag = attr list -> ('a, unit, string, node) format4 -> 'a
+(** Tags which can have attributes but can contain only text. *)
+
 (** {2 Output} *)
 
 val to_string : node -> string
@@ -63,6 +87,7 @@ val int_attr : string -> int to_attr
 
 val tag : string -> std_tag
 val void_tag : string -> void_tag
+val text_tag : string -> _ text_tag
 
 val txt : ('a, unit, string, node) format4 -> 'a
 (** A text node inside the DOM e.g. the 'hi' in [<b>hi</b>]. Allows string
@@ -290,7 +315,7 @@ module Tag : sig
   val object_ : std_tag
   val ol : std_tag
   val optgroup : std_tag
-  val option : std_tag
+  val option : _ text_tag
   val output : std_tag
   val p : std_tag
   val picture : std_tag
@@ -302,7 +327,7 @@ module Tag : sig
   val ruby : std_tag
   val s : std_tag
   val samp : std_tag
-  val script : std_tag
+  val script : _ text_tag
   val section : std_tag
   val select : std_tag
   val slot : std_tag
@@ -310,7 +335,7 @@ module Tag : sig
   val source : void_tag
   val span : std_tag
   val strong : std_tag
-  val style : std_tag
+  val style : _ text_tag
   val sub : std_tag
   val summary : std_tag
   val sup : std_tag
@@ -318,14 +343,14 @@ module Tag : sig
   val tbody : std_tag
   val td : std_tag
   val template : std_tag
-  val textarea : std_tag
+  val textarea : _ text_tag
   val tfoot : std_tag
   val th : std_tag
   val thead : std_tag
   val time : std_tag
+  val title : _ text_tag
   val tr : std_tag
   val track : void_tag
-  val title : std_tag
   val u : std_tag
   val ul : std_tag
   val var : std_tag
