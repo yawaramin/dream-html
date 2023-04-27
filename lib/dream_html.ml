@@ -26,8 +26,12 @@ type void_tag = attr list -> node
 type 'a text_tag = attr list -> ('a, unit, string, node) format4 -> 'a
 
 let write_attr p = function
-  | { name = ""; value = _ } ->
+  | { name = ""; value = "" }
+  | { name = ""; _ } ->
     ()
+  | { name; value = "" } ->
+    p " ";
+    p name
   | { name; value } ->
     p " ";
     p name;
@@ -42,10 +46,7 @@ let rec write_tag p = function
   | Tag { name; attrs; children = None } ->
     p "<";
     p name;
-    begin match attrs with
-    | [] -> ()
-    | _ -> List.iter (write_attr p) attrs
-    end;
+    List.iter (write_attr p) attrs;
     p ">"
   | Tag ({ name; children = Some children; _ } as non_void) ->
     (if name = "html" then p "<!DOCTYPE html>\n");

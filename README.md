@@ -137,7 +137,7 @@ div[][
 
 ```
 $ utop
-utop # #require "dream_html";;
+utop # #require "dream-html";;
 utop # open Dream_html;;
 utop # open Tag;;
 utop # open Attr;;
