@@ -94,7 +94,7 @@ val bool_attr : string -> bool to_attr
 val float_attr : string -> float to_attr
 val int_attr : string -> int to_attr
 
-val tag : string -> std_tag
+val std_tag : string -> std_tag
 val void_tag : string -> void_tag
 
 val text_tag : string -> ?raw:bool -> _ text_tag
