@@ -107,7 +107,7 @@ module Attr = struct
   let align fmt = string_attr "align" fmt
   let allow fmt = string_attr "allow" fmt
   let alt fmt = string_attr "alt" fmt
-  let async = bool_attr "async" true
+  let async = { name = "async"; value = "" }
 
   let autocapitalize value = {
     name = "autocapitalize";
@@ -121,12 +121,12 @@ module Attr = struct
   }
 
   let autocomplete fmt = string_attr "autocomplete" fmt
-  let autofocus = bool_attr "autofocus" true
-  let autoplay = bool_attr "autoplay" true
+  let autofocus = { name = "autofocus"; value = "" }
+  let autoplay = { name = "autoplay"; value = "" }
   let buffered fmt = string_attr "buffered" fmt
   let capture fmt = string_attr "capture" fmt
   let charset fmt = string_attr "charset" fmt
-  let checked = bool_attr "checked" true
+  let checked = { name = "checked"; value = "" }
   let cite fmt = string_attr "cite" fmt
   let class_ fmt = string_attr "class" fmt
   let color fmt = string_attr "color" fmt
@@ -135,7 +135,7 @@ module Attr = struct
   let content fmt = string_attr "content" fmt
   let contenteditable = bool_attr "contenteditable"
   let contextmenu fmt = string_attr "contextmenu" fmt
-  let controls = bool_attr "controls" true
+  let controls = { name = "controls"; value = "" }
   let coords fmt = string_attr "coords" fmt
 
   let crossorigin value = {
@@ -156,8 +156,8 @@ module Attr = struct
       | `auto -> "auto"
   }
 
-  let default = bool_attr "default" true
-  let defer = bool_attr "defer" true
+  let default = { name = "default"; value = "" }
+  let defer = { name = "defer"; value = "" }
 
   let dir value = {
     name = "dir";
@@ -168,16 +168,16 @@ module Attr = struct
   }
 
   let dirname fmt = string_attr "dirname" fmt
-  let disabled = bool_attr "disabled" true
+  let disabled = { name = "disabled"; value = "" }
   let download fmt = string_attr "download" fmt
-  let draggable = bool_attr "draggable" true
+  let draggable = { name = "draggable"; value = "" }
   let enctype value = { name = "enctype"; value = enctype_string value }
   let for_ fmt = string_attr "for" fmt
   let form fmt = string_attr "form" fmt
   let formaction fmt = string_attr "formaction" fmt
   let formenctype value = { name = "formenctype"; value = enctype_string value }
   let formmethod value = { name = "formmethod"; value = Dream.method_to_string value }
-  let formnovalidate = bool_attr "formnovalidate" true
+  let formnovalidate = { name = "formnovalidate"; value = "" }
   let formtarget fmt = string_attr "formtarget" fmt
   let headers fmt = string_attr "headers" fmt
   let height fmt = string_attr "height" fmt
@@ -219,7 +219,7 @@ module Attr = struct
       | `url -> "url"
   }
 
-  let ismap = bool_attr "ismap" true
+  let ismap = { name = "ismap"; value = "" }
   let itemprop fmt = string_attr "itemprop" fmt
 
   let kind value = {
@@ -235,7 +235,7 @@ module Attr = struct
   let label fmt = string_attr "label" fmt
   let lang fmt = string_attr "lang" fmt
   let list fmt = string_attr "list" fmt
-  let loop = bool_attr "loop" true
+  let loop = { name = "loop"; value = "" }
   let low = float_attr "low"
   let max fmt = string_attr "max" fmt
   let maxlength = int_attr "maxlength"
@@ -243,18 +243,18 @@ module Attr = struct
   let method_ value = { name = "method"; value = Dream.method_to_string value }
   let min fmt = string_attr "min" fmt
   let minlength = int_attr "minlength"
-  let multiple = bool_attr "multiple" true
-  let muted = bool_attr "muted" true
+  let multiple = { name = "multiple"; value = "" }
+  let muted = { name = "muted"; value = "" }
   let name fmt = string_attr "name" fmt
-  let novalidate = bool_attr "novalidate" true
+  let novalidate = { name = "novalidate"; value = "" }
   let onblur fmt = string_attr "onblur" ~raw:true fmt
   let onclick fmt = string_attr "onclick" ~raw:true fmt
-  let open_ = bool_attr "open" true
+  let open_ = { name = "open"; value = "" }
   let optimum = float_attr "optimum"
   let pattern fmt = string_attr "pattern" fmt
   let ping fmt = string_attr "ping" fmt
   let placeholder fmt = string_attr "placeholder" fmt
-  let playsinline = bool_attr "playsinline" true
+  let playsinline = { name = "playsinline"; value = "" }
   let poster fmt = string_attr "poster" fmt
 
   let preload value = {
@@ -265,17 +265,17 @@ module Attr = struct
       | `auto -> "auto"
   }
 
-  let readonly = bool_attr "readonly" true
+  let readonly = { name = "readonly"; value = "" }
   let referrerpolicy fmt = string_attr "referrerpolicy " fmt
   let rel fmt = string_attr "rel" fmt
-  let required = bool_attr "required" true
-  let reversed = bool_attr "reversed" true
+  let required = { name = "required"; value = "" }
+  let reversed = { name = "reversed"; value = "" }
   let role fmt = string_attr "role" fmt
   let rows = int_attr "rows"
   let rowspan = int_attr "rowspan"
   let sandbox fmt = string_attr "sandbox" fmt
   let scope fmt = string_attr "scope" fmt
-  let selected = bool_attr "selected" true
+  let selected = { name = "selected"; value = "" }
   let shape fmt = string_attr "shape" fmt
   let size fmt = string_attr "size" fmt
   let sizes fmt = string_attr "sizes" fmt

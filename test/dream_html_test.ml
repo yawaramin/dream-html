@@ -25,7 +25,7 @@ let node = html[lang "en"][
   head[][
     Tag.title[] "Dream_html Test"];
   body[id "test-content"][
-    main[][
+    main[spellcheck true][
       article[id "article-1"; class_ "story"][
         p[Hx.get "/p1"][txt "Test para 1."];
         p[][txt "Test para 2."]];
@@ -33,6 +33,7 @@ let node = html[lang "en"][
       Tag.null[
         comment "oops --><script>alert('lol')</script>";
         textarea[
+          required;
           Hx.trigger "keyup[target.value.trim() != '']";
           autocapitalize `words]
           "super";

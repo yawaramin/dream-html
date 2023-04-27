@@ -46,28 +46,6 @@ type attr
 type node
 (** Either a tag, a comment, or text data in the markup. *)
 
-(** {2 Constructor types}
-
-    These are helper types which are mostly here for bookkeeping reasons and can
-    be ignored by most users. Users or developers who want to add more attributes
-    and tags will find them useful. *)
-
-type 'a to_attr = 'a -> attr
-
-type 'a string_attr = ('a, unit, string, attr) format4 -> 'a
-(** Special handling for string-value attributes so they can use string
-    interpolation. *)
-
-type std_tag = attr list -> node list -> node
-(** A 'standard' tag with attributes and children. *)
-
-type void_tag = attr list -> node
-(** A 'void element':
-    {: https://developer.mozilla.org/en-US/docs/Glossary/Void_element} *)
-
-type 'a text_tag = attr list -> ('a, unit, string, node) format4 -> 'a
-(** Tags which can have attributes but can contain only text. *)
-
 (** {2 Output} *)
 
 val to_string : node -> string
@@ -78,7 +56,26 @@ val respond :
   ?code:int ->
   ?headers:(string * string) list -> node -> Dream.response Lwt.t
 
-(** {2 Creating nodes, attributes, and interpolations} *)
+(** {2 Constructing nodes and attributes} *)
+
+type 'a to_attr = 'a -> attr
+(** Attributes can be created from typed values. *)
+
+type 'a string_attr = ('a, unit, string, attr) format4 -> 'a
+(** Special handling for string-value attributes so they can use format strings
+    i.e. string interpolation. *)
+
+type std_tag = attr list -> node list -> node
+(** A 'standard' tag with attributes and children. *)
+
+type void_tag = attr list -> node
+(** A 'void element':
+    {: https://developer.mozilla.org/en-US/docs/Glossary/Void_element} with no
+    children. *)
+
+type 'a text_tag = attr list -> ('a, unit, string, node) format4 -> 'a
+(** Tags which can have attributes but can contain only text. The text can be
+    formatted. *)
 
 val string_attr : string -> ?raw:bool -> _ string_attr
 (** [string_attr name fmt] is a new string-valued attribute which allows
@@ -113,7 +110,8 @@ val txt : ?raw:bool -> ('a, unit, string, node) format4 -> 'a
     @param raw can lead to HTML injection, please use carefully. *)
 
 val comment : string -> node
-(** A comment that will be embedded in the rendered HTML, i.e. [<!-- comment -->]. *)
+(** A comment that will be embedded in the rendered HTML, i.e. [<!-- comment -->].
+    The text is HTML-escaped. *)
 
 module Attr : sig
   type enctype = [`urlencoded | `formdata | `text_plain]
