@@ -85,7 +85,7 @@ let text_tag name ?(raw=false) attrs fmt =
   fmt
 
 let txt ?(raw=false) fmt = Printf.ksprintf (fun s -> Txt (escape raw s)) fmt
-let comment str = Comment str
+let comment str = Comment (Dream.html_escape str)
 
 module Attr = struct
   type method_ = [`GET | `POST]

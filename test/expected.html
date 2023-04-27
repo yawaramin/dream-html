@@ -4,7 +4,7 @@
 <body id="test-content"><main><article id="article-1" class="story"><p data-hx-get="/p1">Test para 1.</p>
 <p>Test para 2.</p>
 </article>
-<input type="text" onblur="if (1 > 0) alert(this.value)"><!-- embedded HTML comment -->
+<input type="text" onblur="if (1 > 0) alert(this.value)"><!-- oops --&gt;&lt;script&gt;alert(&#x27;lol&#x27;)&lt;/script&gt; -->
 <textarea data-hx-trigger="keyup[target.value.trim() != '']" autocapitalize="words">super</textarea>
 <hr class="super"><p id="greet-Bob">Hello, Bob!</p>
 </main>

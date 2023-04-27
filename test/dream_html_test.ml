@@ -31,7 +31,7 @@ let node = html[lang "en"][
         p[][txt "Test para 2."]];
       input[type_ "text"; onblur "if (1 > 0) alert(this.value)"];
       Tag.null[
-        comment "embedded HTML comment";
+        comment "oops --><script>alert('lol')</script>";
         textarea[
           Hx.trigger "keyup[target.value.trim() != '']";
           autocapitalize `words]
