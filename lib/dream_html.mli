@@ -238,7 +238,7 @@ module HTML : sig
   type method_ =
     [ `GET
     | `POST
-    | `dialog (** @since 2.1.0 *) ]
+    | `dialog  (** @since 2.1.0 *) ]
 
   val null_ : attr
   (** An attribute that will not be rendered in the markup. Useful for conditional
@@ -429,7 +429,92 @@ module HTML : sig
   val rel : _ string_attr
   val required : attr
   val reversed : attr
-  val role : _ string_attr
+
+  val role :
+    [ `alert
+    | `alertdialog
+    | `application
+    | `article
+    | `banner
+    | `button
+    | `cell
+    | `checkbox
+    | `columnheader
+    | `combobox (* command - do not use *)
+    | `comment
+    | `complementary (* composite - do not use *)
+    | `contentinfo
+    | `definition
+    | `dialog (* directory - deprecated *)
+    | `document
+    | `feed
+    | `figure
+    | `form
+    | `generic
+    | `grid
+    | `gridcell
+    | `group
+    | `heading
+    | `img
+      (* input - do not use *)
+      (* landmark - do not use *)
+    | `link
+    | `list
+    | `listbox
+    | `listitem
+    | `log
+    | `main
+    | `mark
+    | `marquee
+    | `math
+    | `menu
+    | `menubar
+    | `menuitem
+    | `menuitemcheckbox
+    | `menuitemradio
+    | `meter
+    | `navigation
+    | `none
+    | `note
+    | `option
+    | `presentation
+    | `progressbar
+    | `radio
+    | `radiogroup (* range - do not use *)
+    | `region (* roletype - do not use *)
+    | `row
+    | `rowgroup
+    | `rowheader
+    | `scrollbar
+    | `search
+    | `searchbox
+    | (* section - do not use *)
+      (* sectionhead - do not use *)
+      (* select - do not use *)
+      `separator
+    | `slider
+    | `spinbutton
+    | `status
+    | (* structure - do not use *)
+      `suggestion
+    | `switch
+    | `tab
+    | `table
+    | `tablist
+    | `tabpanel
+    | `term
+    | `textbox
+    | `timer
+    | `toolbar
+    | `tooltip
+    | `tree
+    | `treegrid
+    | `treeitem
+      (* widget - do not use *)
+      (* window - do not use *) ]
+    to_attr
+  (** @since 3.0.0 *)
+
   val rows : int to_attr
   val rowspan : int to_attr
   val sandbox : _ string_attr
