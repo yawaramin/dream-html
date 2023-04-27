@@ -113,6 +113,8 @@ val comment : string -> node
 (** A comment that will be embedded in the rendered HTML, i.e. [<!-- comment -->].
     The text is HTML-escaped. *)
 
+(** {2 Standard attributes} *)
+
 module Attr : sig
   type enctype = [`urlencoded | `formdata | `text_plain]
   type method_ = [`GET | `POST]
@@ -261,6 +263,8 @@ end
     function calls. However, boolean attributes which may be inherited and
     toggled on/off in children, are constructed by passing in a value. *)
 
+(** {2 Standard tags} *)
+
 module Tag : sig
   val null : node list -> node
   (** A tag that will not be rendered in the markup. Useful for containing a bunch
@@ -396,6 +400,8 @@ end
 
     Finally, a few (text elements) are constructed with a list of attributes and
     a single text child. *)
+
+(** {2 htmx attributes} *)
 
 module Hx : sig
   val boost : bool to_attr
