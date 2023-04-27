@@ -18,27 +18,27 @@
 (** Constructing HTML. Detailed explanation in
     {: https://github.com/yawaramin/dream-html}.
 
-    Quick example:
+    Let's adapt the example from the
+    {{: https://aantron.github.io/dream/} Dream home page}:
 
-    {[open Dream_html
-      open Tag
-      open Attr
+    {[let hello who =
+        let open Dream_html in
+        let open Tag in
+        html[][
+          body[][
+            h1[][txt "Hello, %s!" who]]]
 
-      let greet name = p[class_ "greeting"][txt "Hello, %s!" name]
+      let () =
+        Dream.run
+        @@ Dream.logger
+        @@ Dream.router [
+          Dream.get "/" (fun _ ->
+            Dream_html.respond (hello "world"));
+        ]]} *)
 
-      html[][
-        head[][
-          (* Disambiguate from title attribute *)
-          Tag.title[] "Hello"];
-        body[][
-          main[][
-            comment "HTML comment!";
-            greet "Yawar";
-            h1[][txt "HTML"];
-            p[][txt "Is really cool"]]]]
-    ]} *)
+(** {2 Core types}
 
-(** {2 Core types} *)
+    These are the types of the final values which get rendered. *)
 
 type attr
 (** E.g. [id="toast"]. *)
@@ -46,7 +46,11 @@ type attr
 type node
 (** Either a tag, a comment, or text data in the markup. *)
 
-(** {2 Constructor types} *)
+(** {2 Constructor types}
+
+    These are helper types which are mostly here for bookkeeping reasons and can
+    be ignored by most users. Users or developers who want to add more attributes
+    and tags will find them useful. *)
 
 type 'a to_attr = 'a -> attr
 
@@ -76,10 +80,15 @@ val respond :
 
 (** {2 Creating nodes, attributes, and interpolations} *)
 
-val string_attr : string -> ('a, unit, string, attr) format4 -> 'a
+val string_attr : string -> ?raw:bool -> _ string_attr
 (** [string_attr name fmt] is a new string-valued attribute which allows
-    formatting of the value, and then HTML-escapes it using [Dream.html_escape].
-    Note, the [fmt] argument is required due to the value restriction. *)
+    formatting i.e. string interpolation of the value. Note, the [fmt] argument
+    is required due to the value restriction.
+
+    @param raw (default [false]) whether to inject the raw text or to escape it.
+      Note that Dream does not support escaping inline JavaScript nor CSS, so
+      neither does dream-html:
+      {: https://github.com/aantron/dream/tree/master/example/7-template#security}. *)
 
 val bool_attr : string -> bool to_attr
 val float_attr : string -> float to_attr
@@ -87,20 +96,24 @@ val int_attr : string -> int to_attr
 
 val tag : string -> std_tag
 val void_tag : string -> void_tag
-val text_tag : string -> _ text_tag
 
-val txt : ('a, unit, string, node) format4 -> 'a
+val text_tag : string -> ?raw:bool -> _ text_tag
+(** Build a tag which can contain only text.
+
+    @param raw (default [false]) whether to inject the raw text or to escape it.
+      Note that Dream does not support escaping inline JavaScript nor CSS, so
+      neither does dream-html:
+      {: https://github.com/aantron/dream/tree/master/example/7-template#security}. *)
+
+val txt : ?raw:bool -> ('a, unit, string, node) format4 -> 'a
 (** A text node inside the DOM e.g. the 'hi' in [<b>hi</b>]. Allows string
     interpolation using the same formatting features as [Printf.sprintf]. HTML-
-    escapes the text value using [Dream.html_escape]. *)
+    escapes the text value using [Dream.html_escape].
+
+    @param raw can lead to HTML injection, please use carefully. *)
 
 val comment : string -> node
 (** A comment that will be embedded in the rendered HTML, i.e. [<!-- comment -->]. *)
-
-val raw : string -> node
-[@@alert unsafe "Can lead to HTML injection."]
-(** Useful for injecting unsanitized content into the markup. The text value is
-    not HTML-escaped. Needless to say, be very careful with where you use this! *)
 
 module Attr : sig
   type enctype = [`urlencoded | `formdata | `text_plain]
@@ -183,8 +196,13 @@ module Attr : sig
   val muted : attr
   val name : _ string_attr
   val novalidate : attr
+
   val onblur : _ string_attr
+  (** Note that the value of this attribute is not escaped. *)
+
   val onclick : _ string_attr
+  (** Note that the value of this attribute is not escaped. *)
+
   val open_ : attr
   val optimum : float to_attr
   val pattern : _ string_attr
@@ -216,7 +234,10 @@ module Attr : sig
   val srcset : _ string_attr
   val start : int to_attr
   val step : _ string_attr
+
   val style : _ string_attr
+  (** Note that the value of this attribute is not escaped. *)
+
   val tabindex : int to_attr
   val target : _ string_attr
   val title : _ string_attr
@@ -235,7 +256,12 @@ end
     {: https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}.
 
     Where an attribute name conflicts with an OCaml keyword, the name is suffixed
-    with [_]. *)
+    with [_].
+
+    Most attributes are constructed by passing in a value of some type. Most
+    boolean attributes are plain values and don't need to be constructed with
+    function calls. However, boolean attributes which may be inherited and
+    toggled on/off in children, are constructed by passing in a value. *)
 
 module Tag : sig
   val null : node list -> node
@@ -285,6 +311,8 @@ module Tag : sig
   val h2 : std_tag
   val h3 : std_tag
   val h4 : std_tag
+  val h5 : std_tag
+  val h6 : std_tag
   val head : std_tag
   val header : std_tag
   val hgroup : std_tag
@@ -327,7 +355,10 @@ module Tag : sig
   val ruby : std_tag
   val s : std_tag
   val samp : std_tag
+
   val script : _ text_tag
+  (** Note that the content of this tag is not escaped. *)
+
   val section : std_tag
   val select : std_tag
   val slot : std_tag
@@ -335,7 +366,10 @@ module Tag : sig
   val source : void_tag
   val span : std_tag
   val strong : std_tag
+
   val style : _ text_tag
+  (** Note that the content of this tag is not escaped. *)
+
   val sub : std_tag
   val summary : std_tag
   val sup : std_tag
@@ -357,13 +391,23 @@ module Tag : sig
   val video : std_tag
   val wbr : void_tag
 end
+(** HTML tags. Most (standard tags) are constructed by passing a list of
+    attributes and a list of children.
+
+    Some (void elements) are constructed only with a list of attributes.
+
+    Finally, a few (text elements) are constructed with a list of attributes and
+    a single text child. *)
 
 module Hx : sig
   val boost : bool to_attr
   val confirm : _ string_attr
   val delete : _ string_attr
   val get : _ string_attr
+
   val on : _ string_attr
+  (** Note that the value of this attribute is not escaped. *)
+
   val post : _ string_attr
   val push_url : _ string_attr
   val select : _ string_attr
@@ -371,7 +415,10 @@ module Hx : sig
   val swap : _ string_attr
   val swap_oob : _ string_attr
   val target : _ string_attr
+
   val trigger : _ string_attr
+  (** Note that the value of this attribute is not escaped. *)
+
   val vals : _ string_attr
 end
 (** htmx core attributes {: https://htmx.org/reference/#attributes} *)

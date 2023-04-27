@@ -67,8 +67,10 @@ let pp ppf node = node |> to_string |> Format.pp_print_string ppf
 let respond ?status ?code ?headers node =
   Dream.html ?status ?code ?headers @@ to_string node
 
-let string_attr name fmt =
-  Printf.ksprintf (fun s -> { name; value = Dream.html_escape s }) fmt
+let escape raw = if raw then Fun.id else Dream.html_escape
+
+let string_attr name ?(raw=false) fmt =
+  Printf.ksprintf (fun s -> { name; value = escape raw s }) fmt
 
 let bool_attr name value = { name; value = string_of_bool value }
 let float_attr name value = { name; value = Printf.sprintf "%f" value }
@@ -77,15 +79,13 @@ let int_attr name value = { name; value = string_of_int value }
 let tag name attrs children = Tag { name; attrs; children = Some children }
 let void_tag name attrs = Tag { name; attrs; children = None }
 
-let text_tag name attrs fmt =
+let text_tag name ?(raw=false) attrs fmt =
   Printf.ksprintf
-  (fun s -> Tag { name; attrs; children = Some [Txt (Dream.html_escape s)]})
+  (fun s -> Tag { name; attrs; children = Some [Txt (escape raw s)]})
   fmt
 
-let txt fmt = Printf.ksprintf (fun s -> Txt (Dream.html_escape s)) fmt
-
+let txt ?(raw=false) fmt = Printf.ksprintf (fun s -> Txt (escape raw s)) fmt
 let comment str = Comment str
-let raw str = Txt str
 
 module Attr = struct
   type method_ = [`GET | `POST]
@@ -246,8 +246,8 @@ module Attr = struct
   let muted = bool_attr "muted" true
   let name fmt = string_attr "name" fmt
   let novalidate = bool_attr "novalidate" true
-  let onblur fmt = string_attr "onblur" fmt
-  let onclick fmt = string_attr "onclick" fmt
+  let onblur fmt = string_attr "onblur" ~raw:true fmt
+  let onclick fmt = string_attr "onclick" ~raw:true fmt
   let open_ = bool_attr "open" true
   let optimum = float_attr "optimum"
   let pattern fmt = string_attr "pattern" fmt
@@ -357,6 +357,8 @@ module Tag = struct
   let h2 = tag "h2"
   let h3 = tag "h3"
   let h4 = tag "h4"
+  let h5 = tag "h5"
+  let h6 = tag "h6"
   let head = tag "head"
   let header = tag "header"
   let hgroup = tag "hgroup"
@@ -395,7 +397,7 @@ module Tag = struct
   let ruby = tag "ruby"
   let s = tag "s"
   let samp = tag "samp"
-  let script attrs fmt = text_tag "script" attrs fmt
+  let script attrs fmt = text_tag "script" ~raw:true attrs fmt
   let section = tag "section"
   let select = tag "select"
   let slot = tag "slot"
@@ -403,7 +405,7 @@ module Tag = struct
   let source = void_tag "source"
   let span = tag "span"
   let strong = tag "strong"
-  let style attrs fmt = text_tag "style" attrs fmt
+  let style attrs fmt = text_tag "style" ~raw:true attrs fmt
   let sub = tag "sub"
   let sup = tag "sup"
   let summary = tag "summary"
@@ -434,7 +436,7 @@ module Hx = struct
   let confirm fmt = string_attr "data-hx-confirm" fmt
   let delete fmt = string_attr "data-hx-delete" fmt
   let get fmt = string_attr "data-hx-get" fmt
-  let on fmt = string_attr "data-hx-on" fmt
+  let on fmt = string_attr "data-hx-on" ~raw:true fmt
   let post fmt = string_attr "data-hx-post" fmt
   let push_url fmt = string_attr "data-hx-push-url" fmt
   let select fmt = string_attr "data-hx-select" fmt
@@ -442,6 +444,6 @@ module Hx = struct
   let swap fmt = string_attr "data-hx-swap" fmt
   let swap_oob fmt = string_attr "data-hx-swap-oob" fmt
   let target fmt = string_attr "data-hx-target" fmt
-  let trigger fmt = string_attr "data-hx-trigger" fmt
+  let trigger fmt = string_attr "data-hx-trigger" ~raw:true fmt
   let vals fmt = string_attr "data-hx-vals" fmt
 end
