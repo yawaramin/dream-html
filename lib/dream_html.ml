@@ -15,7 +15,7 @@
    You should have received a copy of the GNU General Public License along with
    dream-html. If not, see <https://www.gnu.org/licenses/>. *)
 
-type attr = { name : string; value : string }
+type attr = string * string
 type tag = { name : string; attrs : attr list; children : node list option }
 and node = Tag of tag | Txt of string | Comment of string
 
@@ -26,13 +26,12 @@ type void_tag = attr list -> node
 type 'a text_tag = attr list -> ('a, unit, string, node) format4 -> 'a
 
 let write_attr p = function
-  | { name = ""; value = "" }
-  | { name = ""; _ } ->
+  | "", _ ->
     ()
-  | { name; value = "" } ->
+  | name, "" ->
     p " ";
     p name
-  | { name; value } ->
+  | name, value ->
     p " ";
     p name;
     p {|="|};
@@ -71,11 +70,11 @@ let respond ?status ?code ?headers node =
 let escape raw = if raw then Fun.id else Dream.html_escape
 
 let string_attr name ?(raw=false) fmt =
-  Printf.ksprintf (fun s -> { name; value = escape raw s }) fmt
+  Printf.ksprintf (fun s -> name, escape raw s) fmt
 
-let bool_attr name value = { name; value = string_of_bool value }
-let float_attr name value = { name; value = Printf.sprintf "%f" value }
-let int_attr name value = { name; value = string_of_int value }
+let bool_attr name value = name, string_of_bool value
+let float_attr name value = name, Printf.sprintf "%f" value
+let int_attr name value = name, string_of_int value
 
 let std_tag name attrs children = Tag { name; attrs; children = Some children }
 let void_tag name attrs = Tag { name; attrs; children = None }
@@ -107,26 +106,23 @@ module Attr = struct
   let align fmt = string_attr "align" fmt
   let allow fmt = string_attr "allow" fmt
   let alt fmt = string_attr "alt" fmt
-  let async = { name = "async"; value = "" }
+  let async = "async", ""
 
-  let autocapitalize value = {
-    name = "autocapitalize";
-    value = match value with
-      | `off -> "off"
-      | `none -> "none"
-      | `on -> "on"
-      | `sentences -> "sentences"
-      | `words -> "words"
-      | `characters -> "characters"
-  }
+  let autocapitalize value = "autocapitalize", match value with
+    | `off -> "off"
+    | `none -> "none"
+    | `on -> "on"
+    | `sentences -> "sentences"
+    | `words -> "words"
+    | `characters -> "characters"
 
   let autocomplete fmt = string_attr "autocomplete" fmt
-  let autofocus = { name = "autofocus"; value = "" }
-  let autoplay = { name = "autoplay"; value = "" }
+  let autofocus = "autofocus", ""
+  let autoplay = "autoplay", ""
   let buffered fmt = string_attr "buffered" fmt
   let capture fmt = string_attr "capture" fmt
   let charset fmt = string_attr "charset" fmt
-  let checked = { name = "checked"; value = "" }
+  let checked = "checked", ""
   let cite fmt = string_attr "cite" fmt
   let class_ fmt = string_attr "class" fmt
   let color fmt = string_attr "color" fmt
@@ -135,147 +131,123 @@ module Attr = struct
   let content fmt = string_attr "content" fmt
   let contenteditable = bool_attr "contenteditable"
   let contextmenu fmt = string_attr "contextmenu" fmt
-  let controls = { name = "controls"; value = "" }
+  let controls = "controls", ""
   let coords fmt = string_attr "coords" fmt
 
-  let crossorigin value = {
-    name = "crossorigin";
-    value = match value with
-      | `anonymous -> "anonymous"
-      | `use_credentials -> "use-credentials"
-  }
+  let crossorigin value = "crossorigin", match value with
+    | `anonymous -> "anonymous"
+    | `use_credentials -> "use-credentials"
 
   let data fmt = string_attr "data" fmt
   let datetime fmt = string_attr "datetime" fmt
 
-  let decoding value = {
-    name = "decoding";
-    value = match value with
-      | `sync -> "sync"
-      | `async -> "async"
-      | `auto -> "auto"
-  }
+  let decoding value = "decoding", match value with
+    | `sync -> "sync"
+    | `async -> "async"
+    | `auto -> "auto"
 
-  let default = { name = "default"; value = "" }
-  let defer = { name = "defer"; value = "" }
+  let default = "default", ""
+  let defer = "defer", ""
 
-  let dir value = {
-    name = "dir";
-    value = match value with
-      | `ltr -> "ltr"
-      | `rtl -> "rtl"
-      | `auto -> "auto"
-  }
+  let dir value = "dir", match value with
+    | `ltr -> "ltr"
+    | `rtl -> "rtl"
+    | `auto -> "auto"
 
   let dirname fmt = string_attr "dirname" fmt
-  let disabled = { name = "disabled"; value = "" }
+  let disabled = "disabled", ""
   let download fmt = string_attr "download" fmt
-  let draggable = { name = "draggable"; value = "" }
-  let enctype value = { name = "enctype"; value = enctype_string value }
+  let draggable = "draggable", ""
+  let enctype value = "enctype", enctype_string value
   let for_ fmt = string_attr "for" fmt
   let form fmt = string_attr "form" fmt
   let formaction fmt = string_attr "formaction" fmt
-  let formenctype value = { name = "formenctype"; value = enctype_string value }
-  let formmethod value = { name = "formmethod"; value = Dream.method_to_string value }
-  let formnovalidate = { name = "formnovalidate"; value = "" }
+  let formenctype value = "formenctype", enctype_string value
+  let formmethod value = "formmethod", Dream.method_to_string value
+  let formnovalidate = "formnovalidate", ""
   let formtarget fmt = string_attr "formtarget" fmt
   let headers fmt = string_attr "headers" fmt
   let height fmt = string_attr "height" fmt
 
-  let hidden value = {
-    name = "hidden";
-    value = match value with
-      | `hidden -> "hidden"
-      | `until_found -> "until-found";
-  }
+  let hidden value = "hidden", match value with
+    | `hidden -> "hidden"
+    | `until_found -> "until-found"
 
   let high = float_attr "high"
   let href fmt = string_attr "href" fmt
   let hreflang fmt = string_attr "hreflang" fmt
 
-  let http_equiv value = {
-    name = "http-equiv";
-    value = match value with
-      | `content_security_policy -> "content-security-policy"
-      | `content_type -> "content-type"
-      | `default_style -> "default-style"
-      | `x_ua_compatible -> "x-ua-compatible"
-      | `refresh -> "refresh"
-  }
+  let http_equiv value = "http-equiv", match value with
+    | `content_security_policy -> "content-security-policy"
+    | `content_type -> "content-type"
+    | `default_style -> "default-style"
+    | `x_ua_compatible -> "x-ua-compatible"
+    | `refresh -> "refresh"
 
   let id fmt = string_attr "id" fmt
   let integrity fmt = string_attr "integrity" fmt
 
-  let inputmode value = {
-    name = "inputmode";
-    value = match value with
-      | `none -> "none"
-      | `text -> "text"
-      | `decimal -> "decimal"
-      | `numeric -> "numeric"
-      | `tel -> "tel"
-      | `search -> "search"
-      | `email -> "email"
-      | `url -> "url"
-  }
+  let inputmode value = "inputmode", match value with
+    | `none -> "none"
+    | `text -> "text"
+    | `decimal -> "decimal"
+    | `numeric -> "numeric"
+    | `tel -> "tel"
+    | `search -> "search"
+    | `email -> "email"
+    | `url -> "url"
 
-  let ismap = { name = "ismap"; value = "" }
+  let ismap = "ismap", ""
   let itemprop fmt = string_attr "itemprop" fmt
 
-  let kind value = {
-    name = "kind";
-    value = match value with
-      | `subtitles -> "subtitles"
-      | `captions -> "captions"
-      | `descriptions -> "descriptions"
-      | `chapters -> "chapters"
-      | `metadata -> "metadata"
-  }
+  let kind value = "kind",match value with
+    | `subtitles -> "subtitles"
+    | `captions -> "captions"
+    | `descriptions -> "descriptions"
+    | `chapters -> "chapters"
+    | `metadata -> "metadata"
 
   let label fmt = string_attr "label" fmt
   let lang fmt = string_attr "lang" fmt
   let list fmt = string_attr "list" fmt
-  let loop = { name = "loop"; value = "" }
+  let loop = "loop", ""
   let low = float_attr "low"
   let max fmt = string_attr "max" fmt
   let maxlength = int_attr "maxlength"
   let media fmt = string_attr "media" fmt
-  let method_ value = { name = "method"; value = Dream.method_to_string value }
+  let method_ value = "method", Dream.method_to_string value
   let min fmt = string_attr "min" fmt
   let minlength = int_attr "minlength"
-  let multiple = { name = "multiple"; value = "" }
-  let muted = { name = "muted"; value = "" }
+  let multiple = "multiple", ""
+  let muted = "muted", ""
   let name fmt = string_attr "name" fmt
-  let novalidate = { name = "novalidate"; value = "" }
+  let novalidate = "novalidate", ""
   let onblur fmt = string_attr "onblur" ~raw:true fmt
   let onclick fmt = string_attr "onclick" ~raw:true fmt
-  let open_ = { name = "open"; value = "" }
+  let open_ = "open", ""
   let optimum = float_attr "optimum"
   let pattern fmt = string_attr "pattern" fmt
   let ping fmt = string_attr "ping" fmt
   let placeholder fmt = string_attr "placeholder" fmt
-  let playsinline = { name = "playsinline"; value = "" }
+  let playsinline = "playsinline", ""
   let poster fmt = string_attr "poster" fmt
 
-  let preload value = {
-    name = "preload";
-    value = match value with
-      | `none -> "none"
-      | `metadata -> "metadata"
-      | `auto -> "auto"
-  }
+  let preload value = "preload", match value with
+    | `none -> "none"
+    | `metadata -> "metadata"
+    | `auto -> "auto"
 
-  let readonly = { name = "readonly"; value = "" }
+  let readonly = "readonly", ""
   let referrerpolicy fmt = string_attr "referrerpolicy " fmt
   let rel fmt = string_attr "rel" fmt
-  let required = { name = "required"; value = "" }
-  let reversed = { name = "reversed"; value = "" }
+  let required = "required", ""
+  let reversed = "reversed", ""
   let role fmt = string_attr "role" fmt
   let rows = int_attr "rows"
   let rowspan = int_attr "rowspan"
   let sandbox fmt = string_attr "sandbox" fmt
   let scope fmt = string_attr "scope" fmt
-  let selected = { name = "selected"; value = "" }
+  let selected = "selected", ""
   let shape fmt = string_attr "shape" fmt
   let size fmt = string_attr "size" fmt
   let sizes fmt = string_attr "sizes" fmt
@@ -292,25 +264,12 @@ module Attr = struct
   let tabindex = int_attr "tabindex"
   let target fmt = string_attr "target" fmt
   let title fmt = string_attr "title" fmt
-
-  let translate value = {
-    name = "translate";
-    value = match value with
-      | `yes -> "yes"
-      | `no -> "no"
-  }
-
+  let translate value = "translate", match value with `yes -> "yes" | `no -> "no"
   let type_ fmt = string_attr "type" fmt
   let usemap fmt = string_attr "usemap" fmt
   let value fmt = string_attr "value" fmt
   let width fmt = string_attr "width" fmt
-
-  let wrap value = {
-    name = "wrap";
-    value = match value with
-      | `hard -> "hard"
-      | `soft -> "soft"
-  }
+  let wrap value = "wrap", match value with `hard -> "hard" | `soft -> "soft"
 end
 
 module Tag = struct
