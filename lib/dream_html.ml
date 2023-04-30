@@ -409,6 +409,7 @@ module Hx = struct
   let params fmt = string_attr "data-hx-params" fmt
   let patch fmt = string_attr "data-hx-patch" fmt
   let post fmt = string_attr "data-hx-post" fmt
+  let preload = "preload", ""
   let preserve = "data-hx-preserve", ""
   let prompt fmt = string_attr "data-hx-prompt" fmt
   let push_url fmt = string_attr "data-hx-push-url" fmt

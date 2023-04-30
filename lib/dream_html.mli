@@ -430,6 +430,10 @@ module Hx : sig
   val params : _ string_attr
   val patch : _ string_attr
   val post : _ string_attr
+
+  val preload : attr
+  (** The preload extension: {: https://htmx.org/extensions/preload/} *)
+
   val preserve : attr
   val prompt : _ string_attr
   val push_url : _ string_attr
