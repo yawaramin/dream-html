@@ -407,22 +407,50 @@ module Hx : sig
   val boost : bool to_attr
   val confirm : _ string_attr
   val delete : _ string_attr
+  val disable : attr
+  val disinherit : _ string_attr
+
+  val encoding_formdata : attr
+  (** Hardcoding of the [hx-encoding] attribute to [multipart/form-data]. *)
+
+  val ext : _ string_attr
   val get : _ string_attr
+  val headers : _ string_attr
+
+  val history_false : attr
+  (** Hardcoding of the [hx-history] attribute to [false]. *)
+
+  val history_elt : attr
+  val include_ : _ string_attr
+  val indicator : _ string_attr
 
   val on : _ string_attr
   (** Note that the value of this attribute is not escaped. *)
 
+  val params : _ string_attr
+  val patch : _ string_attr
   val post : _ string_attr
+  val preserve : attr
+  val prompt : _ string_attr
   val push_url : _ string_attr
+  val put : _ string_attr
+  val replace_url : _ string_attr
+  val request : _ string_attr
   val select : _ string_attr
   val select_oob : _ string_attr
+  val sse_connect : _ string_attr
+  val sse_swap : _ string_attr
   val swap : _ string_attr
   val swap_oob : _ string_attr
+  val sync : _ string_attr
   val target : _ string_attr
 
   val trigger : _ string_attr
   (** Note that the value of this attribute is not escaped. *)
 
+  val validate : attr
   val vals : _ string_attr
+  val ws_connect : _ string_attr
+  val ws_send : attr
 end
-(** htmx core attributes {: https://htmx.org/reference/#attributes} *)
+(** htmx attributes {: https://htmx.org/reference/#attributes} *)
