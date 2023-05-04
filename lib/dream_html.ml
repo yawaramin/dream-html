@@ -238,7 +238,17 @@ module Attr = struct
     | `auto -> "auto"
 
   let readonly = "readonly", ""
-  let referrerpolicy fmt = string_attr "referrerpolicy " fmt
+
+  let referrerpolicy value = "referrerpolicy", match value with
+    | `no_referrer -> "no-referrer"
+    | `no_referrer_when_downgrade -> "no-referrer-when-downgrade"
+    | `origin -> "origin"
+    | `origin_when_cross_origin -> "origin-when-cross-origin"
+    | `same_origin -> "same-origin"
+    | `strict_origin -> "strict-origin"
+    | `strict_origin_when_cross_origin -> "strict-origin-when-cross-origin"
+    | `unsafe_url -> "unsafe-url"
+
   let rel fmt = string_attr "rel" fmt
   let required = "required", ""
   let reversed = "reversed", ""

@@ -131,7 +131,16 @@ module Attr : sig
   val allow : _ string_attr
   val alt : _ string_attr
   val async : attr
-  val autocapitalize : [< `off | `none | `on | `sentences | `words | `characters] to_attr
+
+  val autocapitalize : [<
+    | `off
+    | `none
+    | `on
+    | `sentences
+    | `words
+    | `characters
+    ] to_attr
+
   val autocomplete : _ string_attr
   val autofocus : attr
   val autoplay : attr
@@ -174,13 +183,40 @@ module Attr : sig
   val high : float to_attr
   val href : _ string_attr
   val hreflang : _ string_attr
-  val http_equiv : [< `content_security_policy | `content_type | `default_style | `x_ua_compatible | `refresh] to_attr
+
+  val http_equiv : [<
+    | `content_security_policy
+    | `content_type
+    | `default_style
+    | `x_ua_compatible
+    | `refresh
+    ] to_attr
+
   val id : _ string_attr
   val integrity : _ string_attr
-  val inputmode : [< `none | `text | `decimal | `numeric | `tel | `search | `email | `url] to_attr
+
+  val inputmode : [<
+    | `none
+    | `text
+    | `decimal
+    | `numeric
+    | `tel
+    | `search
+    | `email
+    | `url
+    ] to_attr
+
   val ismap : attr
   val itemprop : _ string_attr
-  val kind : [< `subtitles | `captions | `descriptions | `chapters | `metadata] to_attr
+
+  val kind : [<
+    | `subtitles
+    | `captions
+    | `descriptions
+    | `chapters
+    | `metadata
+    ] to_attr
+
   val label : _ string_attr
   val lang : _ string_attr
   val list : _ string_attr
@@ -212,7 +248,18 @@ module Attr : sig
   val poster : _ string_attr
   val preload : [< `none | `metadata | `auto] to_attr
   val readonly : attr
-  val referrerpolicy : _ string_attr
+
+  val referrerpolicy : [<
+    | `no_referrer
+    | `no_referrer_when_downgrade
+    | `origin
+    | `origin_when_cross_origin
+    | `same_origin
+    | `strict_origin
+    | `strict_origin_when_cross_origin
+    | `unsafe_url
+    ] to_attr
+
   val rel : _ string_attr
   val required : attr
   val reversed : attr
