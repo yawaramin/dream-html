@@ -34,7 +34,9 @@
         @@ Dream.router [
           Dream.get "/" (fun _ ->
             Dream_html.respond (hello "world"));
-        ]]} *)
+        ]]}
+
+    More examples shown below. *)
 
 (** {2 Core types}
 
@@ -54,7 +56,7 @@ val pp : Format.formatter -> node -> unit
 val respond :
   ?status:[< Dream.status] ->
   ?code:int ->
-  ?headers:(string * string) list -> node -> Dream.response Lwt.t
+  ?headers:(string * string) list -> node -> Dream.response Dream.promise
 
 (** {2 Constructing nodes and attributes} *)
 
@@ -104,10 +106,19 @@ val text_tag : string -> ?raw:bool -> _ text_tag
 
 val txt : ?raw:bool -> ('a, unit, string, node) format4 -> 'a
 (** A text node inside the DOM e.g. the 'hi' in [<b>hi</b>]. Allows string
-    interpolation using the same formatting features as [Printf.sprintf]. HTML-
-    escapes the text value using [Dream.html_escape].
+    interpolation using the same formatting features as [Printf.sprintf]:
 
-    @param raw can lead to HTML injection, please use carefully. *)
+    {[b[][txt "Hello, %s!" name]]}
+
+    Or without interpolation:
+
+    {[b[][txt "Bold of you."]]}
+
+    HTML-escapes the text value using [Dream.html_escape]. You can use the [~raw]
+    param to bypass escaping:
+
+    {[let user_input = "<script>alert('I like HTML injection')</script>" in
+      txt ~raw:true "%s" user_input]} *)
 
 val comment : string -> node
 (** A comment that will be embedded in the rendered HTML, i.e. [<!-- comment -->].
@@ -121,7 +132,10 @@ module Attr : sig
 
   val null : attr
   (** An attribute that will not be rendered in the markup. Useful for conditional
-      logic where you sometimes want to render an attribute and sometimes not. *)
+      logic where you sometimes want to render an attribute and sometimes not.
+
+      {[p[if should_show then null else style "display:none"][
+          txt "Show and tell"]]} *)
 
   val accept : _ string_attr
   val accept_charset : _ string_attr
@@ -300,15 +314,33 @@ module Attr : sig
   val wrap : [< `hard | `soft] to_attr
 end
 (** Standard, most non-deprecated attributes from
-    {: https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}.
+    {: https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}. Where an
+    attribute name conflicts with an OCaml keyword, the name is suffixed with [_].
+    Most attributes are constructed by passing in a value of some type.
 
-    Where an attribute name conflicts with an OCaml keyword, the name is suffixed
-    with [_].
+    All string-valued attributes allow formatting (interpolation):
 
-    Most attributes are constructed by passing in a value of some type. Most
-    boolean attributes are plain values and don't need to be constructed with
-    function calls. However, boolean attributes which may be inherited and
-    toggled on/off in children, are constructed by passing in a value. *)
+    {[div[id "section-%d" section_id][]]}
+
+    Or plain strings:
+
+    {[p[id "toast"][]]}
+
+    Most boolean attributes are plain values and don't need to be constructed
+    with function calls:
+
+    {[input[required]]}
+
+    However, boolean attributes which may be inherited and toggled on/off in
+    children, are constructed by passing in a value:
+
+    {[div[contenteditable true][
+        p[][txt "Edit me!"];
+        p[contenteditable false][txt "Can't edit me!"]]]}
+
+    Enumerated attributes accept specific values:
+
+    {[input[inputmode `tel]]} *)
 
 (** {2 Standard tags} *)
 
@@ -316,7 +348,12 @@ module Tag : sig
   val null : node list -> node
   (** A tag that will not be rendered in the markup. Useful for containing a bunch
       of child nodes inside a single node without having to litter the DOM with an
-      actual node. Also may be called 'splicing'. *)
+      actual node. Also may be called 'splicing'.
+
+      {[Tag.null[
+          p[][txt "This paragraph."];
+          p[][txt "And this paragraph."];
+          p[][txt "Are spliced directly into the document without a containing node."]]]} *)
 
   val a : std_tag
   val address : std_tag
@@ -441,12 +478,24 @@ module Tag : sig
   val wbr : void_tag
 end
 (** HTML tags. Most (standard tags) are constructed by passing a list of
-    attributes and a list of children.
+    attributes and a list of children:
 
-    Some (void elements) are constructed only with a list of attributes.
+    {[div[id "my-div"][
+        p[][txt "Hello"]]]}
+
+    Some (void elements) are constructed only with a list of attributes:
+
+    {[input[required; type_ "email"; name "email-addr"]]}
 
     Finally, a few (text elements) are constructed with a list of attributes and
-    a single text child. *)
+    a single text child:
+
+    {[title[] "Document title"
+
+      script[] {|
+        alert('Careful, this is not escaped :-)');
+      |}
+    ]} *)
 
 (** {2 htmx attributes} *)
 
