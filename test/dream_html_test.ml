@@ -31,7 +31,10 @@ let node = html[lang "en"][
         p[][txt "Test para 2."];
         a[href "/a?b=cd:efg/hij"][txt "cd:efg/hij"];
         a[href "/😉"][txt "wink"]];
-      input[type_ "text"; onblur "if (1 > 0) alert(this.value)"];
+      input[
+        type_ "text";
+        autocomplete `name;
+        onblur "if (1 > 0) alert(this.value)"];
       Tag.null[
         comment "oops --><script>alert('lol')</script>";
         dialog[open_][div[][]];

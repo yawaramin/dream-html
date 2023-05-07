@@ -159,7 +159,62 @@ module Attr : sig
     | `characters
     ] to_attr
 
-  val autocomplete : _ string_attr
+  val autocomplete : [<
+    | `off
+    | `on
+    | `name
+    | `honorific_prefix
+    | `given_name
+    | `additional_name
+    | `honorific_suffix
+    | `nickname
+    | `email
+    | `username
+    | `new_password
+    | `current_password
+    | `one_time_code
+    | `organization_title
+    | `organization
+    | `street_address
+    | `address_line1
+    | `address_line2
+    | `address_line3
+    | `address_level4
+    | `address_level3
+    | `address_level2
+    | `address_level1
+    | `country
+    | `country_name
+    | `postal_code
+    | `cc_name
+    | `cc_given_name
+    | `cc_additional_name
+    | `cc_family_name
+    | `cc_number
+    | `cc_exp
+    | `cc_exp_month
+    | `cc_exp_year
+    | `cc_csc
+    | `cc_type
+    | `transaction_currency
+    | `transaction_amount
+    | `language
+    | `bday
+    | `bday_day
+    | `bday_month
+    | `bday_year
+    | `sex
+    | `tel
+    | `tel_country_code
+    | `tel_national
+    | `tel_area_code
+    | `tel_local
+    | `tel_extension
+    | `impp
+    | `url
+    | `photo
+    ] to_attr
+
   val autofocus : attr
   val autoplay : attr
   val buffered : _ string_attr
