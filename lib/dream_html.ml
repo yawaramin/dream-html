@@ -89,6 +89,7 @@ let text_tag name ?(raw=false) attrs fmt =
   fmt
 
 let txt ?(raw=false) fmt = Printf.ksprintf (fun s -> Txt (escape raw s)) fmt
+let csrf_tag req = req |> Dream.csrf_tag |> txt ~raw:true "%s"
 let comment str = Comment (Dream.html_escape str)
 
 module Attr = struct
