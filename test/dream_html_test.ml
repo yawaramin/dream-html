@@ -34,6 +34,9 @@ let node = html[lang "en"][
       input[type_ "text"; onblur "if (1 > 0) alert(this.value)"];
       Tag.null[
         comment "oops --><script>alert('lol')</script>";
+        dialog[open_][div[][]];
+        template[id "idtmpl"][p[][txt "Template"]];
+        div[translate `no][p[translate `yes][]];
         textarea[
           required;
           Hx.trigger "keyup[target.value.trim() != '']";
