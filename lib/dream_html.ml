@@ -72,6 +72,10 @@ let escape raw = if raw then Fun.id else Dream.html_escape
 let string_attr name ?(raw=false) fmt =
   Printf.ksprintf (fun s -> name, escape raw s) fmt
 
+let uri_attr name fmt = Printf.ksprintf
+  (fun s -> name, s |> escape false |> Uri.of_string |> Uri.to_string)
+  fmt
+
 let bool_attr name value = name, string_of_bool value
 let float_attr name value = name, Printf.sprintf "%f" value
 let int_attr name value = name, string_of_int value
@@ -102,7 +106,7 @@ module Attr = struct
   let accept fmt = string_attr "accept" fmt
   let accept_charset fmt = string_attr "accept-charset" fmt
   let accesskey fmt = string_attr "accesskey" fmt
-  let action fmt = string_attr "action" fmt
+  let action fmt = uri_attr "action" fmt
   let align fmt = string_attr "align" fmt
   let allow fmt = string_attr "allow" fmt
   let alt fmt = string_attr "alt" fmt
@@ -123,7 +127,7 @@ module Attr = struct
   let capture fmt = string_attr "capture" fmt
   let charset fmt = string_attr "charset" fmt
   let checked = "checked", ""
-  let cite fmt = string_attr "cite" fmt
+  let cite fmt = uri_attr "cite" fmt
   let class_ fmt = string_attr "class" fmt
   let color fmt = string_attr "color" fmt
   let cols = int_attr "cols"
@@ -138,7 +142,7 @@ module Attr = struct
     | `anonymous -> "anonymous"
     | `use_credentials -> "use-credentials"
 
-  let data fmt = string_attr "data" fmt
+  let data fmt = uri_attr "data" fmt
   let datetime fmt = string_attr "datetime" fmt
 
   let decoding value = "decoding", match value with
@@ -174,7 +178,7 @@ module Attr = struct
     | `until_found -> "until-found"
 
   let high = float_attr "high"
-  let href fmt = string_attr "href" fmt
+  let href fmt = uri_attr "href" fmt
   let hreflang fmt = string_attr "hreflang" fmt
 
   let http_equiv value = "http-equiv", match value with
@@ -230,7 +234,7 @@ module Attr = struct
   let ping fmt = string_attr "ping" fmt
   let placeholder fmt = string_attr "placeholder" fmt
   let playsinline = "playsinline", ""
-  let poster fmt = string_attr "poster" fmt
+  let poster fmt = uri_attr "poster" fmt
 
   let preload value = "preload", match value with
     | `none -> "none"
@@ -264,7 +268,7 @@ module Attr = struct
   let slot fmt = string_attr "slot" fmt
   let span = int_attr "span"
   let spellcheck = bool_attr "spellcheck"
-  let src fmt = string_attr "src" fmt
+  let src fmt = uri_attr "src" fmt
   let srcdoc fmt = string_attr "srcdoc" fmt
   let srclang fmt = string_attr "srclang" fmt
   let srcset fmt = string_attr "srcset" fmt
@@ -404,12 +408,12 @@ module Hx = struct
   let boost = bool_attr "data-hx-boost"
 
   let confirm fmt = string_attr "data-hx-confirm" fmt
-  let delete fmt = string_attr "data-hx-delete" fmt
+  let delete fmt = uri_attr "data-hx-delete" fmt
   let disable = "data-hx-disable", ""
   let disinherit fmt = string_attr "data-hx-disinherit" fmt
   let encoding_formdata = "data-hx-encoding", "multipart/form-data"
   let ext fmt = string_attr "data-hx-ext" fmt
-  let get fmt = string_attr "data-hx-get" fmt
+  let get fmt = uri_attr "data-hx-get" fmt
   let headers fmt = string_attr "data-hx-headers" fmt
   let history_false = bool_attr "data-hx-history" false
   let history_elt = "data-hx-history-elt", ""
@@ -417,13 +421,13 @@ module Hx = struct
   let indicator fmt = string_attr "data-hx-indicator" fmt
   let on fmt = string_attr "data-hx-on" ~raw:true fmt
   let params fmt = string_attr "data-hx-params" fmt
-  let patch fmt = string_attr "data-hx-patch" fmt
-  let post fmt = string_attr "data-hx-post" fmt
+  let patch fmt = uri_attr "data-hx-patch" fmt
+  let post fmt = uri_attr "data-hx-post" fmt
   let preload = "preload", ""
   let preserve = "data-hx-preserve", ""
   let prompt fmt = string_attr "data-hx-prompt" fmt
   let push_url fmt = string_attr "data-hx-push-url" fmt
-  let put fmt = string_attr "data-hx-put" fmt
+  let put fmt = uri_attr "data-hx-put" fmt
   let replace_url fmt = string_attr "data-hx-replace-url" fmt
   let request fmt = string_attr "data-hx-request" fmt
   let select fmt = string_attr "data-hx-select" fmt

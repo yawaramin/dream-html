@@ -89,6 +89,10 @@ val string_attr : string -> ?raw:bool -> _ string_attr
       neither does dream-html:
       {: https://github.com/aantron/dream/tree/master/example/7-template#security}. *)
 
+val uri_attr : string -> _ string_attr
+(** Convenience for attributes whose values should be URIs. Takes care of both
+    HTML-escaping and URI-encoding. *)
+
 val bool_attr : string -> bool to_attr
 val float_attr : string -> float to_attr
 val int_attr : string -> int to_attr

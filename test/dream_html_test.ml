@@ -27,7 +27,7 @@ let node = html[lang "en"][
   body[id "test-content"][
     main[spellcheck true][
       article[id "article-1"; class_ "story"][
-        p[Hx.get "/p1"][txt "Test para 1."];
+        p[Hx.get "/p1?a b"][txt "Test para 1."];
         p[][txt "Test para 2."]];
       input[type_ "text"; onblur "if (1 > 0) alert(this.value)"];
       Tag.null[
