@@ -58,6 +58,10 @@ val respond :
   ?code:int ->
   ?headers:(string * string) list -> node -> Dream.response Dream.promise
 
+val set_body : Dream.response -> node -> unit
+(** Type-safe wrapper for [Dream.set_body]. Sets the body to the given [node] and
+    sets the [Content-Type] header to [text/html]. *)
+
 (** {2 Constructing nodes and attributes} *)
 
 type 'a to_attr = 'a -> attr

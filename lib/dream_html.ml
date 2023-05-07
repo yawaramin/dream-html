@@ -67,6 +67,10 @@ let pp ppf node = node |> to_string |> Format.pp_print_string ppf
 let respond ?status ?code ?headers node =
   Dream.html ?status ?code ?headers @@ to_string node
 
+let set_body resp node =
+  Dream.set_body resp (to_string node);
+  Dream.set_header resp "Content-Type" "text/html"
+
 let escape raw = if raw then Fun.id else Dream.html_escape
 
 let string_attr name ?(raw=false) fmt =
