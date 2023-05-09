@@ -27,7 +27,7 @@ let node = html[lang "en"][
   body[id "test-content"][
     main[spellcheck true][
       article[id "article-1"; class_ "story"][
-        p[Hx.get "/p1?a b"][txt "Test para 1."];
+        p[Hx.get "/p1?a b"; Hx.target "closest article > p"][txt "Test para 1."];
         p[][txt "Test para 2."];
         a[href "/a?b=cd:efg/hij"][txt "cd:efg/hij"];
         a[href "/😉"][txt "wink"]];

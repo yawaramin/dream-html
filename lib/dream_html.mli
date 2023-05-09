@@ -590,7 +590,10 @@ module Hx : sig
 
   val history_elt : attr
   val include_ : _ string_attr
+
   val indicator : _ string_attr
+  (** Note that the value of this attribute is not escaped as it may include a
+      CSS selector. *)
 
   val on : _ string_attr
   (** Note that the value of this attribute is not escaped. *)
@@ -608,14 +611,31 @@ module Hx : sig
   val put : _ string_attr
   val replace_url : _ string_attr
   val request : _ string_attr
+
   val select : _ string_attr
+  (** Note that the value of this attribute is not escaped as it may include a
+      CSS selector. *)
+
   val select_oob : _ string_attr
+  (** Note that the value of this attribute is not escaped as it may include a
+      CSS selector. *)
+
   val sse_connect : _ string_attr
   val sse_swap : _ string_attr
+
   val swap : _ string_attr
+  (** Note that the value of this attribute is not escaped as it may include a
+      CSS selector. *)
+
   val swap_oob : _ string_attr
+  (** Note that the value of this attribute is not escaped as it may include a
+      CSS selector. *)
+
   val sync : _ string_attr
+
   val target : _ string_attr
+  (** Note that the value of this attribute is not escaped as it may include a
+      CSS selector. *)
 
   val trigger : _ string_attr
   (** Note that the value of this attribute is not escaped. *)
