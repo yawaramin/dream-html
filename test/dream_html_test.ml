@@ -24,48 +24,34 @@ let greet name = p [id "greet-%s" name] [txt "Hello, %s!" name]
 let node =
   html
     [lang "en"]
-    [
-      head [] [Tag.title [] "Dream_html Test"];
+    [ head [] [Tag.title [] "Dream_html Test"];
       body
         [id "test-content"]
-        [
-          main
+        [ main
             [spellcheck true]
-            [
-              article
+            [ article
                 [id "article-1"; class_ "story"]
-                [
-                  p
+                [ p
                     [Hx.get "/p1?a b"; Hx.target "closest article > p"]
                     [txt "Test para 1."];
                   p [] [txt "Test para 2."];
                   a [href "/a?b=cd:efg/hij"] [txt "cd:efg/hij"];
-                  a [href "/😉"] [txt "wink"];
-                ];
+                  a [href "/😉"] [txt "wink"] ];
               input
-                [
-                  type_ "text";
+                [ type_ "text";
                   autocomplete `name;
-                  onblur "if (1 > 0) alert(this.value)";
-                ];
+                  onblur "if (1 > 0) alert(this.value)" ];
               Tag.null
-                [
-                  comment "oops --><script>alert('lol')</script>";
+                [ comment "oops --><script>alert('lol')</script>";
                   dialog [open_] [div [] []];
                   template [id "idtmpl"] [p [] [txt "Template"]];
                   div [translate `no] [p [translate `yes] []];
                   textarea
-                    [
-                      required;
+                    [ required;
                       Hx.trigger "keyup[target.value.trim() != '']";
-                      autocapitalize `words;
-                    ]
+                      autocapitalize `words ]
                     "super";
                   hr [(if true then class_ "super" else null)];
-                  greet "Bob";
-                ];
-            ];
-        ];
-    ]
+                  greet "Bob" ] ] ] ]
 
 let () = node |> to_string |> print_endline

@@ -1,11 +1,13 @@
-version = 0.21.0
-profile = conventional
+profile = default
 
+break-string-literals = never
+dock-collection-brackets = false
 leading-nested-match-parens = false
+parens-tuple = multi-line-only
 space-around-variants = false
 space-around-arrays = false
 space-around-lists = false
-space-around-records = false
+space-around-records = true
 break-infix = fit-or-vertical
 break-separators = after
 break-cases = fit-or-vertical

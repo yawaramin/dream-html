@@ -17,11 +17,11 @@
 
 type attr = string * string
 
-type tag = {
-  name : string;
-  attrs : attr list;
-  children : node list option;
-}
+type tag =
+  { name : string;
+    attrs : attr list;
+    children : node list option
+  }
 
 and node =
   | Tag of tag
@@ -48,16 +48,16 @@ let write_attr p = function
 
 (* Loosely based on https://www.w3.org/TR/DOM-Parsing/ *)
 let rec write_tag p = function
-  | Tag {name = ""; children = Some children; _} ->
+  | Tag { name = ""; children = Some children; _ } ->
     List.iter (write_tag p) children
-  | Tag {name; attrs; children = None} ->
+  | Tag { name; attrs; children = None } ->
     p "<";
     p name;
     List.iter (write_attr p) attrs;
     p ">"
-  | Tag ({name; children = Some children; _} as non_void) ->
+  | Tag ({ name; children = Some children; _ } as non_void) ->
     if name = "html" then p "<!DOCTYPE html>\n";
-    write_tag p (Tag {non_void with children = None});
+    write_tag p (Tag { non_void with children = None });
     List.iter (write_tag p) children;
     p "</";
     p name;
@@ -85,22 +85,22 @@ let set_body resp node =
 let escape raw = if raw then Fun.id else Dream.html_escape
 
 let string_attr name ?(raw = false) fmt =
-  Printf.ksprintf (fun s -> (name, escape raw s)) fmt
+  Printf.ksprintf (fun s -> name, escape raw s) fmt
 
 let uri_attr name fmt =
   Printf.ksprintf
-    (fun s -> (name, s |> escape false |> Uri.of_string |> Uri.to_string))
+    (fun s -> name, s |> escape false |> Uri.of_string |> Uri.to_string)
     fmt
 
-let bool_attr name value = (name, string_of_bool value)
-let float_attr name value = (name, Printf.sprintf "%f" value)
-let int_attr name value = (name, string_of_int value)
-let std_tag name attrs children = Tag {name; attrs; children = Some children}
-let void_tag name attrs = Tag {name; attrs; children = None}
+let bool_attr name value = name, string_of_bool value
+let float_attr name value = name, Printf.sprintf "%f" value
+let int_attr name value = name, string_of_int value
+let std_tag name attrs children = Tag { name; attrs; children = Some children }
+let void_tag name attrs = Tag { name; attrs; children = None }
 
 let text_tag name ?(raw = false) attrs fmt =
   Printf.ksprintf
-    (fun s -> Tag {name; attrs; children = Some [Txt (escape raw s)]})
+    (fun s -> Tag { name; attrs; children = Some [Txt (escape raw s)] })
     fmt
 
 let txt ?(raw = false) fmt = Printf.ksprintf (fun s -> Txt (escape raw s)) fmt
@@ -130,7 +130,7 @@ module Attr = struct
   let align fmt = string_attr "align" fmt
   let allow fmt = string_attr "allow" fmt
   let alt fmt = string_attr "alt" fmt
-  let async = ("async", "")
+  let async = "async", ""
 
   let autocapitalize value =
     ( "autocapitalize",
@@ -199,12 +199,12 @@ module Attr = struct
       | `url -> "url"
       | `photo -> "photo" )
 
-  let autofocus = ("autofocus", "")
-  let autoplay = ("autoplay", "")
+  let autofocus = "autofocus", ""
+  let autoplay = "autoplay", ""
   let buffered fmt = string_attr "buffered" fmt
   let capture fmt = string_attr "capture" fmt
   let charset fmt = string_attr "charset" fmt
-  let checked = ("checked", "")
+  let checked = "checked", ""
   let cite fmt = uri_attr "cite" fmt
   let class_ fmt = string_attr "class" fmt
   let color fmt = string_attr "color" fmt
@@ -213,7 +213,7 @@ module Attr = struct
   let content fmt = string_attr "content" fmt
   let contenteditable = bool_attr "contenteditable"
   let contextmenu fmt = string_attr "contextmenu" fmt
-  let controls = ("controls", "")
+  let controls = "controls", ""
   let coords fmt = string_attr "coords" fmt
 
   let crossorigin value =
@@ -232,8 +232,8 @@ module Attr = struct
       | `async -> "async"
       | `auto -> "auto" )
 
-  let default = ("default", "")
-  let defer = ("defer", "")
+  let default = "default", ""
+  let defer = "defer", ""
 
   let dir value =
     ( "dir",
@@ -243,16 +243,16 @@ module Attr = struct
       | `auto -> "auto" )
 
   let dirname fmt = string_attr "dirname" fmt
-  let disabled = ("disabled", "")
+  let disabled = "disabled", ""
   let download fmt = string_attr "download" fmt
-  let draggable = ("draggable", "")
-  let enctype value = ("enctype", enctype_string value)
+  let draggable = "draggable", ""
+  let enctype value = "enctype", enctype_string value
   let for_ fmt = string_attr "for" fmt
   let form fmt = string_attr "form" fmt
   let formaction fmt = string_attr "formaction" fmt
-  let formenctype value = ("formenctype", enctype_string value)
-  let formmethod value = ("formmethod", Dream.method_to_string value)
-  let formnovalidate = ("formnovalidate", "")
+  let formenctype value = "formenctype", enctype_string value
+  let formmethod value = "formmethod", Dream.method_to_string value
+  let formnovalidate = "formnovalidate", ""
   let formtarget fmt = string_attr "formtarget" fmt
   let headers fmt = string_attr "headers" fmt
   let height fmt = string_attr "height" fmt
@@ -291,7 +291,7 @@ module Attr = struct
       | `email -> "email"
       | `url -> "url" )
 
-  let ismap = ("ismap", "")
+  let ismap = "ismap", ""
   let itemprop fmt = string_attr "itemprop" fmt
 
   let kind value =
@@ -306,26 +306,26 @@ module Attr = struct
   let label fmt = string_attr "label" fmt
   let lang fmt = string_attr "lang" fmt
   let list fmt = string_attr "list" fmt
-  let loop = ("loop", "")
+  let loop = "loop", ""
   let low = float_attr "low"
   let max fmt = string_attr "max" fmt
   let maxlength = int_attr "maxlength"
   let media fmt = string_attr "media" fmt
-  let method_ value = ("method", Dream.method_to_string value)
+  let method_ value = "method", Dream.method_to_string value
   let min fmt = string_attr "min" fmt
   let minlength = int_attr "minlength"
-  let multiple = ("multiple", "")
-  let muted = ("muted", "")
+  let multiple = "multiple", ""
+  let muted = "muted", ""
   let name fmt = string_attr "name" fmt
-  let novalidate = ("novalidate", "")
+  let novalidate = "novalidate", ""
   let onblur fmt = string_attr "onblur" ~raw:true fmt
   let onclick fmt = string_attr "onclick" ~raw:true fmt
-  let open_ = ("open", "")
+  let open_ = "open", ""
   let optimum = float_attr "optimum"
   let pattern fmt = string_attr "pattern" fmt
   let ping fmt = string_attr "ping" fmt
   let placeholder fmt = string_attr "placeholder" fmt
-  let playsinline = ("playsinline", "")
+  let playsinline = "playsinline", ""
   let poster fmt = uri_attr "poster" fmt
 
   let preload value =
@@ -335,7 +335,7 @@ module Attr = struct
       | `metadata -> "metadata"
       | `auto -> "auto" )
 
-  let readonly = ("readonly", "")
+  let readonly = "readonly", ""
 
   let referrerpolicy value =
     ( "referrerpolicy",
@@ -350,14 +350,14 @@ module Attr = struct
       | `unsafe_url -> "unsafe-url" )
 
   let rel fmt = string_attr "rel" fmt
-  let required = ("required", "")
-  let reversed = ("reversed", "")
+  let required = "required", ""
+  let reversed = "reversed", ""
   let role fmt = string_attr "role" fmt
   let rows = int_attr "rows"
   let rowspan = int_attr "rowspan"
   let sandbox fmt = string_attr "sandbox" fmt
   let scope fmt = string_attr "scope" fmt
-  let selected = ("selected", "")
+  let selected = "selected", ""
   let shape fmt = string_attr "shape" fmt
   let size fmt = string_attr "size" fmt
   let sizes fmt = string_attr "sizes" fmt
@@ -514,22 +514,22 @@ module Hx = struct
   let boost = bool_attr "data-hx-boost"
   let confirm fmt = string_attr "data-hx-confirm" fmt
   let delete fmt = uri_attr "data-hx-delete" fmt
-  let disable = ("data-hx-disable", "")
+  let disable = "data-hx-disable", ""
   let disinherit fmt = string_attr "data-hx-disinherit" fmt
-  let encoding_formdata = ("data-hx-encoding", "multipart/form-data")
+  let encoding_formdata = "data-hx-encoding", "multipart/form-data"
   let ext fmt = string_attr "data-hx-ext" fmt
   let get fmt = uri_attr "data-hx-get" fmt
   let headers fmt = string_attr "data-hx-headers" fmt
   let history_false = bool_attr "data-hx-history" false
-  let history_elt = ("data-hx-history-elt", "")
+  let history_elt = "data-hx-history-elt", ""
   let include_ fmt = string_attr "data-hx-include" fmt
   let indicator fmt = string_attr ~raw:true "data-hx-indicator" fmt
   let on fmt = string_attr "data-hx-on" ~raw:true fmt
   let params fmt = string_attr "data-hx-params" fmt
   let patch fmt = uri_attr "data-hx-patch" fmt
   let post fmt = uri_attr "data-hx-post" fmt
-  let preload = ("preload", "")
-  let preserve = ("data-hx-preserve", "")
+  let preload = "preload", ""
+  let preserve = "data-hx-preserve", ""
   let prompt fmt = string_attr "data-hx-prompt" fmt
   let push_url fmt = uri_attr "data-hx-push-url" fmt
   let put fmt = uri_attr "data-hx-put" fmt
@@ -544,8 +544,8 @@ module Hx = struct
   let sync fmt = string_attr "data-hx-sync" fmt
   let target fmt = string_attr ~raw:true "data-hx-target" fmt
   let trigger fmt = string_attr "data-hx-trigger" ~raw:true fmt
-  let validate = ("data-hx-validate", "")
+  let validate = "data-hx-validate", ""
   let vals fmt = string_attr "data-hx-vals" fmt
   let ws_connect fmt = string_attr "data-ws-connect" fmt
-  let ws_send = ("data-ws-send", "")
+  let ws_send = "data-ws-send", ""
 end
