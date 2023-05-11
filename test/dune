@@ -3,8 +3,11 @@
  (libraries dream_html))
 
 (rule
- (with-stdout-to got.html (run ./dream_html_test.exe)))
+ (with-stdout-to
+  got.html
+  (run ./dream_html_test.exe)))
 
 (rule
  (alias runtest)
- (action (diff expected.html got.html)))
+ (action
+  (diff expected.html got.html)))

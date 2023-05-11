@@ -56,7 +56,9 @@ val pp : Format.formatter -> node -> unit
 val respond :
   ?status:[< Dream.status] ->
   ?code:int ->
-  ?headers:(string * string) list -> node -> Dream.response Dream.promise
+  ?headers:(string * string) list ->
+  node ->
+  Dream.response Dream.promise
 
 val set_body : Dream.response -> node -> unit
 (** Type-safe wrapper for [Dream.set_body]. Sets the body to the given [node] and
@@ -100,7 +102,6 @@ val uri_attr : string -> _ string_attr
 val bool_attr : string -> bool to_attr
 val float_attr : string -> float to_attr
 val int_attr : string -> int to_attr
-
 val std_tag : string -> std_tag
 val void_tag : string -> void_tag
 
@@ -143,9 +144,43 @@ val csrf_tag : Dream.request -> node
 
 (** {2 Standard attributes} *)
 
+(** Standard, most non-deprecated attributes from
+    {: https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}. Where an
+    attribute name conflicts with an OCaml keyword, the name is suffixed with [_].
+    Most attributes are constructed by passing in a value of some type.
+
+    All string-valued attributes allow formatting (interpolation):
+
+    {[div[id "section-%d" section_id][]]}
+
+    Or plain strings:
+
+    {[p[id "toast"][]]}
+
+    Most boolean attributes are plain values and don't need to be constructed
+    with function calls:
+
+    {[input[required]]}
+
+    However, boolean attributes which may be inherited and toggled on/off in
+    children, are constructed by passing in a value:
+
+    {[div[contenteditable true][
+        p[][txt "Edit me!"];
+        p[contenteditable false][txt "Can't edit me!"]]]}
+
+    Enumerated attributes accept specific values:
+
+    {[input[inputmode `tel]]} *)
 module Attr : sig
-  type enctype = [`urlencoded | `formdata | `text_plain]
-  type method_ = [`GET | `POST]
+  type enctype =
+    [ `urlencoded
+    | `formdata
+    | `text_plain ]
+
+  type method_ =
+    [ `GET
+    | `POST ]
 
   val null : attr
   (** An attribute that will not be rendered in the markup. Useful for conditional
@@ -163,17 +198,11 @@ module Attr : sig
   val alt : _ string_attr
   val async : attr
 
-  val autocapitalize : [<
-    | `off
-    | `none
-    | `on
-    | `sentences
-    | `words
-    | `characters
-    ] to_attr
+  val autocapitalize :
+    [< `off | `none | `on | `sentences | `words | `characters] to_attr
 
-  val autocomplete : [<
-    | `off
+  val autocomplete :
+    [< `off
     | `on
     | `name
     | `honorific_prefix
@@ -225,8 +254,8 @@ module Attr : sig
     | `tel_extension
     | `impp
     | `url
-    | `photo
-    ] to_attr
+    | `photo ]
+    to_attr
 
   val autofocus : attr
   val autoplay : attr
@@ -270,38 +299,26 @@ module Attr : sig
   val href : _ string_attr
   val hreflang : _ string_attr
 
-  val http_equiv : [<
-    | `content_security_policy
+  val http_equiv :
+    [< `content_security_policy
     | `content_type
     | `default_style
     | `x_ua_compatible
-    | `refresh
-    ] to_attr
+    | `refresh ]
+    to_attr
 
   val id : _ string_attr
   val integrity : _ string_attr
 
-  val inputmode : [<
-    | `none
-    | `text
-    | `decimal
-    | `numeric
-    | `tel
-    | `search
-    | `email
-    | `url
-    ] to_attr
+  val inputmode :
+    [< `none | `text | `decimal | `numeric | `tel | `search | `email | `url]
+    to_attr
 
   val ismap : attr
   val itemprop : _ string_attr
 
-  val kind : [<
-    | `subtitles
-    | `captions
-    | `descriptions
-    | `chapters
-    | `metadata
-    ] to_attr
+  val kind :
+    [< `subtitles | `captions | `descriptions | `chapters | `metadata] to_attr
 
   val label : _ string_attr
   val lang : _ string_attr
@@ -335,16 +352,16 @@ module Attr : sig
   val preload : [< `none | `metadata | `auto] to_attr
   val readonly : attr
 
-  val referrerpolicy : [<
-    | `no_referrer
+  val referrerpolicy :
+    [< `no_referrer
     | `no_referrer_when_downgrade
     | `origin
     | `origin_when_cross_origin
     | `same_origin
     | `strict_origin
     | `strict_origin_when_cross_origin
-    | `unsafe_url
-    ] to_attr
+    | `unsafe_url ]
+    to_attr
 
   val rel : _ string_attr
   val required : attr
@@ -385,37 +402,28 @@ module Attr : sig
   val width : _ string_attr
   val wrap : [< `hard | `soft] to_attr
 end
-(** Standard, most non-deprecated attributes from
-    {: https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}. Where an
-    attribute name conflicts with an OCaml keyword, the name is suffixed with [_].
-    Most attributes are constructed by passing in a value of some type.
-
-    All string-valued attributes allow formatting (interpolation):
-
-    {[div[id "section-%d" section_id][]]}
-
-    Or plain strings:
-
-    {[p[id "toast"][]]}
-
-    Most boolean attributes are plain values and don't need to be constructed
-    with function calls:
-
-    {[input[required]]}
-
-    However, boolean attributes which may be inherited and toggled on/off in
-    children, are constructed by passing in a value:
-
-    {[div[contenteditable true][
-        p[][txt "Edit me!"];
-        p[contenteditable false][txt "Can't edit me!"]]]}
-
-    Enumerated attributes accept specific values:
-
-    {[input[inputmode `tel]]} *)
 
 (** {2 Standard tags} *)
 
+(** HTML tags. Most (standard tags) are constructed by passing a list of
+    attributes and a list of children:
+
+    {[div[id "my-div"][
+        p[][txt "Hello"]]]}
+
+    Some (void elements) are constructed only with a list of attributes:
+
+    {[input[required; type_ "email"; name "email-addr"]]}
+
+    Finally, a few (text elements) are constructed with a list of attributes and
+    a single text child:
+
+    {[title[] "Document title"
+
+      script[] {|
+        alert('Careful, this is not escaped :-)');
+      |}
+    ]} *)
 module Tag : sig
   val null : node list -> node
   (** A tag that will not be rendered in the markup. Useful for containing a bunch
@@ -549,28 +557,10 @@ module Tag : sig
   val video : std_tag
   val wbr : void_tag
 end
-(** HTML tags. Most (standard tags) are constructed by passing a list of
-    attributes and a list of children:
-
-    {[div[id "my-div"][
-        p[][txt "Hello"]]]}
-
-    Some (void elements) are constructed only with a list of attributes:
-
-    {[input[required; type_ "email"; name "email-addr"]]}
-
-    Finally, a few (text elements) are constructed with a list of attributes and
-    a single text child:
-
-    {[title[] "Document title"
-
-      script[] {|
-        alert('Careful, this is not escaped :-)');
-      |}
-    ]} *)
 
 (** {2 htmx attributes} *)
 
+(** htmx attributes {: https://htmx.org/reference/#attributes} *)
 module Hx : sig
   val boost : bool to_attr
   val confirm : _ string_attr
@@ -645,4 +635,3 @@ module Hx : sig
   val ws_connect : _ string_attr
   val ws_send : attr
 end
-(** htmx attributes {: https://htmx.org/reference/#attributes} *)

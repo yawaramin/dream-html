@@ -16,8 +16,17 @@
    dream-html. If not, see <https://www.gnu.org/licenses/>. *)
 
 type attr = string * string
-type tag = { name : string; attrs : attr list; children : node list option }
-and node = Tag of tag | Txt of string | Comment of string
+
+type tag = {
+  name : string;
+  attrs : attr list;
+  children : node list option;
+}
+
+and node =
+  | Tag of tag
+  | Txt of string
+  | Comment of string
 
 type 'a to_attr = 'a -> attr
 type 'a string_attr = ('a, unit, string, attr) format4 -> 'a
@@ -26,8 +35,7 @@ type void_tag = attr list -> node
 type 'a text_tag = attr list -> ('a, unit, string, node) format4 -> 'a
 
 let write_attr p = function
-  | "", _ ->
-    ()
+  | "", _ -> ()
   | name, "" ->
     p " ";
     p name
@@ -40,22 +48,25 @@ let write_attr p = function
 
 (* Loosely based on https://www.w3.org/TR/DOM-Parsing/ *)
 let rec write_tag p = function
-  | Tag { name = ""; children = Some children; _ } ->
+  | Tag {name = ""; children = Some children; _} ->
     List.iter (write_tag p) children
-  | Tag { name; attrs; children = None } ->
+  | Tag {name; attrs; children = None} ->
     p "<";
     p name;
     List.iter (write_attr p) attrs;
     p ">"
-  | Tag ({ name; children = Some children; _ } as non_void) ->
-    (if name = "html" then p "<!DOCTYPE html>\n");
-    write_tag p (Tag { non_void with children = None });
+  | Tag ({name; children = Some children; _} as non_void) ->
+    if name = "html" then p "<!DOCTYPE html>\n";
+    write_tag p (Tag {non_void with children = None});
     List.iter (write_tag p) children;
-    p "</"; p name; p ">\n"
-  | Txt str ->
-    p str
+    p "</";
+    p name;
+    p ">\n"
+  | Txt str -> p str
   | Comment str ->
-    p "<!-- "; p str; p " -->\n"
+    p "<!-- ";
+    p str;
+    p " -->\n"
 
 let to_string node =
   let buf = Buffer.create 256 in
@@ -73,41 +84,45 @@ let set_body resp node =
 
 let escape raw = if raw then Fun.id else Dream.html_escape
 
-let string_attr name ?(raw=false) fmt =
-  Printf.ksprintf (fun s -> name, escape raw s) fmt
+let string_attr name ?(raw = false) fmt =
+  Printf.ksprintf (fun s -> (name, escape raw s)) fmt
 
-let uri_attr name fmt = Printf.ksprintf
-  (fun s -> name, s |> escape false |> Uri.of_string |> Uri.to_string)
-  fmt
-
-let bool_attr name value = name, string_of_bool value
-let float_attr name value = name, Printf.sprintf "%f" value
-let int_attr name value = name, string_of_int value
-
-let std_tag name attrs children = Tag { name; attrs; children = Some children }
-let void_tag name attrs = Tag { name; attrs; children = None }
-
-let text_tag name ?(raw=false) attrs fmt =
+let uri_attr name fmt =
   Printf.ksprintf
-  (fun s -> Tag { name; attrs; children = Some [Txt (escape raw s)]})
-  fmt
+    (fun s -> (name, s |> escape false |> Uri.of_string |> Uri.to_string))
+    fmt
 
-let txt ?(raw=false) fmt = Printf.ksprintf (fun s -> Txt (escape raw s)) fmt
+let bool_attr name value = (name, string_of_bool value)
+let float_attr name value = (name, Printf.sprintf "%f" value)
+let int_attr name value = (name, string_of_int value)
+let std_tag name attrs children = Tag {name; attrs; children = Some children}
+let void_tag name attrs = Tag {name; attrs; children = None}
+
+let text_tag name ?(raw = false) attrs fmt =
+  Printf.ksprintf
+    (fun s -> Tag {name; attrs; children = Some [Txt (escape raw s)]})
+    fmt
+
+let txt ?(raw = false) fmt = Printf.ksprintf (fun s -> Txt (escape raw s)) fmt
 let csrf_tag req = req |> Dream.csrf_tag |> txt ~raw:true "%s"
 let comment str = Comment (Dream.html_escape str)
 
 module Attr = struct
-  type method_ = [`GET | `POST]
-  type enctype = [`urlencoded | `formdata | `text_plain]
+  type method_ =
+    [ `GET
+    | `POST ]
+
+  type enctype =
+    [ `urlencoded
+    | `formdata
+    | `text_plain ]
 
   let enctype_string = function
     | `urlencoded -> "application/x-www-form-urlencoded"
     | `formdata -> "multipart/form-data"
     | `text_plain -> "text/plain"
 
-
   let null = string_attr "" ""
-
   let accept fmt = string_attr "accept" fmt
   let accept_charset fmt = string_attr "accept-charset" fmt
   let accesskey fmt = string_attr "accesskey" fmt
@@ -115,77 +130,81 @@ module Attr = struct
   let align fmt = string_attr "align" fmt
   let allow fmt = string_attr "allow" fmt
   let alt fmt = string_attr "alt" fmt
-  let async = "async", ""
+  let async = ("async", "")
 
-  let autocapitalize value = "autocapitalize", match value with
-    | `off -> "off"
-    | `none -> "none"
-    | `on -> "on"
-    | `sentences -> "sentences"
-    | `words -> "words"
-    | `characters -> "characters"
+  let autocapitalize value =
+    ( "autocapitalize",
+      match value with
+      | `off -> "off"
+      | `none -> "none"
+      | `on -> "on"
+      | `sentences -> "sentences"
+      | `words -> "words"
+      | `characters -> "characters" )
 
-  let autocomplete value = "autocomplete", match value with
-    | `off -> "off"
-    | `on -> "on"
-    | `name -> "name"
-    | `honorific_prefix -> "honorific-prefix"
-    | `given_name -> "given-name"
-    | `additional_name -> "additional-name"
-    | `honorific_suffix -> "honorific-suffix"
-    | `nickname -> "nickname"
-    | `email -> "email"
-    | `username -> "username"
-    | `new_password -> "new-password"
-    | `current_password -> "current-password"
-    | `one_time_code -> "one-time-code"
-    | `organization_title -> "organization-title"
-    | `organization -> "organization"
-    | `street_address -> "street-address"
-    | `address_line1 -> "address-line1"
-    | `address_line2 -> "address-line2"
-    | `address_line3 -> "address-line3"
-    | `address_level4 -> "address-level4"
-    | `address_level3 -> "address-level3"
-    | `address_level2 -> "address-level2"
-    | `address_level1 -> "address-level1"
-    | `country -> "country"
-    | `country_name -> "country-name"
-    | `postal_code -> "postal-code"
-    | `cc_name -> "cc-name"
-    | `cc_given_name -> "cc-given-name"
-    | `cc_additional_name -> "cc-additional-name"
-    | `cc_family_name -> "cc-family-name"
-    | `cc_number -> "cc-number"
-    | `cc_exp -> "cc-exp"
-    | `cc_exp_month -> "cc-exp-month"
-    | `cc_exp_year -> "cc-exp-year"
-    | `cc_csc -> "cc-csc"
-    | `cc_type -> "cc-type"
-    | `transaction_currency -> "transaction-currency"
-    | `transaction_amount -> "transaction-amount"
-    | `language -> "language"
-    | `bday -> "bday"
-    | `bday_day -> "bday-day"
-    | `bday_month -> "bday-month"
-    | `bday_year -> "bday-year"
-    | `sex -> "sex"
-    | `tel -> "tel"
-    | `tel_country_code -> "tel-country-code"
-    | `tel_national -> "tel-national"
-    | `tel_area_code -> "tel-area-code"
-    | `tel_local -> "tel-local"
-    | `tel_extension -> "tel-extension"
-    | `impp -> "impp"
-    | `url -> "url"
-    | `photo -> "photo"
+  let autocomplete value =
+    ( "autocomplete",
+      match value with
+      | `off -> "off"
+      | `on -> "on"
+      | `name -> "name"
+      | `honorific_prefix -> "honorific-prefix"
+      | `given_name -> "given-name"
+      | `additional_name -> "additional-name"
+      | `honorific_suffix -> "honorific-suffix"
+      | `nickname -> "nickname"
+      | `email -> "email"
+      | `username -> "username"
+      | `new_password -> "new-password"
+      | `current_password -> "current-password"
+      | `one_time_code -> "one-time-code"
+      | `organization_title -> "organization-title"
+      | `organization -> "organization"
+      | `street_address -> "street-address"
+      | `address_line1 -> "address-line1"
+      | `address_line2 -> "address-line2"
+      | `address_line3 -> "address-line3"
+      | `address_level4 -> "address-level4"
+      | `address_level3 -> "address-level3"
+      | `address_level2 -> "address-level2"
+      | `address_level1 -> "address-level1"
+      | `country -> "country"
+      | `country_name -> "country-name"
+      | `postal_code -> "postal-code"
+      | `cc_name -> "cc-name"
+      | `cc_given_name -> "cc-given-name"
+      | `cc_additional_name -> "cc-additional-name"
+      | `cc_family_name -> "cc-family-name"
+      | `cc_number -> "cc-number"
+      | `cc_exp -> "cc-exp"
+      | `cc_exp_month -> "cc-exp-month"
+      | `cc_exp_year -> "cc-exp-year"
+      | `cc_csc -> "cc-csc"
+      | `cc_type -> "cc-type"
+      | `transaction_currency -> "transaction-currency"
+      | `transaction_amount -> "transaction-amount"
+      | `language -> "language"
+      | `bday -> "bday"
+      | `bday_day -> "bday-day"
+      | `bday_month -> "bday-month"
+      | `bday_year -> "bday-year"
+      | `sex -> "sex"
+      | `tel -> "tel"
+      | `tel_country_code -> "tel-country-code"
+      | `tel_national -> "tel-national"
+      | `tel_area_code -> "tel-area-code"
+      | `tel_local -> "tel-local"
+      | `tel_extension -> "tel-extension"
+      | `impp -> "impp"
+      | `url -> "url"
+      | `photo -> "photo" )
 
-  let autofocus = "autofocus", ""
-  let autoplay = "autoplay", ""
+  let autofocus = ("autofocus", "")
+  let autoplay = ("autoplay", "")
   let buffered fmt = string_attr "buffered" fmt
   let capture fmt = string_attr "capture" fmt
   let charset fmt = string_attr "charset" fmt
-  let checked = "checked", ""
+  let checked = ("checked", "")
   let cite fmt = uri_attr "cite" fmt
   let class_ fmt = string_attr "class" fmt
   let color fmt = string_attr "color" fmt
@@ -194,133 +213,151 @@ module Attr = struct
   let content fmt = string_attr "content" fmt
   let contenteditable = bool_attr "contenteditable"
   let contextmenu fmt = string_attr "contextmenu" fmt
-  let controls = "controls", ""
+  let controls = ("controls", "")
   let coords fmt = string_attr "coords" fmt
 
-  let crossorigin value = "crossorigin", match value with
-    | `anonymous -> "anonymous"
-    | `use_credentials -> "use-credentials"
+  let crossorigin value =
+    ( "crossorigin",
+      match value with
+      | `anonymous -> "anonymous"
+      | `use_credentials -> "use-credentials" )
 
   let data fmt = uri_attr "data" fmt
   let datetime fmt = string_attr "datetime" fmt
 
-  let decoding value = "decoding", match value with
-    | `sync -> "sync"
-    | `async -> "async"
-    | `auto -> "auto"
+  let decoding value =
+    ( "decoding",
+      match value with
+      | `sync -> "sync"
+      | `async -> "async"
+      | `auto -> "auto" )
 
-  let default = "default", ""
-  let defer = "defer", ""
+  let default = ("default", "")
+  let defer = ("defer", "")
 
-  let dir value = "dir", match value with
-    | `ltr -> "ltr"
-    | `rtl -> "rtl"
-    | `auto -> "auto"
+  let dir value =
+    ( "dir",
+      match value with
+      | `ltr -> "ltr"
+      | `rtl -> "rtl"
+      | `auto -> "auto" )
 
   let dirname fmt = string_attr "dirname" fmt
-  let disabled = "disabled", ""
+  let disabled = ("disabled", "")
   let download fmt = string_attr "download" fmt
-  let draggable = "draggable", ""
-  let enctype value = "enctype", enctype_string value
+  let draggable = ("draggable", "")
+  let enctype value = ("enctype", enctype_string value)
   let for_ fmt = string_attr "for" fmt
   let form fmt = string_attr "form" fmt
   let formaction fmt = string_attr "formaction" fmt
-  let formenctype value = "formenctype", enctype_string value
-  let formmethod value = "formmethod", Dream.method_to_string value
-  let formnovalidate = "formnovalidate", ""
+  let formenctype value = ("formenctype", enctype_string value)
+  let formmethod value = ("formmethod", Dream.method_to_string value)
+  let formnovalidate = ("formnovalidate", "")
   let formtarget fmt = string_attr "formtarget" fmt
   let headers fmt = string_attr "headers" fmt
   let height fmt = string_attr "height" fmt
 
-  let hidden value = "hidden", match value with
-    | `hidden -> "hidden"
-    | `until_found -> "until-found"
+  let hidden value =
+    ( "hidden",
+      match value with
+      | `hidden -> "hidden"
+      | `until_found -> "until-found" )
 
   let high = float_attr "high"
   let href fmt = uri_attr "href" fmt
   let hreflang fmt = string_attr "hreflang" fmt
 
-  let http_equiv value = "http-equiv", match value with
-    | `content_security_policy -> "content-security-policy"
-    | `content_type -> "content-type"
-    | `default_style -> "default-style"
-    | `x_ua_compatible -> "x-ua-compatible"
-    | `refresh -> "refresh"
+  let http_equiv value =
+    ( "http-equiv",
+      match value with
+      | `content_security_policy -> "content-security-policy"
+      | `content_type -> "content-type"
+      | `default_style -> "default-style"
+      | `x_ua_compatible -> "x-ua-compatible"
+      | `refresh -> "refresh" )
 
   let id fmt = string_attr "id" fmt
   let integrity fmt = string_attr "integrity" fmt
 
-  let inputmode value = "inputmode", match value with
-    | `none -> "none"
-    | `text -> "text"
-    | `decimal -> "decimal"
-    | `numeric -> "numeric"
-    | `tel -> "tel"
-    | `search -> "search"
-    | `email -> "email"
-    | `url -> "url"
+  let inputmode value =
+    ( "inputmode",
+      match value with
+      | `none -> "none"
+      | `text -> "text"
+      | `decimal -> "decimal"
+      | `numeric -> "numeric"
+      | `tel -> "tel"
+      | `search -> "search"
+      | `email -> "email"
+      | `url -> "url" )
 
-  let ismap = "ismap", ""
+  let ismap = ("ismap", "")
   let itemprop fmt = string_attr "itemprop" fmt
 
-  let kind value = "kind",match value with
-    | `subtitles -> "subtitles"
-    | `captions -> "captions"
-    | `descriptions -> "descriptions"
-    | `chapters -> "chapters"
-    | `metadata -> "metadata"
+  let kind value =
+    ( "kind",
+      match value with
+      | `subtitles -> "subtitles"
+      | `captions -> "captions"
+      | `descriptions -> "descriptions"
+      | `chapters -> "chapters"
+      | `metadata -> "metadata" )
 
   let label fmt = string_attr "label" fmt
   let lang fmt = string_attr "lang" fmt
   let list fmt = string_attr "list" fmt
-  let loop = "loop", ""
+  let loop = ("loop", "")
   let low = float_attr "low"
   let max fmt = string_attr "max" fmt
   let maxlength = int_attr "maxlength"
   let media fmt = string_attr "media" fmt
-  let method_ value = "method", Dream.method_to_string value
+  let method_ value = ("method", Dream.method_to_string value)
   let min fmt = string_attr "min" fmt
   let minlength = int_attr "minlength"
-  let multiple = "multiple", ""
-  let muted = "muted", ""
+  let multiple = ("multiple", "")
+  let muted = ("muted", "")
   let name fmt = string_attr "name" fmt
-  let novalidate = "novalidate", ""
+  let novalidate = ("novalidate", "")
   let onblur fmt = string_attr "onblur" ~raw:true fmt
   let onclick fmt = string_attr "onclick" ~raw:true fmt
-  let open_ = "open", ""
+  let open_ = ("open", "")
   let optimum = float_attr "optimum"
   let pattern fmt = string_attr "pattern" fmt
   let ping fmt = string_attr "ping" fmt
   let placeholder fmt = string_attr "placeholder" fmt
-  let playsinline = "playsinline", ""
+  let playsinline = ("playsinline", "")
   let poster fmt = uri_attr "poster" fmt
 
-  let preload value = "preload", match value with
-    | `none -> "none"
-    | `metadata -> "metadata"
-    | `auto -> "auto"
+  let preload value =
+    ( "preload",
+      match value with
+      | `none -> "none"
+      | `metadata -> "metadata"
+      | `auto -> "auto" )
 
-  let readonly = "readonly", ""
+  let readonly = ("readonly", "")
 
-  let referrerpolicy value = "referrerpolicy", match value with
-    | `no_referrer -> "no-referrer"
-    | `no_referrer_when_downgrade -> "no-referrer-when-downgrade"
-    | `origin -> "origin"
-    | `origin_when_cross_origin -> "origin-when-cross-origin"
-    | `same_origin -> "same-origin"
-    | `strict_origin -> "strict-origin"
-    | `strict_origin_when_cross_origin -> "strict-origin-when-cross-origin"
-    | `unsafe_url -> "unsafe-url"
+  let referrerpolicy value =
+    ( "referrerpolicy",
+      match value with
+      | `no_referrer -> "no-referrer"
+      | `no_referrer_when_downgrade -> "no-referrer-when-downgrade"
+      | `origin -> "origin"
+      | `origin_when_cross_origin -> "origin-when-cross-origin"
+      | `same_origin -> "same-origin"
+      | `strict_origin -> "strict-origin"
+      | `strict_origin_when_cross_origin -> "strict-origin-when-cross-origin"
+      | `unsafe_url -> "unsafe-url" )
 
   let rel fmt = string_attr "rel" fmt
-  let required = "required", ""
-  let reversed = "reversed", ""
+  let required = ("required", "")
+  let reversed = ("reversed", "")
   let role fmt = string_attr "role" fmt
   let rows = int_attr "rows"
   let rowspan = int_attr "rowspan"
   let sandbox fmt = string_attr "sandbox" fmt
   let scope fmt = string_attr "scope" fmt
-  let selected = "selected", ""
+  let selected = ("selected", "")
   let shape fmt = string_attr "shape" fmt
   let size fmt = string_attr "size" fmt
   let sizes fmt = string_attr "sizes" fmt
@@ -337,17 +374,27 @@ module Attr = struct
   let tabindex = int_attr "tabindex"
   let target fmt = string_attr "target" fmt
   let title fmt = string_attr "title" fmt
-  let translate value = "translate", match value with `yes -> "yes" | `no -> "no"
+
+  let translate value =
+    ( "translate",
+      match value with
+      | `yes -> "yes"
+      | `no -> "no" )
+
   let type_ fmt = string_attr "type" fmt
   let usemap fmt = string_attr "usemap" fmt
   let value fmt = string_attr "value" fmt
   let width fmt = string_attr "width" fmt
-  let wrap value = "wrap", match value with `hard -> "hard" | `soft -> "soft"
+
+  let wrap value =
+    ( "wrap",
+      match value with
+      | `hard -> "hard"
+      | `soft -> "soft" )
 end
 
 module Tag = struct
   let null = std_tag "" []
-
   let a = std_tag "a"
   let address = std_tag "address"
   let abbr = std_tag "abbr"
@@ -465,25 +512,24 @@ module Hx = struct
   (* This is a boolean because it can be selectively switched off in some parts
      of the page. *)
   let boost = bool_attr "data-hx-boost"
-
   let confirm fmt = string_attr "data-hx-confirm" fmt
   let delete fmt = uri_attr "data-hx-delete" fmt
-  let disable = "data-hx-disable", ""
+  let disable = ("data-hx-disable", "")
   let disinherit fmt = string_attr "data-hx-disinherit" fmt
-  let encoding_formdata = "data-hx-encoding", "multipart/form-data"
+  let encoding_formdata = ("data-hx-encoding", "multipart/form-data")
   let ext fmt = string_attr "data-hx-ext" fmt
   let get fmt = uri_attr "data-hx-get" fmt
   let headers fmt = string_attr "data-hx-headers" fmt
   let history_false = bool_attr "data-hx-history" false
-  let history_elt = "data-hx-history-elt", ""
+  let history_elt = ("data-hx-history-elt", "")
   let include_ fmt = string_attr "data-hx-include" fmt
   let indicator fmt = string_attr ~raw:true "data-hx-indicator" fmt
   let on fmt = string_attr "data-hx-on" ~raw:true fmt
   let params fmt = string_attr "data-hx-params" fmt
   let patch fmt = uri_attr "data-hx-patch" fmt
   let post fmt = uri_attr "data-hx-post" fmt
-  let preload = "preload", ""
-  let preserve = "data-hx-preserve", ""
+  let preload = ("preload", "")
+  let preserve = ("data-hx-preserve", "")
   let prompt fmt = string_attr "data-hx-prompt" fmt
   let push_url fmt = uri_attr "data-hx-push-url" fmt
   let put fmt = uri_attr "data-hx-put" fmt
@@ -498,8 +544,8 @@ module Hx = struct
   let sync fmt = string_attr "data-hx-sync" fmt
   let target fmt = string_attr ~raw:true "data-hx-target" fmt
   let trigger fmt = string_attr "data-hx-trigger" ~raw:true fmt
-  let validate = "data-hx-validate", ""
+  let validate = ("data-hx-validate", "")
   let vals fmt = string_attr "data-hx-vals" fmt
   let ws_connect fmt = string_attr "data-ws-connect" fmt
-  let ws_send = "data-ws-send", ""
+  let ws_send = ("data-ws-send", "")
 end
