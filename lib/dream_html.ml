@@ -89,9 +89,7 @@ let string_attr name ?(raw = false) fmt =
   Printf.ksprintf (fun s -> name, escape raw s) fmt
 
 let uri_attr name fmt =
-  Printf.ksprintf
-    (fun s -> name, s |> escape false |> Uri.of_string |> Uri.to_string)
-    fmt
+  Printf.ksprintf (fun s -> name, s |> Uri.of_string |> Uri.to_string) fmt
 
 let bool_attr name value = name, string_of_bool value
 let float_attr name value = name, Printf.sprintf "%f" value
