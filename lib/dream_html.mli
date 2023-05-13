@@ -134,8 +134,8 @@ val csrf_tag : Dream.request -> node
     wrapper for [Dream.csrf_tag].
 
     {[Tag.form
-      [action "/foo"]
-      [csrf_tag req; input [name "bar"]; input [type_ "submit"]]]} *)
+        [action "/foo"]
+        [csrf_tag req; input [name "bar"]; input [type_ "submit"]]]} *)
 
 (** {2 Standard attributes} *)
 
