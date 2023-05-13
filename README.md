@@ -18,11 +18,9 @@ dream-html. If not, see <https://www.gnu.org/licenses/>.
 
 ## What
 
-This is a set of helper functions I am using to generate HTML markup from inside
-my [Dream](https://aantron.github.io/dream) backend. It works pretty well but has
-not been proven at large scale or anything like that.
-
-Most HTML elements and attributes from the
+An HTML library that is closely integrated with
+[Dream](https://aantron.github.io/dream). Most HTML elements and attributes from
+the
 [Mozilla Developer Network references](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference)
 are now implemented. I have deliberately left out almost all non-standard or
 deprecated tags/attributes. Also, supporting CSS is out of scope for this library.
@@ -31,48 +29,12 @@ personally using them.
 
 ## Why
 
-Having tried TyXML, I found that too complex. Dream's built-in eml (Embedded ML)
-templating system has a few disadvantages, e.g. no editor support, somewhat
-quirky syntax that can be hard to debug when it starts erroring, and a rather
-large limitation that you need to manually set up a conversion rule in your `dune`
-file for each separate template file.
-
-Dream-html is most similar in approach to Daniel Buenzli's
-[Webs](https://erratique.ch/software/webs/doc/Webs_html/index.html) HTML library
-(in OCaml land, in other languages many people have published similar code-first
-approach libraries). The philosophy is to do some minimal type checking and not
-dive deep into a typed HTML rabbit hole like TyXML.
-
-Let's compare how the following HTML would look in either of Webs or dream-html:
-
-```html
-<p class="text-lg" id="hello">Hello, World!</p>
-```
-
-Webs:
-
-```ocaml
-open Webs_html
-open El
-open At
-
-let greeting = p ~at:[class' "text-lg"; id "hello"] [txt "Hello, World!"]
-```
-
-Dream-html:
-
-```ocaml
-open Dream_html
-open Tag
-open Attr
-
-let greeting = p[class_ "text-lg"; id "hello"][txt "Hello, World!"]
-```
-
-Note, this is not meant to be a demonstration of how many characters you're
-saving. It's just a different style which I have found we can take advantage of
-thanks to OCaml being whitespace-insensitive. Normally you wouldn't format OCaml
-code like this, but I feel that the domain justifies it.
+- TyXML is a bit too complex.
+- Dream's built-in eml (Embedded ML) has some drawbacks like no editor support,
+  quirky syntax that can be hard to debug, and manual dune rule setup for each
+  view file.
+- Daniel Buenzli's `Webs_html` is most similar but I wanted to fine-tune a few
+  things and take advantage of close Dream integration.
 
 ## Details
 
@@ -83,7 +45,7 @@ Attribute and text values are escaped using
 utop # open Dream_html;;
 utop # let user_input = "<script>alert('You have been pwned')</script>";;
 utop # open Tag;;
-utop # let safe = p[][txt "%s" user_input];;
+utop # let safe = p [] [txt "%s" user_input];;
 utop # to_string safe;;
 - : string =
 "<p>&lt;script&gt;alert(&#x27;You have been pwned&#x27;)&lt;/script&gt;</p>"
@@ -101,16 +63,14 @@ You can compose multiple HTML nodes together into a single node without an extra
 DOM node, like [React fragments](https://react.dev/reference/react/Fragment):
 
 ```ocaml
-let view = Tag.null[
-  p[][txt "Hello"];
-  p[][txt "World"]]
+let view = Tag.null [p [] [txt "Hello"]; p [] [txt "World"]]
 ```
 
 You can do string interpolation using the `txt` node constructor and of any
 attribute which takes a string value:
 
 ```ocaml
-let greet name = p[id "greet-%s" name][txt "Hello, %s!" name]
+let greet name = p [id "greet-%s" name] [txt "Hello, %s!" name]
 ```
 
 You can conditionally render an attribute, and
@@ -118,19 +78,18 @@ You can conditionally render an attribute, and
 are statically enforced as childless:
 
 ```ocaml
-let entry = input[
-  if should_focus then autofocus else null;
-  id "email";
-  name "email";
-  value "Email address"]
+let entry =
+  input
+    [ (if should_focus then autofocus else null);
+      id "email";
+      name "email";
+      value "Email address" ]
 ```
 
 You can also embed HTML comments in the generated document:
 
 ```ocaml
-div[][
-  comment "TODO: xyz.";
-  p[][txt "Hello!"]]
+div [] [comment "TODO: xyz."; p [] [txt "Hello!"]]
 ```
 
 ## Explore in the REPL
@@ -142,7 +101,7 @@ utop # open Dream_html;;
 utop # open Tag;;
 utop # open Attr;;
 utop # #install_printer pp;;
-utop # p[class_ "hello"][txt "world"];;
+utop # p [class_ "hello"] [txt "world"];;
 - : node = <p class="hello">world</p>
 ```
 
