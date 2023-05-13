@@ -82,6 +82,7 @@ let set_body resp node =
   Dream.set_body resp (to_string node);
   Dream.set_header resp "Content-Type" "text/html"
 
+let write stream node = Dream.write stream (to_string node)
 let escape raw = if raw then Fun.id else Dream.html_escape
 
 let string_attr name ?(raw = false) fmt =

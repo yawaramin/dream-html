@@ -60,6 +60,9 @@ val set_body : Dream.response -> node -> unit
 (** Type-safe wrapper for [Dream.set_body]. Sets the body to the given [node] and
     sets the [Content-Type] header to [text/html]. *)
 
+val write : Dream.stream -> node -> unit Dream.promise
+(** Type-safe wrapper for [Dream.write]. *)
+
 (** {2 Constructing nodes and attributes} *)
 
 type 'a to_attr = 'a -> attr
