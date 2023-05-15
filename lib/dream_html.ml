@@ -106,6 +106,22 @@ let txt ?(raw = false) fmt = Printf.ksprintf (fun s -> Txt (escape raw s)) fmt
 let csrf_tag req = req |> Dream.csrf_tag |> txt ~raw:true "%s"
 let comment str = Comment (Dream.html_escape str)
 
+let ( +@ ) node attr =
+  match node with
+  | Tag t -> Tag { t with attrs = attr :: t.attrs }
+  | _ -> invalid_arg "cannot add attribute to non-tag node"
+
+let ( -@ ) node attr =
+  match node with
+  | Tag t ->
+    Tag { t with attrs = List.filter (fun (k, _) -> k <> attr) t.attrs }
+  | _ -> invalid_arg "cannot remove attribute from non-tag node"
+
+let ( .@[] ) node attr =
+  match node with
+  | Tag { attrs; _ } -> List.assoc attr attrs
+  | _ -> invalid_arg "cannot get value of attribute from non-tag node"
+
 module Attr = struct
   type method_ =
     [ `GET

@@ -140,6 +140,33 @@ val csrf_tag : Dream.request -> node
         [action "/foo"]
         [csrf_tag req; input [name "bar"]; input [type_ "submit"]]]} *)
 
+(** {2 Accessors for tags} *)
+
+val ( +@ ) : node -> attr -> node
+(** Add an attribute to a tag.
+
+    @raise Invalid_argument if the node is not a tag (i.e. if it is a text or
+      comment node).
+    @since 0.0.3. *)
+
+val ( -@ ) : node -> string -> node
+(** Remove an attribute from a tag.
+
+    @raise Invalid_argument if the node is not a tag (i.e. if it is a text or
+      comment node).
+    @since 0.0.3. *)
+
+val ( .@[] ) : node -> string -> string
+(** Get the value of an existing attribute.
+
+    @raise Invalid_argument if the node is not a tag (i.e. if it is a text or
+      comment node).
+    @raise Not_found if the tag does not have the given attribute.
+    @since 0.0.3.
+
+    {[let toast = p [id "toast"] [txt "OK."]
+      let toast_id = toast.@["id"]]} *)
+
 (** {2 Standard attributes} *)
 
 (** Standard, most non-deprecated attributes from
