@@ -51,6 +51,23 @@ utop # to_string safe;;
 "<p>&lt;script&gt;alert(&#x27;You have been pwned&#x27;)&lt;/script&gt;</p>"
 ```
 
+## How to install
+
+This package is not published on opam, so you can add it as a pinned package. E.g.
+
+```
+opam pin add dream-html https://github.com/yawaramin/dream-html
+```
+
+If you are using a `dune-project` file to declare your dependencies, you can add
+the pin to your `<package>.opam.template` file:
+
+```
+pin-depends: [
+  ["dream-html.dev" "git+https://github.com/yawaramin/dream-html"]
+]
+```
+
 ## Usage
 
 A convenience is provided to respond with an HTML node from a handler:
