@@ -56,7 +56,7 @@ utop # to_string safe;;
 This package is not published on opam, so you can add it as a pinned package. E.g.
 
 ```
-opam pin add dream-html https://github.com/yawaramin/dream-html
+opam pin add dream-html git+https://github.com/yawaramin/dream-html
 ```
 
 If you are using a `dune-project` file to declare your dependencies, you can add
