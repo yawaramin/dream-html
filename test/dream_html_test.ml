@@ -28,7 +28,7 @@ let node =
       body
         [id "test-content"]
         [ main
-            [spellcheck true]
+            [spellcheck true; colspan 1]
             [ article
                 [id "article-1"; class_ "story"]
                 [ p
