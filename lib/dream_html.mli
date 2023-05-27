@@ -96,7 +96,13 @@ val string_attr : string -> ?raw:bool -> _ string_attr
 
 val uri_attr : string -> _ string_attr
 (** Convenience for attributes whose values should be URIs. Takes care of URI-
-    encoding. *)
+    encoding.
+
+    {[a [href "/blog?tags=iamsafe\"></a><script>alert('Pwned')</script>"] [txt "Tags: tag1 | tag2"]]}
+
+    Output:
+
+    {[<a href="/blog?tags=iamsafe%22%3E%3C/a%3E%3Cscript%3Ealert('Pwned')%3C/script%3E">Tags: tag1 | tag2</a>]} *)
 
 val bool_attr : string -> bool to_attr
 val float_attr : string -> float to_attr
