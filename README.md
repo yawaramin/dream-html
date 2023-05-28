@@ -24,7 +24,7 @@ the
 [Mozilla Developer Network references](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference)
 are now implemented. I have deliberately left out almost all non-standard or
 deprecated tags/attributes. Also, supporting CSS is out of scope for this library.
-However, I have included the core [htmx](https://htmx.org/) attributes as I am
+However, I have included the [htmx](https://htmx.org/) attributes as I am
 personally using them.
 
 ## Why
@@ -32,9 +32,38 @@ personally using them.
 - TyXML is a bit too complex.
 - Dream's built-in eml (Embedded ML) has some drawbacks like no editor support,
   quirky syntax that can be hard to debug, and manual dune rule setup for each
-  view file.
+  view file. Also in general string-based HTML templating is
+  [suboptimal](https://www.devever.net/~hl/stringtemplates).
 - Daniel Buenzli's `Webs_html` is most similar but I wanted to fine-tune a few
   things and take advantage of close Dream integration.
+
+## First look
+
+```ocaml
+let page req =
+  let open Dream_html in
+  let open Tag in
+  let open Attr in
+  html [lang "en"] [
+    head [] [
+      (* Need module prefix because conflicts with title attribute *)
+      Tag.title [] "Dream-html" ];
+    body [] [
+      h1 [] [txt "Dream-html"];
+      p [] [txt "Is cool!"];
+      (* Need module prefix because conflicts with form attribute *)
+      Tag.form [method_ `POST; action "/feedback"] [
+        (* Integrated with Dream's CSRF token generation *)
+        csrf_tag req;
+
+        (* Need module prefix because conflicts with label attribute *)
+        Tag.label [for_ "what-you-think"] [txt "Tell us what you think!"];
+        input [name "what-you-think"; id "what-you-think"];
+        input [type_ "submit"; value "Send"] ] ] ]
+
+(* Integrated with Dream response *)
+let handler req = Dream_html.respond (page req)
+```
 
 ## Details
 
