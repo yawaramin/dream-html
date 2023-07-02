@@ -664,6 +664,9 @@ module Hx : sig
   val vals : _ string_attr
   val ws_connect : _ string_attr
   val ws_send : attr
+  
+  val hs: _ string_attr
+  (** Note that the value of this attribute is not escaped. *)
 end
 
 (** {2 Interop example–Markdown to HTML}
