@@ -563,5 +563,5 @@ module Hx = struct
   let vals fmt = string_attr "data-hx-vals" fmt
   let ws_connect fmt = string_attr "data-ws-connect" fmt
   let ws_send = "data-ws-send", ""
-  let hs = string_attr "_" fmt
+  let hs fmt = string_attr "_" fmt
 end
