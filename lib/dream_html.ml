@@ -237,6 +237,9 @@ module Attr = struct
       | `anonymous -> "anonymous"
       | `use_credentials -> "use-credentials" )
 
+  let custom_attr name = name, ""
+  let custom_string_attr name fmt = string_attr name fmt
+
   let data fmt = uri_attr "data" fmt
   let datetime fmt = string_attr "datetime" fmt
 
@@ -521,6 +524,7 @@ module Tag = struct
   let var = std_tag "var"
   let video = std_tag "video"
   let wbr = void_tag "wbr"
+  let web_component name = std_tag name
 end
 
 module Hx = struct

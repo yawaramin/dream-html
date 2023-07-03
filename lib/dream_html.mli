@@ -305,6 +305,12 @@ module Attr : sig
   val controls : attr
   val coords : _ string_attr
   val crossorigin : [< `anonymous | `use_credentials] to_attr
+
+  val custom_attr : string -> attr
+  val custom_string_attr : string -> _ string_attr
+  (** A custom attribute. The name must be lowercase and not start with "data-". *)
+
+
   val data : _ string_attr
   val datetime : _ string_attr
   val decoding : [< `sync | `async | `auto] to_attr
@@ -586,6 +592,9 @@ module Tag : sig
   val var : std_tag
   val video : std_tag
   val wbr : void_tag
+
+  val web_component : string -> std_tag
+  (** A web component. The name is not escaped. *)
 end
 
 (** {2 htmx attributes} *)

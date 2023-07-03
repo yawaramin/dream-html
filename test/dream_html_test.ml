@@ -52,6 +52,8 @@ let node =
                       autocapitalize `words ]
                     "super";
                   hr [(if true then class_ "super" else null)];
-                  greet "Bob" ] ] ] ]
+                  greet "Bob";
+                  web_component "some-random-wc" [custom_string_attr "my-attr" "1"; custom_attr "another-attr"] []
+                  ] ] ] ]
 
 let () = node |> to_string |> print_endline
