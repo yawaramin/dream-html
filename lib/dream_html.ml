@@ -524,6 +524,7 @@ module Tag = struct
 end
 
 module Hx = struct
+  let __ fmt = string_attr ~raw:true "_" fmt
   (* This is a boolean because it can be selectively switched off in some parts
      of the page. *)
   let boost = bool_attr "data-hx-boost"
@@ -563,5 +564,4 @@ module Hx = struct
   let vals fmt = string_attr "data-hx-vals" fmt
   let ws_connect fmt = string_attr "data-ws-connect" fmt
   let ws_send = "data-ws-send", ""
-  let hs fmt = string_attr "_" fmt
 end
