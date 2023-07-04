@@ -84,6 +84,13 @@ type 'a text_tag = attr list -> ('a, unit, string, node) format4 -> 'a
 (** Tags which can have attributes but can contain only text. The text can be
     formatted. *)
 
+val attr : string -> attr
+(** [attr name] is a new attribute which does not carry any payload. E.g.
+
+    {[let required = attr "required"]}
+
+    @since 0.1.0. *)
+
 val string_attr : string -> ?raw:bool -> _ string_attr
 (** [string_attr name fmt] is a new string-valued attribute which allows
     formatting i.e. string interpolation of the value. Note, the [fmt] argument
@@ -592,9 +599,11 @@ end
 
 (** htmx attributes {: https://htmx.org/reference/#attributes} *)
 module Hx : sig
-  val __: _ string_attr
+  val __ : _ string_attr
   (** This attribute serves as the _ attribute, which is used by Hyperscript.
-      Note that the value of this attribute is not escaped. *)
+      Note that the value of this attribute is not escaped.
+
+      @since 0.1.0. *)
 
   val boost : bool to_attr
   val confirm : _ string_attr
