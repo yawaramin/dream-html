@@ -593,7 +593,7 @@ end
 (** htmx attributes {: https://htmx.org/reference/#attributes} *)
 module Hx : sig
   val __: _ string_attr
-  (** This attribute serves as the _ attribute, which is used by Hyprescript.
+  (** This attribute serves as the _ attribute, which is used by Hyperscript.
       Note that the value of this attribute is not escaped. *)
 
   val boost : bool to_attr
