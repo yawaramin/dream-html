@@ -42,22 +42,18 @@ personally using them.
 ```ocaml
 let page req =
   let open Dream_html in
-  let open Tag in
-  let open Attr in
+  let open HTML in
   html [lang "en"] [
     head [] [
-      (* Need module prefix because conflicts with title attribute *)
-      Tag.title [] "Dream-html" ];
+      title [] "Dream-html" ];
     body [] [
       h1 [] [txt "Dream-html"];
       p [] [txt "Is cool!"];
-      (* Need module prefix because conflicts with form attribute *)
-      Tag.form [method_ `POST; action "/feedback"] [
+      form [method_ `POST; action "/feedback"] [
         (* Integrated with Dream's CSRF token generation *)
         csrf_tag req;
 
-        (* Need module prefix because conflicts with label attribute *)
-        Tag.label [for_ "what-you-think"] [txt "Tell us what you think!"];
+        label [for_ "what-you-think"] [txt "Tell us what you think!"];
         input [name "what-you-think"; id "what-you-think"];
         input [type_ "submit"; value "Send"] ] ] ]
 
@@ -73,7 +69,7 @@ Attribute and text values are escaped using
 ```
 utop # open Dream_html;;
 utop # let user_input = "<script>alert('You have been pwned')</script>";;
-utop # open Tag;;
+utop # open HTML;;
 utop # let safe = p [] [txt "%s" user_input];;
 utop # to_string safe;;
 - : string =
@@ -82,19 +78,8 @@ utop # to_string safe;;
 
 ## How to install
 
-This package is not published on opam, so you can add it as a pinned package. E.g.
-
 ```
-opam pin add dream-html git+https://github.com/yawaramin/dream-html
-```
-
-If you are using a `dune-project` file to declare your dependencies, you can add
-the pin to your `<package>.opam.template` file:
-
-```
-pin-depends: [
-  ["dream-html.dev" "git+https://github.com/yawaramin/dream-html"]
-]
+opam install dream-html
 ```
 
 ## Usage
@@ -109,7 +94,7 @@ You can compose multiple HTML nodes together into a single node without an extra
 DOM node, like [React fragments](https://react.dev/reference/react/Fragment):
 
 ```ocaml
-let view = Tag.null [p [] [txt "Hello"]; p [] [txt "World"]]
+let view = null [p [] [txt "Hello"]; p [] [txt "World"]]
 ```
 
 You can do string interpolation using the `txt` node constructor and of any
@@ -126,7 +111,7 @@ are statically enforced as childless:
 ```ocaml
 let entry =
   input
-    [ (if should_focus then autofocus else null);
+    [ (if should_focus then autofocus else null_);
       id "email";
       name "email";
       value "Email address" ]
@@ -144,8 +129,7 @@ div [] [comment "TODO: xyz."; p [] [txt "Hello!"]]
 $ utop
 utop # #require "dream-html";;
 utop # open Dream_html;;
-utop # open Tag;;
-utop # open Attr;;
+utop # open HTML;;
 utop # #install_printer pp;;
 utop # p [class_ "hello"] [txt "world"];;
 - : node = <p class="hello">world</p>

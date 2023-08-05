@@ -123,7 +123,9 @@ let ( .@[] ) node attr =
   | Tag { attrs; _ } -> List.assoc attr attrs
   | _ -> invalid_arg "cannot get value of attribute from non-tag node"
 
-module Attr = struct
+module HTML = struct
+  (* Attributes *)
+
   type method_ =
     [ `GET
     | `POST ]
@@ -138,7 +140,7 @@ module Attr = struct
     | `formdata -> "multipart/form-data"
     | `text_plain -> "text/plain"
 
-  let null = string_attr "" ""
+  let null_ = string_attr "" ""
   let accept fmt = string_attr "accept" fmt
   let accept_charset fmt = string_attr "accept-charset" fmt
   let accesskey fmt = string_attr "accesskey" fmt
@@ -221,7 +223,7 @@ module Attr = struct
   let capture fmt = string_attr "capture" fmt
   let charset fmt = string_attr "charset" fmt
   let checked = attr "checked"
-  let cite fmt = uri_attr "cite" fmt
+  let cite_ fmt = uri_attr "cite" fmt
   let class_ fmt = string_attr "class" fmt
   let color fmt = string_attr "color" fmt
   let cols = int_attr "cols"
@@ -238,7 +240,7 @@ module Attr = struct
       | `anonymous -> "anonymous"
       | `use_credentials -> "use-credentials" )
 
-  let data fmt = uri_attr "data" fmt
+  let data_ fmt = uri_attr "data" fmt
   let datetime fmt = string_attr "datetime" fmt
 
   let decoding value =
@@ -264,7 +266,7 @@ module Attr = struct
   let draggable = attr "draggable"
   let enctype value = "enctype", enctype_string value
   let for_ fmt = string_attr "for" fmt
-  let form fmt = string_attr "form" fmt
+  let form_ fmt = string_attr "form" fmt
   let formaction fmt = string_attr "formaction" fmt
   let formenctype value = "formenctype", enctype_string value
   let formmethod value = "formmethod", Dream.method_to_string value
@@ -319,7 +321,7 @@ module Attr = struct
       | `chapters -> "chapters"
       | `metadata -> "metadata" )
 
-  let label fmt = string_attr "label" fmt
+  let label_ fmt = string_attr "label" fmt
   let lang fmt = string_attr "lang" fmt
   let list fmt = string_attr "list" fmt
   let loop = attr "loop"
@@ -377,8 +379,8 @@ module Attr = struct
   let shape fmt = string_attr "shape" fmt
   let size fmt = string_attr "size" fmt
   let sizes fmt = string_attr "sizes" fmt
-  let slot fmt = string_attr "slot" fmt
-  let span = int_attr "span"
+  let slot_ fmt = string_attr "slot" fmt
+  let span_ = int_attr "span"
   let spellcheck = bool_attr "spellcheck"
   let src fmt = uri_attr "src" fmt
   let srcdoc fmt = string_attr "srcdoc" fmt
@@ -386,10 +388,10 @@ module Attr = struct
   let srcset fmt = string_attr "srcset" fmt
   let start = int_attr "start"
   let step fmt = string_attr "step" fmt
-  let style fmt = string_attr ~raw:true "style" fmt
+  let style_ fmt = string_attr ~raw:true "style" fmt
   let tabindex = int_attr "tabindex"
   let target fmt = string_attr "target" fmt
-  let title fmt = string_attr "title" fmt
+  let title_ fmt = string_attr "title" fmt
 
   let translate value =
     ( "translate",
@@ -407,9 +409,9 @@ module Attr = struct
       match value with
       | `hard -> "hard"
       | `soft -> "soft" )
-end
 
-module Tag = struct
+  (* Tags *)
+
   let null = std_tag "" []
   let a = std_tag "a"
   let address = std_tag "address"

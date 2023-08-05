@@ -16,15 +16,14 @@
    dream-html. If not, see <https://www.gnu.org/licenses/>. *)
 
 open Dream_html
-open Tag
-open Attr
+open HTML
 
 let greet name = p [id "greet-%s" name] [txt "Hello, %s!" name]
 
 let node =
   html
     [lang "en"]
-    [ head [] [Tag.title [] "Dream_html Test"];
+    [ head [] [title [] "Dream_html Test"];
       body
         [id "test-content"]
         [ main
@@ -41,7 +40,7 @@ let node =
                 [ type_ "text";
                   autocomplete `name;
                   onblur "if (1 > 0) alert(this.value)" ];
-              Tag.null
+              null
                 [ comment "oops --><script>alert('lol')</script>";
                   dialog [open_] [div [] []];
                   template [id "idtmpl"] [p [] [txt "Template"]];
@@ -51,7 +50,7 @@ let node =
                       Hx.trigger "keyup[target.value.trim() != '']";
                       autocapitalize `words ]
                     "super";
-                  hr [(if true then class_ "super" else null)];
+                  hr [(if true then class_ "super" else null_)];
                   greet "Bob" ] ] ] ]
 
 let () = node |> to_string |> print_endline
