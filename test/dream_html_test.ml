@@ -42,14 +42,14 @@ let node =
                   onblur "if (1 > 0) alert(this.value)" ];
               null
                 [ comment "oops --><script>alert('lol')</script>";
-                  dialog [open_] [div [] []];
+                  dialog [open_; title_ {|"hello"|}] [div [] []];
                   template [id "idtmpl"] [p [] [txt "Template"]];
                   div [translate `no] [p [translate `yes] []];
                   textarea
                     [ required;
                       Hx.trigger "keyup[target.value.trim() != '']";
                       autocapitalize `words ]
-                    "super";
+                    "'super'";
                   hr [(if true then class_ "super" else null_)];
                   greet "Bob" ] ] ] ]
 

@@ -83,11 +83,37 @@ let set_body resp node =
   Dream.set_header resp "Content-Type" "text/html"
 
 let write stream node = Dream.write stream (to_string node)
-let escape raw = if raw then Fun.id else Dream.html_escape
+
+let txt_escape buffer = function
+  | '&' -> Buffer.add_string buffer "&amp;"
+  | '<' -> Buffer.add_string buffer "&lt;"
+  | '>' -> Buffer.add_string buffer "&gt;"
+  | c -> Buffer.add_char buffer c
+
+let txt_escape raw s =
+  if raw then
+    s
+  else
+    let buffer = Buffer.create (String.length s * 2) in
+    String.iter (txt_escape buffer) s;
+    Buffer.contents buffer
+
+let attr_escape buffer = function
+  | '"' -> Buffer.add_string buffer "&quot;"
+  | c -> Buffer.add_char buffer c
+
+let attr_escape raw s =
+  if raw then
+    s
+  else
+    let buffer = Buffer.create (String.length s * 2) in
+    String.iter (attr_escape buffer) s;
+    Buffer.contents buffer
+
 let attr name = name, ""
 
 let string_attr name ?(raw = false) fmt =
-  Printf.ksprintf (fun s -> name, escape raw s) fmt
+  Printf.ksprintf (fun s -> name, attr_escape raw s) fmt
 
 let uri_attr name fmt =
   Printf.ksprintf (fun s -> name, s |> Uri.of_string |> Uri.to_string) fmt
@@ -100,10 +126,12 @@ let void_tag name attrs = Tag { name; attrs; children = None }
 
 let text_tag name ?(raw = false) attrs fmt =
   Printf.ksprintf
-    (fun s -> Tag { name; attrs; children = Some [Txt (escape raw s)] })
+    (fun s -> Tag { name; attrs; children = Some [Txt (txt_escape raw s)] })
     fmt
 
-let txt ?(raw = false) fmt = Printf.ksprintf (fun s -> Txt (escape raw s)) fmt
+let txt ?(raw = false) fmt =
+  Printf.ksprintf (fun s -> Txt (txt_escape raw s)) fmt
+
 let csrf_tag req = req |> Dream.csrf_tag |> txt ~raw:true "%s"
 let comment str = Comment (Dream.html_escape str)
 
