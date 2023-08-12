@@ -59,7 +59,7 @@ let page req =
 let handler req = Dream_html.respond (page req)
 ```
 
-## Details
+## Security (HTML escaping)
 
 Attribute and text values are escaped using rules very similar to standards-
 compliant web browsers:
