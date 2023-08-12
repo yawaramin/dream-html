@@ -172,13 +172,13 @@ val ( -@ ) : node -> string -> node
 val ( .@[] ) : node -> string -> string
 (** Get the value of an existing attribute.
 
+    {[let toast = p [id "toast"] [txt "OK."]
+      let toast_id = toast.@["id"]]}
+
     @raise Invalid_argument if the node is not a tag (i.e. if it is a text or
       comment node).
     @raise Not_found if the tag does not have the given attribute.
-    @since 0.0.3.
-
-    {[let toast = p [id "toast"] [txt "OK."]
-      let toast_id = toast.@["id"]]} *)
+    @since 0.0.3. *)
 
 (** {2 Standard attributes and tags} *)
 
@@ -215,7 +215,9 @@ module HTML : sig
 
     Enumerated attributes accept specific values:
 
-    {[input [inputmode `tel]]} *)
+    {[input [inputmode `tel]]}
+
+    @since 1.0.0. *)
 
   type enctype =
     [ `urlencoded

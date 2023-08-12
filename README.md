@@ -34,8 +34,6 @@ personally using them.
   quirky syntax that can be hard to debug, and manual dune rule setup for each
   view file. Also in general string-based HTML templating is
   [suboptimal](https://www.devever.net/~hl/stringtemplates).
-- Daniel Buenzli's `Webs_html` is most similar but I wanted to fine-tune a few
-  things and take advantage of close Dream integration.
 
 ## First look
 
@@ -63,22 +61,30 @@ let handler req = Dream_html.respond (page req)
 
 ## Details
 
-Attribute and text values are escaped using
-[`Dream.html_escape`](https://aantron.github.io/dream/#val-html_escape):
+Attribute and text values are escaped using rules very similar to standards-
+compliant web browsers:
 
 ```
 utop # open Dream_html;;
-utop # let user_input = "<script>alert('You have been pwned')</script>";;
 utop # open HTML;;
-utop # let safe = p [] [txt "%s" user_input];;
-utop # to_string safe;;
-- : string =
-"<p>&lt;script&gt;alert(&#x27;You have been pwned&#x27;)&lt;/script&gt;</p>"
+utop # #install_printer pp;;
+
+utop # let user_input = "<script>alert('You have been pwned')</script>";;
+val user_input : string = "<script>alert('You have been pwned')</script>"
+
+utop # p [] [txt "%s" user_input];;
+- : node = <p>&lt;script&gt;alert('You have been pwned')&lt;/script&gt;</p>
+
+utop # div [title_ {|"%s|} user_input] [];;
+- : node = <div title="&quot;<script>alert('You have been pwned')</script>"></div>
 ```
 
 ## How to install
 
+Make sure your local copy of the opam repository is up-to-date first:
+
 ```
+opam update
 opam install dream-html
 ```
 
