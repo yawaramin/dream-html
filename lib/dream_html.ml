@@ -554,6 +554,40 @@ module HTML = struct
   let wbr = void_tag "wbr"
 end
 
+module SVG = struct
+  (* Attributes *)
+  let d fmt = string_attr "d" fmt
+  let fill fmt = string_attr "fill" fmt
+  let stroke fmt = string_attr "stroke" fmt
+
+  let stroke_linecap value =
+    ( "stroke-linecap",
+      match value with
+      | `butt -> "butt"
+      | `round -> "round"
+      | `square -> "square" )
+
+  let stroke_linejoin value =
+    ( "stroke-linejoin",
+      match value with
+      | `arcs -> "arcs"
+      | `bevel -> "bevel"
+      | `miter -> "miter"
+      | `miter_clip -> "miter-clip"
+      | `round -> "round" )
+
+  let stroke_width fmt = string_attr "stroke-width" fmt
+
+  let viewbox ~min_x ~min_y ~width ~height =
+    "viewbox", Printf.sprintf "%d %d %d %d" min_x min_y width height
+
+  let xmlns = string_attr "xmlns" "http://www.w3.org/2000/svg"
+
+  (* Tags *)
+  let path = std_tag "path"
+  let svg = std_tag "svg"
+end
+
 module Hx = struct
   let __ fmt = string_attr ~raw:true "_" fmt
 

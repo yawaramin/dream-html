@@ -602,6 +602,23 @@ module HTML : sig
   val wbr : void_tag
 end
 
+(** @since 1.1.0. *)
+module SVG : sig
+  val d : _ string_attr
+  val fill : _ string_attr
+  val stroke : _ string_attr
+  val stroke_linecap : [< `butt | `round | `square] to_attr
+
+  val stroke_linejoin :
+    [< `arcs | `bevel | `miter | `miter_clip | `round] to_attr
+
+  val stroke_width : _ string_attr
+  val viewbox : min_x:int -> min_y:int -> width:int -> height:int -> attr
+  val xmlns : attr
+  val path : std_tag
+  val svg : std_tag
+end
+
 (** {2 htmx attributes} *)
 
 (** htmx attributes {: https://htmx.org/reference/#attributes} *)

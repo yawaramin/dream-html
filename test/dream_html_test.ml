@@ -16,11 +16,13 @@
    dream-html. If not, see <https://www.gnu.org/licenses/>. *)
 
 open Dream_html
-open HTML
 
-let greet name = p [id "greet-%s" name] [txt "Hello, %s!" name]
+let greet nm =
+  let open HTML in
+  p [id "greet-%s" nm] [txt "Hello, %s!" nm]
 
-let node =
+let html_node =
+  let open HTML in
   html
     [lang "en"]
     [ head [] [title [] "Dream_html Test"];
@@ -53,4 +55,21 @@ let node =
                   hr [(if true then class_ "super" else null_)];
                   greet "Bob" ] ] ] ]
 
-let () = node |> to_string |> print_endline
+let svg_node =
+  let open SVG in
+  svg
+    [ xmlns;
+      fill "none";
+      viewbox ~min_x:0 ~min_y:0 ~width:24 ~height:24;
+      stroke_width "1.5";
+      stroke "currentColor";
+      HTML.class_ "w-6 h-6" ]
+    [ path
+        [ stroke_linecap `round;
+          stroke_linejoin `round;
+          d "M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" ]
+        [] ]
+
+let () =
+  html_node |> to_string |> print_endline;
+  svg_node |> to_string |> print_endline
