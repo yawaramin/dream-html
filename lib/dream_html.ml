@@ -293,6 +293,14 @@ module HTML = struct
   let download fmt = string_attr "download" fmt
   let draggable = attr "draggable"
   let enctype value = "enctype", enctype_string value
+
+  let fetchpriority value =
+    ( "fetchpriority",
+      match value with
+      | `high -> "high"
+      | `low -> "low"
+      | `auto -> "auto" )
+
   let for_ fmt = string_attr "for" fmt
   let form_ fmt = string_attr "form" fmt
   let formaction fmt = string_attr "formaction" fmt

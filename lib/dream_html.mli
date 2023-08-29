@@ -331,6 +331,10 @@ module HTML : sig
   val download : _ string_attr
   val draggable : attr
   val enctype : [< enctype] to_attr
+
+  val fetchpriority : [< `high | `low | `auto] to_attr
+  (** @since 1.2.0. *)
+
   val for_ : _ string_attr
   val form_ : _ string_attr
   val formaction : _ string_attr
