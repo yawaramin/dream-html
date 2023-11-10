@@ -180,6 +180,12 @@ val ( .@[] ) : node -> string -> string
     @raise Not_found if the tag does not have the given attribute.
     @since 0.0.3. *)
 
+val is_null : node -> bool
+(** Get whether a node is null (empty) or not. Useful for conditional rendering
+    of UIs when you are passed in a node and you don't know if it's empty or not.
+
+    @since 1.2.0. *)
+
 (** {2 Standard attributes and tags} *)
 
 (** All standard HTML attributes and tags. Some attributes and tags have the same

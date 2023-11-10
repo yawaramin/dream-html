@@ -151,6 +151,10 @@ let ( .@[] ) node attr =
   | Tag { attrs; _ } -> List.assoc attr attrs
   | _ -> invalid_arg "cannot get value of attribute from non-tag node"
 
+let is_null = function
+  | Tag { name = ""; _ } -> true
+  | _ -> false
+
 module HTML = struct
   (* Attributes *)
 
