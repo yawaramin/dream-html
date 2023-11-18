@@ -1,0 +1,3 @@
+(library
+ (name dreamix)
+ (libraries dream_html stringext))
