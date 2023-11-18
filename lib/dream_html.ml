@@ -155,6 +155,8 @@ let is_null = function
   | Tag { name = ""; _ } -> true
   | _ -> false
 
+let is_null_ (name, _) = name = ""
+
 module HTML = struct
   (* Attributes *)
 

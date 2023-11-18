@@ -186,6 +186,11 @@ val is_null : node -> bool
 
     @since 1.2.0. *)
 
+val is_null_ : attr -> bool
+(** Get whether an attribute is null (empty) or not.
+
+    @since 1.2.0. *)
+
 (** {2 Standard attributes and tags} *)
 
 (** All standard HTML attributes and tags. Some attributes and tags have the same
