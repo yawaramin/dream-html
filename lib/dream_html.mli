@@ -679,7 +679,7 @@ module Hx : sig
 
   val preserve : attr
   val prompt : _ string_attr
-  val push_url : _ string_attr
+  val push_url : bool to_attr
   val put : _ string_attr
   val replace_url : _ string_attr
   val request : _ string_attr
