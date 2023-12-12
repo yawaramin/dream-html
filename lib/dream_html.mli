@@ -311,13 +311,14 @@ module HTML : sig
     | `tel_extension
     | `impp
     | `url
-    | `photo ]
+    | `photo
+    | `webauthn ]
     to_attr
 
   val autofocus : attr
   val autoplay : attr
   val buffered : _ string_attr
-  val capture : _ string_attr
+  val capture : [< `user | `environment] to_attr
   val charset : _ string_attr
   val checked : attr
   val cite_ : _ string_attr

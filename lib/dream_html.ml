@@ -249,12 +249,19 @@ module HTML = struct
       | `tel_extension -> "tel-extension"
       | `impp -> "impp"
       | `url -> "url"
-      | `photo -> "photo" )
+      | `photo -> "photo"
+      | `webauthn -> "webauthn" )
 
   let autofocus = attr "autofocus"
   let autoplay = attr "autoplay"
   let buffered fmt = string_attr "buffered" fmt
-  let capture fmt = string_attr "capture" fmt
+
+  let capture value =
+    ( "capture",
+      match value with
+      | `user -> "user"
+      | `environment -> "environment" )
+
   let charset fmt = string_attr "charset" fmt
   let checked = attr "checked"
   let cite_ fmt = uri_attr "cite" fmt
