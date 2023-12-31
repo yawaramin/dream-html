@@ -21,6 +21,8 @@
  (description
   "Write HTML directly in your OCaml source files with editor support.")
  (documentation "https://yawaramin.github.io/dream-html/")
+ (tags (org:yawaramin))
  (depends
   (dream
    (>= 1.0.0~alpha3))))
+
