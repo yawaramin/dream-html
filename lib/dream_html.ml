@@ -628,6 +628,7 @@ module Hx = struct
   let include_ fmt = string_attr "data-hx-include" fmt
   let indicator fmt = string_attr ~raw:true "data-hx-indicator" fmt
   let on fmt = string_attr "data-hx-on" ~raw:true fmt
+  let on_ ~event fmt = string_attr ("data-hx-on:" ^ event) ~raw:true fmt
   let params fmt = string_attr "data-hx-params" fmt
   let patch fmt = uri_attr "data-hx-patch" fmt
   let post fmt = uri_attr "data-hx-post" fmt

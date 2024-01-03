@@ -635,9 +635,9 @@ module SVG : sig
   val svg : std_tag
 end
 
-(** {2 htmx attributes} *)
+(** {2 htmx support} *)
 
-(** htmx attributes {: https://htmx.org/reference/#attributes} *)
+(** htmx support {: https://htmx.org/reference/} *)
 module Hx : sig
   val __ : _ string_attr
   (** This attribute serves as the _ attribute, which is used by Hyperscript.
@@ -669,7 +669,14 @@ module Hx : sig
       CSS selector. *)
 
   val on : _ string_attr
+  [@@ocaml.deprecated "See https://htmx.org/attributes/hx-on/#hx-on-deprecated"]
   (** Note that the value of this attribute is not escaped. *)
+
+  val on_ : event:string -> _ string_attr
+  (** The [hx-on:*] set of attributes, where [*] represents DOM events:
+      {: https://htmx.org/attributes/hx-on/}.
+
+      Note that the value of this attribute is not escaped. *)
 
   val params : _ string_attr
   val patch : _ string_attr
