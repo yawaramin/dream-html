@@ -41,6 +41,7 @@ personally using them.
 let page req =
   let open Dream_html in
   let open HTML in
+  (* automatically injects <!doctype html> *)
   html [lang "en"] [
     head [] [
       title [] "Dream-html" ];
@@ -117,7 +118,7 @@ are statically enforced as childless:
 ```ocaml
 let entry =
   input
-    [ (if should_focus then autofocus else null_);
+    [ if should_focus then autofocus else null_;
       id "email";
       name "email";
       value "Email address" ]
@@ -155,10 +156,6 @@ Set the new version of the output as correct:
 
 Surface design obviously lifted straight from
 [elm-html](https://package.elm-lang.org/packages/elm/html/latest/).
-
-Similar to [Webs](https://erratique.ch/software/webs/doc/Webs_html/index.html) as
-mentioned earlier (it turns out there are only a limited number of ways to do
-this kind of library).
 
 Implementation inspired by both elm-html and
 [Scalatags](https://com-lihaoyi.github.io/scalatags/).
