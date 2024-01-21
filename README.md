@@ -142,6 +142,25 @@ utop # p [class_ "hello"] [txt "world"];;
 - : node = <p class="hello">world</p>
 ```
 
+## Import HTML
+
+One issue that you may come across is that the syntax of HTML is different from
+the syntax of dream-html markup. To ease this problem, you may use the
+bookmarklet `import_html.js` provided in this project. Simply create a new
+bookmark in your browser with any name, and set the URL to the content of that
+file (make sure it is exactly the given content).
+
+Then, whenever you have a web page open, just click on the bookmarklet to copy
+its markup to the clipboard in dream-html format. From there you can simple
+paste it into your project.
+
+Note that the dream-html version is not formatted nicely, because the
+expectation is that you will use ocamlformat to fix the formatting.
+
+Also note that the translation done by this bookmarklet is on a best-effort
+basis. Many web pages don't strictly conform to the rules of correct HTML
+markup, so you will likely need to fix those issues for your build to work.
+
 ## Test
 
 Run the test and print out diff if it fails:
