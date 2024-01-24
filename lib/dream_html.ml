@@ -162,7 +162,8 @@ module HTML = struct
 
   type method_ =
     [ `GET
-    | `POST ]
+    | `POST
+    | `dialog ]
 
   type enctype =
     [ `urlencoded
@@ -318,7 +319,13 @@ module HTML = struct
   let form_ fmt = string_attr "form" fmt
   let formaction fmt = string_attr "formaction" fmt
   let formenctype value = "formenctype", enctype_string value
-  let formmethod value = "formmethod", Dream.method_to_string value
+
+  let method_to_string = function
+    | `GET -> "get"
+    | `POST -> "post"
+    | `dialog -> "dialog"
+
+  let formmethod value = "formmethod", method_to_string value
   let formnovalidate = attr "formnovalidate"
   let formtarget fmt = string_attr "formtarget" fmt
   let headers fmt = string_attr "headers" fmt
@@ -378,7 +385,7 @@ module HTML = struct
   let max fmt = string_attr "max" fmt
   let maxlength = int_attr "maxlength"
   let media fmt = string_attr "media" fmt
-  let method_ value = "method", Dream.method_to_string value
+  let method_ value = "method", method_to_string value
   let min fmt = string_attr "min" fmt
   let minlength = int_attr "minlength"
   let multiple = attr "multiple"
