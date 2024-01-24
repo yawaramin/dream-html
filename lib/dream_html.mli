@@ -238,7 +238,7 @@ module HTML : sig
   type method_ =
     [ `GET
     | `POST
-    | `dialog ]
+    | `dialog (** @since 2.1.0 *) ]
 
   val null_ : attr
   (** An attribute that will not be rendered in the markup. Useful for conditional
