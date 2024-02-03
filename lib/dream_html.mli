@@ -721,6 +721,64 @@ module SVG : sig
   val svg : std_tag
 end
 
+(** {2 ARIA support} *)
+
+(** {: https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/}
+
+    @since 3.0.0. *)
+module Aria : sig
+  val activedescendant : _ string_attr
+  val atomic : attr
+  val autocomplete : [`inline | `list | `both] to_attr
+  val braillelabel : _ string_attr
+  val brailleroledescription : _ string_attr
+  val busy : attr
+  val checked : [`false_ | `true_ | `mixed] to_attr
+  val colcount : int to_attr
+  val colindextext : _ string_attr
+  val colspan : int to_attr
+  val controls : _ string_attr
+  val current : [`page | `step | `location | `date | `time | `true_] to_attr
+  val describedby : _ string_attr
+  val description : _ string_attr
+  val details : _ string_attr
+  val disabled : attr
+  val errormessage : _ string_attr
+  val expanded : bool to_attr
+  val flowto : _ string_attr
+  val haspopup : [`true_ | `menu | `listbox | `tree | `grid | `dialog] to_attr
+  val hidden : bool to_attr
+  val invalid : [`grammar | `spelling | `true_] to_attr
+  val keyshortcuts : _ string_attr
+  val label : _ string_attr
+  val labelledby : _ string_attr
+  val level : int to_attr
+  val live : [`assertive | `polite] to_attr
+  val modal : attr
+  val multiline : attr
+  val multiselectable : attr
+  val orientation : [`horizontal | `vertical] to_attr
+  val owns : _ string_attr
+  val placeholder : _ string_attr
+  val posinset : int to_attr
+  val pressed : [`false_ | `mixed | `true_] to_attr
+  val readonly : attr
+  val relevant : [`additions | `all | `removals | `text] to_attr
+  val required : attr
+  val roledescription : _ string_attr
+  val rowcount : int to_attr
+  val rowindex : int to_attr
+  val rowindextext : _ string_attr
+  val rowspan : int to_attr
+  val selected : bool to_attr
+  val setsize : int to_attr
+  val sort : [`ascending | `descending | `other] to_attr
+  val valuemax : float to_attr
+  val valuemin : float to_attr
+  val valuenow : float to_attr
+  val valuetext : _ string_attr
+end
+
 (** {2 htmx support} *)
 
 (** htmx support {: https://htmx.org/reference/} *)

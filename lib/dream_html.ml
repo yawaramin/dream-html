@@ -693,6 +693,134 @@ module SVG = struct
   let svg = std_tag "svg"
 end
 
+module Aria = struct
+  let activedescendant fmt = string_attr "activedescendant" fmt
+  let atomic = attr "atomic"
+
+  let autocomplete value =
+    ( "autocomplete",
+      match value with
+      | `inline -> "inline"
+      | `list -> "list"
+      | `both -> "both" )
+
+  let braillelabel fmt = string_attr "braillelabel" fmt
+  let brailleroledescription fmt = string_attr "brailleroledescription" fmt
+  let busy = attr "busy"
+
+  let checked value =
+    ( "checked",
+      match value with
+      | `false_ -> "false"
+      | `true_ -> "true"
+      | `mixed -> "mixed" )
+
+  let colcount = int_attr "colcount"
+  let colindextext fmt = string_attr "colindextext" fmt
+  let colspan = int_attr "colspan"
+  let controls fmt = string_attr "controls" fmt
+
+  let current value =
+    ( "current",
+      match value with
+      | `page -> "page"
+      | `step -> "step"
+      | `location -> "location"
+      | `date -> "date"
+      | `time -> "time"
+      | `true_ -> "true" )
+
+  let describedby fmt = string_attr "describedby" fmt
+  let description fmt = string_attr "description" fmt
+  let details fmt = string_attr "details" fmt
+  let disabled = attr "disabled"
+  let errormessage fmt = string_attr "errormessage" fmt
+  let expanded = bool_attr "expanded"
+  let flowto fmt = string_attr "flowto" fmt
+
+  let haspopup value =
+    ( "haspopup",
+      match value with
+      | `true_ -> "true"
+      | `menu -> "menu"
+      | `listbox -> "listbox"
+      | `tree -> "tree"
+      | `grid -> "grid"
+      | `dialog -> "dialog" )
+
+  let hidden = bool_attr "hidden"
+
+  let invalid value =
+    ( "invalid",
+      match value with
+      | `grammar -> "grammar"
+      | `spelling -> "spelling"
+      | `true_ -> "true" )
+
+  let keyshortcuts fmt = string_attr "keyshortcuts" fmt
+  let label fmt = string_attr "label" fmt
+  let labelledby fmt = string_attr "labelledby" fmt
+  let level = int_attr "level"
+
+  let live value =
+    ( "live",
+      match value with
+      | `assertive -> "assertive"
+      | `polite -> "polite" )
+
+  let modal = attr "modal"
+  let multiline = attr "multiline"
+  let multiselectable = attr "multiselectable"
+
+  let orientation value =
+    ( "orientation",
+      match value with
+      | `horizontal -> "horizontal"
+      | `vertical -> "vertical" )
+
+  let owns fmt = string_attr "owns" fmt
+  let placeholder fmt = string_attr "placeholder" fmt
+  let posinset = int_attr "posinset"
+
+  let pressed value =
+    ( "pressed",
+      match value with
+      | `false_ -> "false"
+      | `mixed -> "mixed"
+      | `true_ -> "true" )
+
+  let readonly = attr "readonly"
+
+  let relevant value =
+    ( "relevant",
+      match value with
+      | `additions -> "additions"
+      | `all -> "all"
+      | `removals -> "removals"
+      | `text -> "text" )
+
+  let required = attr "required"
+  let roledescription fmt = string_attr "roledescription" fmt
+  let rowcount = int_attr "rowcount"
+  let rowindex = int_attr "rowindex"
+  let rowindextext fmt = string_attr "rowindextext" fmt
+  let rowspan = int_attr "rowspan"
+  let selected = bool_attr "selected"
+  let setsize = int_attr "setsize"
+
+  let sort value =
+    ( "sort",
+      match value with
+      | `ascending -> "ascending"
+      | `descending -> "descending"
+      | `other -> "other" )
+
+  let valuemax = float_attr "valuemax"
+  let valuemin = float_attr "valuemin"
+  let valuenow = float_attr "valuenow"
+  let valuetext fmt = string_attr "valuetext" fmt
+end
+
 module Hx = struct
   let __ fmt = string_attr ~raw:true "_" fmt
 
