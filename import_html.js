@@ -16,80 +16,115 @@ javascript: (async () => {
      You should have received a copy of the GNU General Public License along with
      dream-html. If not, see <https://www.gnu.org/licenses/>. */
 
-  const suffixAttrs = [
-    'cite', 'class', 'data', 'for', 'form', 'label', 'method', 'object', 'open',
-    'slot', 'span', 'style', 'title', 'type',
-  ];
-  const ariaAttrs = [
-    'aria-activedescendant', 'aria-atomic', 'aria-autocomplete',
-    'aria-braillelabel', 'aria-brailleroledescription', 'aria-busy',
-    'aria-checked', 'aria-colcount', 'aria-colindextext', 'aria-colspan',
-    'aria-controls', 'aria-current', 'aria-describedby', 'aria-description',
-    'aria-details', 'aria-disabled', 'aria-errormessage', 'aria-expanded',
-    'aria-flowto', 'aria-haspopup', 'aria-hidden', 'aria-invalid',
-    'aria-keyshortcuts', 'aria-label', 'aria-labelledby', 'aria-level',
-    'aria-live', 'aria-modal', 'aria-multiline', 'aria-multiselectable',
-    'aria-orientation', 'aria-owns', 'aria-placeholder', 'aria-posinset',
-    'aria-pressed', 'aria-readonly', 'aria-relevant', 'aria-required',
-    'aria-roledescription', 'aria-rowcount', 'aria-rowindex', 'aria-rowindextext',
-    'aria-rowspan', 'aria-selected', 'aria-setsize', 'aria-sort', 'aria-valuemax',
-    'aria-valuemin', 'aria-valuenow', 'aria-valuetext',
-  ];
-  const hxAttrs = [
-    'hx-boost', 'hx-confirm', 'hx-delete', 'hx-disable', 'hx-disinherit',
-    'hx-encoding', 'hx-ext', 'hx-get', 'hx-headers', 'hx-history',
-    'hx-history-elt', 'hx-include', 'hx-indicator', 'hx-on', 'hx-params',
-    'hx-patch', 'hx-post', 'hx-preload', 'hx-preserve', 'hx-prompt',
-    'hx-push-url', 'hx-put', 'hx-replace-url', 'hx-request', 'hx-select',
-    'hx-select-oob', 'hx-sse-connect', 'hx-sse-swap', 'hx-swap', 'hx-swap-oob',
-    'hx-sync', 'hx-target', 'hx-trigger', 'hx-validate', 'hx-vals',
-    'hx-ws-connect', 'hx-ws-send',
-  ];
-  const polyVarAttrs = [
-    'autocapitalize', 'autocomplete', 'capture', 'crossorigin', 'decoding', 'dir',
-    'enctype', 'fetchpriority', 'formenctype', 'formmethod', 'hidden',
-    'http_equiv', 'inputmode', 'kind', 'low', 'method', 'preload',
-    'referrerpolicy', 'role', 'translate', 'wrap',
-  ];
-  const intAttrs = [
-    'cols', 'colspan', 'maxlength', 'minlength', 'rows', 'rowspan', 'span',
-    'start', 'tabindex',
-  ];
-  const boolAttrs = [
-    'async', 'autofocus', 'autoplay', 'checked', 'controls', 'default', 'defer',
-    'disabled', 'draggable', 'formnovalidate', 'ismap', 'loop', 'multiple',
-    'muted', 'novalidate', 'open', 'playsinline', 'readonly', 'required',
-    'reversed', 'selected',
-  ];
-  const voidTags = [
-    'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta',
-    'source', 'track', 'wbr',
-  ];
-  const textTags = ['option', 'script', 'style', 'textarea', 'title'];
+  const suffixAttrs = {
+    'cite': 1, 'class': 1, 'data': 1, 'for': 1, 'form': 1, 'label': 1,
+    'method': 1, 'object': 1, 'open': 1, 'slot': 1, 'span': 1, 'style': 1,
+    'title': 1, 'type': 1,
+  };
+  const ariaAttrs = {
+    'aria-activedescendant': 1, 'aria-atomic': 1, 'aria-autocomplete': 1,
+    'aria-braillelabel': 1, 'aria-brailleroledescription': 1, 'aria-busy': 1,
+    'aria-checked': 1, 'aria-colcount': 1, 'aria-colindextext': 1,
+    'aria-colspan': 1, 'aria-controls': 1, 'aria-current': 1,
+    'aria-describedby': 1, 'aria-description': 1, 'aria-details': 1,
+    'aria-disabled': 1, 'aria-errormessage': 1, 'aria-expanded': 1,
+    'aria-flowto': 1, 'aria-haspopup': 1, 'aria-hidden': 1, 'aria-invalid': 1,
+    'aria-keyshortcuts': 1, 'aria-label': 1, 'aria-labelledby': 1,
+    'aria-level': 1, 'aria-live': 1, 'aria-modal': 1, 'aria-multiline': 1,
+    'aria-multiselectable': 1, 'aria-orientation': 1, 'aria-owns': 1,
+    'aria-placeholder': 1, 'aria-posinset': 1, 'aria-pressed': 1,
+    'aria-readonly': 1, 'aria-relevant': 1, 'aria-required': 1,
+    'aria-roledescription': 1, 'aria-rowcount': 1, 'aria-rowindex': 1,
+    'aria-rowindextext': 1, 'aria-rowspan': 1, 'aria-selected': 1,
+    'aria-setsize': 1, 'aria-sort': 1, 'aria-valuemax': 1, 'aria-valuemin': 1,
+    'aria-valuenow': 1, 'aria-valuetext': 1,
+  };
+  const hxAttrs = {
+    'hx-boost': 1, 'hx-confirm': 1, 'hx-delete': 1, 'hx-disable': 1,
+    'hx-disinherit': 1, 'hx-encoding': 1, 'hx-ext': 1, 'hx-get': 1,
+    'hx-headers': 1, 'hx-history': 1, 'hx-history-elt': 1, 'hx-include': 1,
+    'hx-indicator': 1, 'hx-on': 1, 'hx-params': 1, 'hx-patch': 1, 'hx-post': 1,
+    'hx-preload': 1, 'hx-preserve': 1, 'hx-prompt': 1, 'hx-push-url': 1,
+    'hx-put': 1, 'hx-replace-url': 1, 'hx-request': 1, 'hx-select': 1,
+    'hx-select-oob': 1, 'hx-sse-connect': 1, 'hx-sse-swap': 1, 'hx-swap': 1,
+    'hx-swap-oob': 1, 'hx-sync': 1, 'hx-target': 1, 'hx-trigger': 1,
+    'hx-validate': 1, 'hx-vals': 1, 'hx-ws-connect': 1, 'hx-ws-send': 1,
+  };
+  const polyVarAttrs = {
+    'autocapitalize': 1, 'autocomplete': 1, 'capture': 1, 'crossorigin': 1,
+    'decoding': 1, 'dir': 1, 'enctype': 1, 'fetchpriority': 1, 'formenctype': 1,
+    'formmethod': 1, 'hidden': 1, 'http_equiv': 1, 'inputmode': 1, 'kind': 1,
+    'low': 1, 'method': 1, 'preload': 1, 'referrerpolicy': 1, 'role': 1,
+    'translate': 1, 'wrap': 1,
+    'aria-autocomplete': 1, 'aria-checked': 1, 'aria-current': 1,
+    'aria-haspopup': 1, 'aria-invalid': 1, 'aria-live': 1, 'aria-orientation': 1,
+    'aria-pressed': 1, 'aria-relevant': 1, 'aria-sort': 1,
+  };
+  const numAttrs = {
+    'cols': 1, 'colspan': 1, 'high': 1, 'low': 1, 'maxlength': 1, 'minlength': 1,
+    'optimum': 1, 'rows': 1, 'rowspan': 1, 'span': 1, 'start': 1, 'tabindex': 1,
+    'aria-valuemax': 1, 'aria-valuemin': 1, 'aria-valuenow': 1,
+  };
+  const boolAttrs = {
+    'async': 1, 'autofocus': 1, 'autoplay': 1, 'checked': 1, 'controls': 1,
+    'default': 1, 'defer': 1, 'disabled': 1, 'draggable': 1, 'formnovalidate': 1,
+    'ismap': 1, 'loop': 1, 'multiple': 1, 'muted': 1, 'novalidate': 1, 'open': 1,
+    'playsinline': 1, 'readonly': 1, 'required': 1, 'reversed': 1, 'selected': 1,
+    'aria-atomic': 1, 'aria-busy': 1, 'aria-disabled': 1, 'aria-modal': 1,
+    'aria-multiline': 1, 'aria-multiselectable': 1, 'aria-readonly': 1,
+    'aria-required': 1,
+    'hx-disable': 1, 'data-hx-disable': 1, 'hx-history-elt': 1,
+    'data-hx-history-elt': 1, 'hx-preload': 1, 'data-hx-preload': 1,
+    'hx-preserve': 1, 'data-hx-preserve': 1, 'hx-validate': 1,
+    'data-hx-validate': 1, 'hx-ws-send': 1, 'data-hx-ws-send': 1,
+  };
+  const voidTags = {
+    'area': 1, 'base': 1, 'br': 1, 'col': 1, 'embed': 1, 'hr': 1, 'img': 1,
+    'input': 1, 'link': 1, 'meta': 1, 'source': 1, 'track': 1, 'wbr': 1,
+  };
+  const textTags = {
+    'option': 1, 'script': 1, 'style': 1, 'textarea': 1, 'title': 1
+  };
 
   const attr = name => {
-    if (suffixAttrs.indexOf(name) > -1) return name + '_';
-    if (ariaAttrs.indexOf(name) > -1) return 'Aria.' + name.slice(5);
-    if (hxAttrs.indexOf(name) > -1) return 'Hx.' + name.slice(3).replaceAll('-', '_');
+    if (suffixAttrs[name]) return name + '_';
+    if (ariaAttrs[name]) return 'Aria.' + name.slice(5);
+    if (hxAttrs[name]) return 'Hx.' + name.slice(3).replaceAll('-', '_');
 
     if (
       name.length >= 9 &&
       name.startsWith('data-hx-') &&
-      hxAttrs.indexOf(name.slice(5)) > -1
+      hxAttrs[name.slice(5)] > -1
     ) return 'Hx.' + name.slice(8).replaceAll('-', '_');
 
     if (name.indexOf('-') > -1) return 'string_attr "' + name + '"';
     return name;
   };
 
-  const polyvar = v =>
-    '`' + (v == 'get' || v == 'post' ? v.toUpperCase() : v).replaceAll('-', '_');
+  const polyvar = v => {
+    let v2 = v;
+
+    switch (v2) {
+      case 'get':
+      case 'post':
+        v2 = v2.toUpperCase();
+        break;
+      case 'true':
+      case 'false':
+        v2 += '_';
+        break;
+      default:
+        v2 = v2.replaceAll('-', '_');
+    }
+
+    return '`' + v2;
+  };
 
   const stringify = (v, nm = '') => {
     if (v == null) return '';
-    if (polyVarAttrs.indexOf(nm) > -1) return polyvar(v);
-    if (intAttrs.indexOf(nm) > -1) return v;
-    if (boolAttrs.indexOf(nm) > -1) return '';
+    if (polyVarAttrs[nm]) return polyvar(v);
+    if (numAttrs[nm]) return v;
+    if (boolAttrs[nm]) return '';
     if (v.indexOf('"') > -1) return '{|' + v + '|}';
     return '"' + v + '"';
   };
@@ -121,9 +156,9 @@ javascript: (async () => {
         }
         res += '] ';
 
-        if (voidTags.indexOf(name) > -1) {
+        if (voidTags[name]) {
           /* do nothing */
-        } else if (textTags.indexOf(name) > -1) {
+        } else if (textTags[name]) {
           res += stringify(t.innerText);
         } else {
           res += '[';
