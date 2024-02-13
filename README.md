@@ -104,7 +104,7 @@ DOM node, like [React fragments](https://react.dev/reference/react/Fragment):
 let view = null [p [] [txt "Hello"]; p [] [txt "World"]]
 ```
 
-You can do string interpolation using the `txt` node constructor and of any
+You can do string interpolation of text nodes using `txt` and of any
 attribute which takes a string value:
 
 ```ocaml
