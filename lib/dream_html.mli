@@ -158,6 +158,9 @@ val csrf_tag : Dream.request -> node
 val ( +@ ) : node -> attr -> node
 (** Add an attribute to a tag.
 
+    {[let toast msg = p [id "toast"] [txt "%s" msg]
+      let toast_oob = toast "ok." +@ Hx.swap_oob "true"]}
+
     @raise Invalid_argument if the node is not a tag (i.e. if it is a text or
       comment node).
     @since 0.0.3. *)
@@ -565,6 +568,8 @@ module HTML : sig
       and a single text child:
 
       {[title [] "Document title"
+
+        title [] "My App ・ %s" page_name
 
         script [] {|alert('Careful, this is not escaped :-)');|}
       ]} *)
