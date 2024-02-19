@@ -694,34 +694,34 @@ module SVG = struct
 end
 
 module Aria = struct
-  let activedescendant fmt = string_attr "activedescendant" fmt
-  let atomic = attr "atomic"
+  let activedescendant fmt = string_attr "aria-activedescendant" fmt
+  let atomic = attr "aria-atomic"
 
   let autocomplete value =
-    ( "autocomplete",
+    ( "aria-autocomplete",
       match value with
       | `inline -> "inline"
       | `list -> "list"
       | `both -> "both" )
 
-  let braillelabel fmt = string_attr "braillelabel" fmt
-  let brailleroledescription fmt = string_attr "brailleroledescription" fmt
-  let busy = attr "busy"
+  let braillelabel fmt = string_attr "aria-braillelabel" fmt
+  let brailleroledescription fmt = string_attr "aria-brailleroledescription" fmt
+  let busy = attr "aria-busy"
 
   let checked value =
-    ( "checked",
+    ( "aria-checked",
       match value with
       | `false_ -> "false"
       | `true_ -> "true"
       | `mixed -> "mixed" )
 
-  let colcount = int_attr "colcount"
-  let colindextext fmt = string_attr "colindextext" fmt
-  let colspan = int_attr "colspan"
-  let controls fmt = string_attr "controls" fmt
+  let colcount = int_attr "aria-colcount"
+  let colindextext fmt = string_attr "aria-colindextext" fmt
+  let colspan = int_attr "aria-colspan"
+  let controls fmt = string_attr "aria-controls" fmt
 
   let current value =
-    ( "current",
+    ( "aria-current",
       match value with
       | `page -> "page"
       | `step -> "step"
@@ -730,16 +730,16 @@ module Aria = struct
       | `time -> "time"
       | `true_ -> "true" )
 
-  let describedby fmt = string_attr "describedby" fmt
-  let description fmt = string_attr "description" fmt
-  let details fmt = string_attr "details" fmt
-  let disabled = attr "disabled"
-  let errormessage fmt = string_attr "errormessage" fmt
-  let expanded = bool_attr "expanded"
-  let flowto fmt = string_attr "flowto" fmt
+  let describedby fmt = string_attr "aria-describedby" fmt
+  let description fmt = string_attr "aria-description" fmt
+  let details fmt = string_attr "aria-details" fmt
+  let disabled = attr "aria-disabled"
+  let errormessage fmt = string_attr "aria-errormessage" fmt
+  let expanded = bool_attr "aria-expanded"
+  let flowto fmt = string_attr "aria-flowto" fmt
 
   let haspopup value =
-    ( "haspopup",
+    ( "aria-haspopup",
       match value with
       | `true_ -> "true"
       | `menu -> "menu"
@@ -748,77 +748,77 @@ module Aria = struct
       | `grid -> "grid"
       | `dialog -> "dialog" )
 
-  let hidden = bool_attr "hidden"
+  let hidden = bool_attr "aria-hidden"
 
   let invalid value =
-    ( "invalid",
+    ( "aria-invalid",
       match value with
       | `grammar -> "grammar"
       | `spelling -> "spelling"
       | `true_ -> "true" )
 
-  let keyshortcuts fmt = string_attr "keyshortcuts" fmt
-  let label fmt = string_attr "label" fmt
-  let labelledby fmt = string_attr "labelledby" fmt
-  let level = int_attr "level"
+  let keyshortcuts fmt = string_attr "aria-keyshortcuts" fmt
+  let label fmt = string_attr "aria-label" fmt
+  let labelledby fmt = string_attr "aria-labelledby" fmt
+  let level = int_attr "aria-level"
 
   let live value =
-    ( "live",
+    ( "aria-live",
       match value with
       | `assertive -> "assertive"
       | `polite -> "polite" )
 
-  let modal = attr "modal"
-  let multiline = attr "multiline"
-  let multiselectable = attr "multiselectable"
+  let modal = attr "aria-modal"
+  let multiline = attr "aria-multiline"
+  let multiselectable = attr "aria-multiselectable"
 
   let orientation value =
-    ( "orientation",
+    ( "aria-orientation",
       match value with
       | `horizontal -> "horizontal"
       | `vertical -> "vertical" )
 
-  let owns fmt = string_attr "owns" fmt
-  let placeholder fmt = string_attr "placeholder" fmt
-  let posinset = int_attr "posinset"
+  let owns fmt = string_attr "aria-owns" fmt
+  let placeholder fmt = string_attr "aria-placeholder" fmt
+  let posinset = int_attr "aria-posinset"
 
   let pressed value =
-    ( "pressed",
+    ( "aria-pressed",
       match value with
       | `false_ -> "false"
       | `mixed -> "mixed"
       | `true_ -> "true" )
 
-  let readonly = attr "readonly"
+  let readonly = attr "aria-readonly"
 
   let relevant value =
-    ( "relevant",
+    ( "aria-relevant",
       match value with
       | `additions -> "additions"
       | `all -> "all"
       | `removals -> "removals"
       | `text -> "text" )
 
-  let required = attr "required"
-  let roledescription fmt = string_attr "roledescription" fmt
-  let rowcount = int_attr "rowcount"
-  let rowindex = int_attr "rowindex"
-  let rowindextext fmt = string_attr "rowindextext" fmt
-  let rowspan = int_attr "rowspan"
-  let selected = bool_attr "selected"
-  let setsize = int_attr "setsize"
+  let required = attr "aria-required"
+  let roledescription fmt = string_attr "aria-roledescription" fmt
+  let rowcount = int_attr "aria-rowcount"
+  let rowindex = int_attr "aria-rowindex"
+  let rowindextext fmt = string_attr "aria-rowindextext" fmt
+  let rowspan = int_attr "aria-rowspan"
+  let selected = bool_attr "aria-selected"
+  let setsize = int_attr "aria-setsize"
 
   let sort value =
-    ( "sort",
+    ( "aria-sort",
       match value with
       | `ascending -> "ascending"
       | `descending -> "descending"
       | `other -> "other" )
 
-  let valuemax = float_attr "valuemax"
-  let valuemin = float_attr "valuemin"
-  let valuenow = float_attr "valuenow"
-  let valuetext fmt = string_attr "valuetext" fmt
+  let valuemax = float_attr "aria-valuemax"
+  let valuemin = float_attr "aria-valuemin"
+  let valuenow = float_attr "aria-valuenow"
+  let valuetext fmt = string_attr "aria-valuetext" fmt
 end
 
 module Hx = struct
