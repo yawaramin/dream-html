@@ -36,8 +36,8 @@ module Page = struct
   open Dream_html
   open HTML
 
-  (* Use id attribute to allow OOB swap *)
-  let titl str = title [id "title"] "todos · %s" str
+  (* Helper to build a title prefixed with the name of the app. *)
+  let titl str = title [] "todos · %s" str
   let toast_id = "toast"
   let toast msg = span [id "%s" toast_id; Aria.live `polite] [txt "%s" msg]
 
@@ -217,7 +217,7 @@ module Todo = struct
     let todo = Repo.find (Dream.param req id_param) in
     let rendered = render todo trgt in
     if is_htmx req then
-      respond (null [rendered; oob (Page.titl todo.desc)])
+      respond (null [rendered; Page.titl todo.desc])
     else
       respond
         (Page.render todo.desc
@@ -234,7 +234,7 @@ module Todo = struct
         respond
           (null
              [ Todos.render_one (Filename.dirname trgt) todo;
-               oob (Page.titl desc);
+               Page.titl desc;
                oob (Page.toast "updated description") ])
       else
         Dream.redirect req trgt

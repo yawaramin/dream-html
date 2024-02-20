@@ -133,15 +133,16 @@ let get req =
   let todo = Repo.find (Dream.param req id_param) in
   let rendered = render todo trgt in
   if is_htmx req then
-    respond (null [rendered; oob (Page.titl todo.desc)])
+    respond (null [rendered; Page.titl todo.desc])
   else
     respond
       (Page.render todo.desc
          (Todos.render (Repo.list ()) (Filename.dirname trgt) rendered))
-
 ```
 
-For htmx requests we also need to out-of-band update the page title, but for
-full-page loads we don't. We can easily append the OOB swap node to any response
-thanks to dream-html's flexibility.
+Note that for htmx requests, we return an updated title as part of the response
+fragment, but we don't explicitly mark it as an out-of-band swap. htmx has
+special support for the `<title>` tag and will automatically swap it if found.
+Of course, you can still do an OOB swap for the title if you want, but it's
+redundant.
 
