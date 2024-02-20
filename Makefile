@@ -22,3 +22,8 @@ doc : odoc
 .PHONY : odoc
 odoc :
 	@dune build @doc
+
+.PHONY : app
+app :
+	open http://localhost:8080 &&\
+	LIVERELOAD=1 dune exec -w ./app/app.exe

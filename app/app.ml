@@ -1,0 +1,293 @@
+(* Add an out of band swap attribute to any node *)
+let oob node =
+  let open Dream_html in
+  ignore node.@["id"];
+  node +@ Hx.swap_oob "true"
+
+let hx_request = "Hx-Request"
+let hx_history_request_request = "Hx-History-Restore-Request"
+
+(* Check for htmx request *)
+let is_htmx req =
+  Dream.has_header req hx_request
+  && not (Dream.has_header req hx_history_request_request)
+
+let vary_response ~if_fragment ~if_full req =
+  let open Lwt.Syntax in
+  let+ resp = if is_htmx req then if_fragment () else if_full () in
+  Dream.set_header resp "Vary" (hx_request ^ ", " ^ hx_history_request_request);
+  resp
+
+(* Middleware to handle errors *)
+let dreamcatcher next req =
+  Lwt.catch
+    (fun () -> next req)
+    begin
+      fun exn ->
+        let status, msg =
+          match exn with
+          | Not_found -> `Not_Found, "not found"
+          | Failure msg | Assert_failure (msg, _, _) -> `Bad_Request, msg
+          | Invalid_argument msg -> `Status 422, msg
+          | _ -> `Internal_Server_Error, "something went wrong"
+        in
+        Dream.error (fun log -> log "%s" @@ Printexc.to_string exn);
+        Dream.respond ~status msg
+    end
+
+module Resource = struct
+  let page = [%path "/"]
+  let todos = [%path "/todos"]
+  let todo = [%path "/todos/%d"]
+end
+
+module Page = struct
+  let htmx = "https://unpkg.com/htmx.org@2.0.0-alpha2/dist/htmx.min.js"
+
+  open Dream_html
+  open HTML
+
+  (* Helper to build a title prefixed with the name of the app. *)
+  let titl str = title [] "todos · %s" str
+  let toast_id = "toast"
+  let toast msg = span [id "%s" toast_id; Aria.live `polite] [txt "%s" msg]
+  let get = get Resource.page (fun req -> Dream.redirect req "/todos")
+
+  (* outlet should be a <main> element *)
+  let render titl_str outlet =
+    html
+      [lang "en"]
+      [ head []
+          [ Livereload.script;
+            titl titl_str;
+            link
+              [ rel "stylesheet";
+                href
+                  "https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+              ];
+            style []
+              {|
+#%s {
+  display:none;
+  position:fixed;
+  bottom:1rem;
+  right:1rem;
+  transition:display 5s ease-in-out;
+  padding:1rem;
+  border-radius:var(--pico-border-radius);
+}
+
+#%s.htmx-added {
+  display:block;
+  background-color:#E9F2FC;
+}
+
+.htmx-added * {
+  animation:yellowfade 5s !important;
+}
+
+@keyframes yellowfade {
+  from {
+    background:#FDF1B4;
+  }
+  to {
+    background:transparent;
+  }
+}
+
+#%s.error {
+  display:block;
+  background-color:#FFBF00;
+}
+
+body {
+  padding:1rem;
+}
+|}
+              toast_id toast_id toast_id;
+            meta [charset "UTF-8"];
+            meta
+              [name "viewport"; content "width=device-width, initial-scale=1.0"]
+          ];
+        body []
+          [ header []
+              [ a
+                  [href (Path.link Resource.page); style_ "text-decoration:none"]
+                  [hgroup [] [h1 [] [txt "todos"]; p [] [txt "get stuff done"]]]
+              ];
+            outlet;
+            footer []
+              [ toast "";
+                script [src "%s" htmx] "";
+                script []
+                  {|document.addEventListener('htmx:responseError', evt => {
+  document.getElementById('%s').outerHTML = `<span id="%s" class="error">${evt.detail.xhr.responseText}</span>`;
+});|}
+                  toast_id toast_id ] ] ]
+end
+
+module Todos = struct
+  open Dream_html
+  open HTML
+
+  let todo = "todo"
+
+  let render_one { Repo.id = todo_id; desc; completed } =
+    let msg = txt "%s" desc in
+    let msg = if completed then s [] [msg] else msg in
+    a
+      [ id "todos-%d" todo_id;
+        style_ "text-decoration:none";
+        href (Path.link Resource.todo) todo_id;
+        Hx.get (Path.link Resource.todo) todo_id;
+        Hx.target "#%s" todo;
+        Hx.push_url "true" ]
+      [article [] [msg; footer [] [txt "#%d" todo_id]]]
+
+  let todolist = "todos"
+
+  let render todos outlet =
+    main
+      [class_ "grid"]
+      [ div []
+          [ form
+              [ method_ `POST;
+                action (Path.link Resource.todos);
+                Hx.post (Path.link Resource.todos);
+                Hx.swap "afterbegin settle:5s";
+                Hx.target "#%s" todolist ]
+              [ label []
+                  [ txt "new:";
+                    fieldset
+                      [role `group]
+                      [ input [name "desc"; autofocus; required];
+                        input [type_ "submit"; value "add"] ] ] ];
+            div [id "%s" todolist] (List.map render_one todos) ];
+        div [id "%s" todo] [outlet] ]
+
+  let get =
+    get Resource.todos (fun _ ->
+        [] |> null |> render (Repo.list ()) |> Page.render "all" |> respond)
+
+  let post =
+    post Resource.todos (fun req ->
+        let open Lwt.Syntax in
+        let* frm = Dream.form ~csrf:false req in
+        match frm with
+        | `Ok [("desc", "")] -> invalid_arg "need todo description"
+        | `Ok [("desc", desc)] ->
+          let todo = Repo.add desc in
+          let trgt = Dream.target req in
+          vary_response req
+            ~if_fragment:(fun () ->
+              respond ~status:`Created
+                (null [render_one todo; oob (Page.toast "added todo")]))
+            ~if_full:(fun () ->
+              todo.id
+              |> string_of_int
+              |> Filename.concat trgt
+              |> Dream.redirect req)
+        | _ -> invalid_arg "could not add todo")
+end
+
+module Todo = struct
+  open Dream_html
+  open HTML
+
+  let complete_btn todo =
+    let completion =
+      if todo.Repo.completed then "un-complete" else "complete"
+    in
+    input [id "todo-complete"; type_ "submit"; value "%s" completion]
+
+  let todo_desc = "todo-desc"
+
+  let render todo =
+    let input_id = input [type_ "hidden"; name "id"; value "%d" todo.Repo.id] in
+    div
+      [style_ "position:sticky;top:0"]
+      [ form
+          [ method_ `POST;
+            action (Path.link Resource.todo) todo.id;
+            Hx.post (Path.link Resource.todo) todo.id;
+            Hx.swap "outerHTML settle:5s";
+            Hx.target "#todos-%d" todo.id;
+            style_ "display:inline" ]
+          [ input_id;
+            label [for_ "%s" todo_desc] [txt "#%d:" todo.id];
+            fieldset
+              [role `group]
+              [ input
+                  [ id "%s" todo_desc;
+                    name "desc";
+                    value "%s" todo.desc;
+                    required;
+                    autofocus ];
+                input [type_ "submit"; value "update"] ] ];
+        form
+          [ method_ `POST;
+            action (Path.link Resource.todo) todo.id;
+            Hx.post (Path.link Resource.todo) todo.id;
+            Hx.swap "outerHTML settle:5s";
+            Hx.target "#todos-%d" todo.id;
+            style_ "display:inline" ]
+          [input_id; complete_btn todo] ]
+
+  let render_toggled todo =
+    let msg = if todo.Repo.completed then "completed" else "un-completed" in
+    null [Todos.render_one todo; oob (complete_btn todo); oob (Page.toast msg)]
+
+  let get =
+    get Resource.todo (fun req id ->
+        let todo = Repo.find id in
+        let rendered = render todo in
+        vary_response req
+          ~if_fragment:(fun () ->
+            respond (null [rendered; Page.titl todo.desc]))
+          ~if_full:(fun () ->
+            respond
+              (Page.render todo.desc (Todos.render (Repo.list ()) rendered))))
+
+  let post =
+    post Resource.todo (fun req _ ->
+        let trgt = Dream.target req in
+        let open Lwt.Syntax in
+        let* frm = Dream.form ~csrf:false req in
+        match frm with
+        | `Ok [("desc", desc); ("id", idval)] ->
+          let todo = Repo.edit idval desc in
+          vary_response req
+            ~if_fragment:(fun () ->
+              respond
+                (null
+                   [ Todos.render_one todo;
+                     Page.titl desc;
+                     oob (Page.toast "updated description") ]))
+            ~if_full:(fun () -> Dream.redirect req trgt)
+        | `Ok [("id", idval)] ->
+          let todo = Repo.toggle idval in
+          vary_response req
+            ~if_fragment:(fun () -> respond (render_toggled todo))
+            ~if_full:(fun () -> Dream.redirect req trgt)
+        | _ -> invalid_arg "There was an error")
+end
+
+let stop =
+  let promise, resolve = Lwt.wait () in
+  Sys.set_signal Sys.sigterm
+    (Signal_handle (fun _ -> Lwt.wakeup_later resolve ()));
+  promise
+
+open Dream
+
+let () =
+  run ~stop
+  @@ logger
+  @@ dreamcatcher
+  @@ router
+       [ Dream_html.Livereload.route;
+         Page.get;
+         Todos.get;
+         Todos.post;
+         Todo.get;
+         Todo.post ]
