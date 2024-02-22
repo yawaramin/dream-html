@@ -21,8 +21,8 @@ let dreamcatcher next req =
         let status, msg =
           match exn with
           | Not_found -> `Not_Found, "not found"
-          | Failure _ | Assert_failure (_, _, _) | Invalid_argument _ ->
-            `Bad_Request, "can't do that"
+          | Failure msg | Assert_failure (msg, _, _) | Invalid_argument msg ->
+            `Bad_Request, msg
           | _ -> `Internal_Server_Error, "something went wrong"
         in
         Dream.error (fun log -> log "%s" @@ Printexc.to_string exn);
@@ -152,6 +152,7 @@ module Todos = struct
     let open Lwt.Syntax in
     let* frm = Dream.form ~csrf:false req in
     match frm with
+    | `Ok [("desc", "")] -> invalid_arg "need todo description"
     | `Ok [("desc", desc)] ->
       let todo = Repo.add desc in
       let trgt = Dream.target req in
