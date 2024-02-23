@@ -21,8 +21,8 @@ let dreamcatcher next req =
         let status, msg =
           match exn with
           | Not_found -> `Not_Found, "not found"
-          | Failure msg | Assert_failure (msg, _, _) | Invalid_argument msg ->
-            `Bad_Request, msg
+          | Failure msg | Assert_failure (msg, _, _) -> `Bad_Request, msg
+          | Invalid_argument msg -> `Status 422, msg
           | _ -> `Internal_Server_Error, "something went wrong"
         in
         Dream.error (fun log -> log "%s" @@ Printexc.to_string exn);
@@ -157,7 +157,8 @@ module Todos = struct
       let todo = Repo.add desc in
       let trgt = Dream.target req in
       if is_htmx req then
-        respond (null [render_one trgt todo; oob (Page.toast "added todo")])
+        respond ~status:`Created
+          (null [render_one trgt todo; oob (Page.toast "added todo")])
       else
         todo.id |> string_of_int |> Filename.concat trgt |> Dream.redirect req
     | _ -> invalid_arg "could not add todo"
