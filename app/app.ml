@@ -112,7 +112,7 @@ module Todos = struct
         href "%s" trgt;
         Hx.get "%s" trgt;
         Hx.target "#%s" todo;
-        Hx.push_url "%s" trgt ]
+        Hx.push_url "true" ]
       [article [] [msg; footer [] [txt "#%d" idval]]]
 
   let todolist = "todos"
@@ -249,10 +249,16 @@ module Todo = struct
     | _ -> invalid_arg "There was an error"
 end
 
+let stop =
+  let promise, resolve = Lwt.wait () in
+  Sys.set_signal Sys.sigterm
+    (Signal_handle (fun _ -> Lwt.wakeup_later resolve ()));
+  promise
+
 open Dream
 
 let () =
-  run
+  run ~stop
   @@ logger
   @@ dreamcatcher
   @@ router
