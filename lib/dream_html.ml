@@ -865,3 +865,149 @@ module Hx = struct
   let ws_connect fmt = string_attr "data-ws-connect" fmt
   let ws_send = attr "data-ws-send"
 end
+
+module MathML = struct
+  let annotation = std_tag "annotation"
+  let annotation_xml = std_tag "annotation-xml"
+  let maction = std_tag "maction"
+  let math = std_tag "math"
+  let merror = std_tag "merror"
+  let mfrac = std_tag "mfrac"
+  let mi = std_tag "mi"
+  let mmultiscripts = std_tag "mmultiscripts"
+  let mn = std_tag "mn"
+  let mo = std_tag "mo"
+  let mover = std_tag "mover"
+  let mpadded = std_tag "mpadded"
+  let mphantom = std_tag "mphantom"
+  let mprescripts = std_tag "mprescripts"
+  let mroot = std_tag "mroot"
+  let mrow = std_tag "mrow"
+  let ms = std_tag "ms"
+  let mspace = std_tag "mspace"
+  let msqrt = std_tag "msqrt"
+  let mstyle = std_tag "mstyle"
+  let msub = std_tag "msub"
+  let msubsup = std_tag "msubsup"
+  let msup = std_tag "msup"
+  let mtable = std_tag "mtable"
+  let mtd = std_tag "mtd"
+  let mtext = std_tag "mtext"
+  let mtr = std_tag "mtr"
+  let munder = std_tag "munder"
+  let munderover = std_tag "munderover"
+  let semantics = std_tag "semantics"
+
+  let dir value =
+    ( "dir",
+      match value with
+      | `rtl -> "rtl"
+      | `ltr -> "ltr" )
+
+  let displaystyle value =
+    ( "displaystyle",
+      if value then
+        "normal"
+      else
+        "compact" )
+
+  let mathbackground fmt = string_attr "mathbackground" fmt
+  let mathcolor fmt = string_attr "mathcolor" fmt
+  let mathsize fmt = string_attr "mathsize" fmt
+  let scriptlevel fmt = string_attr "scriptlevel" fmt
+  let accent = bool_attr "accent"
+  let accentunder = bool_attr "accentunder"
+
+  let align value =
+    ( "align",
+      match value with
+      | `axis -> "axis"
+      | `baseline -> "baseline"
+      | `bottom -> "bottom"
+      | `center -> "center" )
+
+  let columnalign value =
+    ( "columnalign",
+      match value with
+      | `left -> "left"
+      | `right -> "right"
+      | `center -> "center" )
+
+  let columnlines value =
+    ( "columnlines",
+      match value with
+      | `none -> "none"
+      | `solid -> "solid"
+      | `dashed -> "dashed" )
+
+  let columnspacing = int_attr "columnspacing"
+  let columnspan = int_attr "columnspan"
+  let depth fmt = string_attr "depth" fmt
+
+  let display value =
+    ( "display",
+      match value with
+      | `block -> "block"
+      | `inline -> "inline" )
+
+  let fence = bool_attr "fence"
+
+  let frame value =
+    ( "frame",
+      match value with
+      | `none -> "none"
+      | `solid -> "solid"
+      | `dashed -> "dashed" )
+
+  let framespacing fmt = string_attr "framespacing" fmt
+  let height fmt = string_attr "height" fmt
+  let linethickness fmt = string_attr "linethickness" fmt
+  let lspace fmt = string_attr "lspace" fmt
+  let maxsize fmt = string_attr "maxsize" fmt
+  let minsize fmt = string_attr "minsize" fmt
+  let movablelimit = bool_attr "movablelimit"
+
+  let notation value =
+    ( "notation",
+      match value with
+      | `actuarial -> "actuarial"
+      | `bottom -> "bottom"
+      | `box -> "box"
+      | `circle -> "circle"
+      | `downdiagonalstrike -> "downdiagonalstrike"
+      | `left -> "left"
+      | `longdiv -> "longdiv"
+      | `madruwb -> "madruwb"
+      | `phasorangle -> "phasorangle"
+      | `radical -> "radical"
+      | `right -> "right"
+      | `roundedbox -> "roundedbox"
+      | `top -> "top"
+      | `updiagonalarrow -> "updiagonalarrow"
+      | `updiagonalstrike -> "updiagonalstrike"
+      | `verticalstrike -> "verticalstrike" )
+
+  let rowalign value =
+    ( "rowalign",
+      match value with
+      | `top -> "top"
+      | `bottom -> "bottom"
+      | `center -> "center" )
+
+  let rowlines value =
+    ( "rowlines",
+      match value with
+      | `none -> "none"
+      | `solid -> "solid"
+      | `dashed -> "dashed" )
+
+  let rowspacing = int_attr "rowspacing"
+  let rowspan = int_attr "rowspan"
+  let rspace fmt = string_attr "rspace" fmt
+  let separator = bool_attr "separator"
+  let stretchy = bool_attr "stretchy"
+  let symmetric = bool_attr "symmetric"
+  let voffset fmt = string_attr "voffset" fmt
+  let width fmt = string_attr "width" fmt
+  let xmlns fmt = string_attr "xmlns" fmt
+end
