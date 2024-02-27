@@ -875,6 +875,7 @@ module Hx : sig
   val ws_send : attr
 end
 
+(** {2 mathml support} *)
 module MathML : sig
   val annotation : std_tag
   val annotation_xml : std_tag
@@ -908,9 +909,6 @@ module MathML : sig
   val semantics : std_tag
   val dir : [`ltr | `rtl] to_attr
   val displaystyle : bool to_attr
-  val mathbackground : _ string_attr
-  val mathcolor : _ string_attr
-  val mathsize : _ string_attr
   val scriptlevel : _ string_attr
   val accent : bool to_attr
   val accentunder : bool to_attr

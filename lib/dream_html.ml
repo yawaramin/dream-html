@@ -911,9 +911,6 @@ module MathML = struct
       else
         "compact" )
 
-  let mathbackground fmt = string_attr "mathbackground" fmt
-  let mathcolor fmt = string_attr "mathcolor" fmt
-  let mathsize fmt = string_attr "mathsize" fmt
   let scriptlevel fmt = string_attr "scriptlevel" fmt
   let accent = bool_attr "accent"
   let accentunder = bool_attr "accentunder"
