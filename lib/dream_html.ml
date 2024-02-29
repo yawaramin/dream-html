@@ -180,7 +180,6 @@ module HTML = struct
   let accept_charset fmt = string_attr "accept-charset" fmt
   let accesskey fmt = string_attr "accesskey" fmt
   let action fmt = uri_attr "action" fmt
-  let align fmt = string_attr "align" fmt
   let allow fmt = string_attr "allow" fmt
   let alt fmt = string_attr "alt" fmt
   let async = attr "async"
@@ -867,6 +866,65 @@ module Hx = struct
 end
 
 module MathML = struct
+  (* Attributes *)
+  let accent = bool_attr "accent"
+  let accentunder = bool_attr "accentunder"
+  let columnspan = int_attr "columnspan"
+  let depth fmt = string_attr "depth" fmt
+
+  let display value =
+    ( "display",
+      match value with
+      | `block -> "block"
+      | `inline -> "inline" )
+
+  let displaystyle = bool_attr "displaystyle"
+  let fence = bool_attr "fence"
+  let framespacing fmt = string_attr "framespacing" fmt
+  let height fmt = string_attr "height" fmt
+  let linethickness fmt = string_attr "linethickness" fmt
+  let lspace fmt = string_attr "lspace" fmt
+  let maxsize fmt = string_attr "maxsize" fmt
+  let minsize fmt = string_attr "minsize" fmt
+  let movablelimit = bool_attr "movablelimit"
+
+  let notation value =
+    ( "notation",
+      match value with
+      | `actuarial -> "actuarial"
+      | `bottom -> "bottom"
+      | `box -> "box"
+      | `circle -> "circle"
+      | `downdiagonalstrike -> "downdiagonalstrike"
+      | `left -> "left"
+      | `longdiv -> "longdiv"
+      | `madruwb -> "madruwb"
+      | `phasorangle -> "phasorangle"
+      | `radical -> "radical"
+      | `right -> "right"
+      | `roundedbox -> "roundedbox"
+      | `top -> "top"
+      | `updiagonalarrow -> "updiagonalarrow"
+      | `updiagonalstrike -> "updiagonalstrike"
+      | `verticalstrike -> "verticalstrike" )
+
+  let rowlines value =
+    ( "rowlines",
+      match value with
+      | `none -> "none"
+      | `solid -> "solid"
+      | `dashed -> "dashed" )
+
+  let rowspan = int_attr "rowspan"
+  let rspace fmt = string_attr "rspace" fmt
+  let scriptlevel fmt = string_attr "scriptlevel" fmt
+  let separator = bool_attr "separator"
+  let stretchy = bool_attr "stretchy"
+  let symmetric = bool_attr "symmetric"
+  let voffset fmt = string_attr "voffset" fmt
+  let xmlns fmt = string_attr "xmlns" fmt
+
+  (* Tags *)
   let annotation = std_tag "annotation"
   let annotation_xml = std_tag "annotation-xml"
   let maction = std_tag "maction"
@@ -903,108 +961,4 @@ module MathML = struct
       match value with
       | `rtl -> "rtl"
       | `ltr -> "ltr" )
-
-  let displaystyle value =
-    ( "displaystyle",
-      if value then
-        "normal"
-      else
-        "compact" )
-
-  let scriptlevel fmt = string_attr "scriptlevel" fmt
-  let accent = bool_attr "accent"
-  let accentunder = bool_attr "accentunder"
-
-  let align value =
-    ( "align",
-      match value with
-      | `axis -> "axis"
-      | `baseline -> "baseline"
-      | `bottom -> "bottom"
-      | `center -> "center" )
-
-  let columnalign value =
-    ( "columnalign",
-      match value with
-      | `left -> "left"
-      | `right -> "right"
-      | `center -> "center" )
-
-  let columnlines value =
-    ( "columnlines",
-      match value with
-      | `none -> "none"
-      | `solid -> "solid"
-      | `dashed -> "dashed" )
-
-  let columnspacing = int_attr "columnspacing"
-  let columnspan = int_attr "columnspan"
-  let depth fmt = string_attr "depth" fmt
-
-  let display value =
-    ( "display",
-      match value with
-      | `block -> "block"
-      | `inline -> "inline" )
-
-  let fence = bool_attr "fence"
-
-  let frame value =
-    ( "frame",
-      match value with
-      | `none -> "none"
-      | `solid -> "solid"
-      | `dashed -> "dashed" )
-
-  let framespacing fmt = string_attr "framespacing" fmt
-  let height fmt = string_attr "height" fmt
-  let linethickness fmt = string_attr "linethickness" fmt
-  let lspace fmt = string_attr "lspace" fmt
-  let maxsize fmt = string_attr "maxsize" fmt
-  let minsize fmt = string_attr "minsize" fmt
-  let movablelimit = bool_attr "movablelimit"
-
-  let notation value =
-    ( "notation",
-      match value with
-      | `actuarial -> "actuarial"
-      | `bottom -> "bottom"
-      | `box -> "box"
-      | `circle -> "circle"
-      | `downdiagonalstrike -> "downdiagonalstrike"
-      | `left -> "left"
-      | `longdiv -> "longdiv"
-      | `madruwb -> "madruwb"
-      | `phasorangle -> "phasorangle"
-      | `radical -> "radical"
-      | `right -> "right"
-      | `roundedbox -> "roundedbox"
-      | `top -> "top"
-      | `updiagonalarrow -> "updiagonalarrow"
-      | `updiagonalstrike -> "updiagonalstrike"
-      | `verticalstrike -> "verticalstrike" )
-
-  let rowalign value =
-    ( "rowalign",
-      match value with
-      | `top -> "top"
-      | `bottom -> "bottom"
-      | `center -> "center" )
-
-  let rowlines value =
-    ( "rowlines",
-      match value with
-      | `none -> "none"
-      | `solid -> "solid"
-      | `dashed -> "dashed" )
-
-  let rowspacing = int_attr "rowspacing"
-  let rowspan = int_attr "rowspan"
-  let rspace fmt = string_attr "rspace" fmt
-  let separator = bool_attr "separator"
-  let stretchy = bool_attr "stretchy"
-  let symmetric = bool_attr "symmetric"
-  let voffset fmt = string_attr "voffset" fmt
-  let width fmt = string_attr "width" fmt
-  let xmlns fmt = string_attr "xmlns" fmt
 end
