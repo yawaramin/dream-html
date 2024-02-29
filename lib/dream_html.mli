@@ -254,7 +254,6 @@ module HTML : sig
   val accept_charset : _ string_attr
   val accesskey : _ string_attr
   val action : _ string_attr
-  val align : _ string_attr
   val allow : _ string_attr
   val alt : _ string_attr
   val async : attr
@@ -912,15 +911,10 @@ module MathML : sig
   val scriptlevel : _ string_attr
   val accent : bool to_attr
   val accentunder : bool to_attr
-  val align : [`axis | `baseline | `bottom | `center | `bottom] to_attr
-  val columnalign : [`left | `right | `center] to_attr
-  val columnlines : [`none | `solid | `dashed] to_attr
-  val columnspacing : int to_attr
   val columnspan : int to_attr
   val depth : _ string_attr
   val display : [`block | `inline] to_attr
   val fence : bool to_attr
-  val frame : [`none | `solid | `dashed] to_attr
   val framespacing : _ string_attr
   val height : _ string_attr
   val linethickness : _ string_attr
@@ -948,16 +942,13 @@ module MathML : sig
     | `verticalstrike ]
     to_attr
 
-  val rowalign : [`top | `bottom | `center] to_attr
   val rowlines : [`none | `solid | `dashed] to_attr
-  val rowspacing : int to_attr
   val rowspan : int to_attr
   val rspace : _ string_attr
   val separator : bool to_attr
   val stretchy : bool to_attr
   val symmetric : bool to_attr
   val voffset : _ string_attr
-  val width : _ string_attr
   val xmlns : _ string_attr
 end
 
