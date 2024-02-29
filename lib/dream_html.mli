@@ -876,44 +876,13 @@ end
 
 (** {2 mathml support} *)
 module MathML : sig
-  val annotation : std_tag
-  val annotation_xml : std_tag
-  val maction : std_tag
-  val math : std_tag
-  val merror : std_tag
-  val mfrac : std_tag
-  val mi : std_tag
-  val mmultiscripts : std_tag
-  val mn : std_tag
-  val mo : std_tag
-  val mover : std_tag
-  val mpadded : std_tag
-  val mphantom : std_tag
-  val mprescripts : std_tag
-  val mroot : std_tag
-  val mrow : std_tag
-  val ms : std_tag
-  val mspace : std_tag
-  val msqrt : std_tag
-  val mstyle : std_tag
-  val msub : std_tag
-  val msubsup : std_tag
-  val msup : std_tag
-  val mtable : std_tag
-  val mtd : std_tag
-  val mtext : std_tag
-  val mtr : std_tag
-  val munder : std_tag
-  val munderover : std_tag
-  val semantics : std_tag
-  val dir : [`ltr | `rtl] to_attr
-  val displaystyle : bool to_attr
-  val scriptlevel : _ string_attr
   val accent : bool to_attr
   val accentunder : bool to_attr
   val columnspan : int to_attr
   val depth : _ string_attr
+  val dir : [`ltr | `rtl] to_attr
   val display : [`block | `inline] to_attr
+  val displaystyle : bool to_attr
   val fence : bool to_attr
   val framespacing : _ string_attr
   val height : _ string_attr
@@ -945,11 +914,42 @@ module MathML : sig
   val rowlines : [`none | `solid | `dashed] to_attr
   val rowspan : int to_attr
   val rspace : _ string_attr
+  val scriptlevel : _ string_attr
   val separator : bool to_attr
   val stretchy : bool to_attr
   val symmetric : bool to_attr
   val voffset : _ string_attr
   val xmlns : _ string_attr
+  val annotation : std_tag
+  val annotation_xml : std_tag
+  val maction : std_tag
+  val math : std_tag
+  val merror : std_tag
+  val mfrac : std_tag
+  val mi : std_tag
+  val mmultiscripts : std_tag
+  val mn : std_tag
+  val mo : std_tag
+  val mover : std_tag
+  val mpadded : std_tag
+  val mphantom : std_tag
+  val mprescripts : std_tag
+  val mroot : std_tag
+  val mrow : std_tag
+  val ms : std_tag
+  val mspace : std_tag
+  val msqrt : std_tag
+  val mstyle : std_tag
+  val msub : std_tag
+  val msubsup : std_tag
+  val msup : std_tag
+  val mtable : std_tag
+  val mtd : std_tag
+  val mtext : std_tag
+  val mtr : std_tag
+  val munder : std_tag
+  val munderover : std_tag
+  val semantics : std_tag
 end
 
 (** {2 Interop example–Markdown to HTML}
