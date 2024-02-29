@@ -884,33 +884,14 @@ module MathML : sig
   val display : [`block | `inline] to_attr
   val displaystyle : bool to_attr
   val fence : bool to_attr
-  val framespacing : _ string_attr
   val height : _ string_attr
+  val largeop : bool to_attr
   val linethickness : _ string_attr
   val lspace : _ string_attr
+  val mathvariant : _ string_attr
   val maxsize : _ string_attr
   val minsize : _ string_attr
-  val movablelimit : bool to_attr
-
-  val notation :
-    [ `actuarial
-    | `bottom
-    | `box
-    | `circle
-    | `downdiagonalstrike
-    | `left
-    | `longdiv
-    | `madruwb
-    | `phasorangle
-    | `radical
-    | `right
-    | `roundedbox
-    | `top
-    | `updiagonalarrow
-    | `updiagonalstrike
-    | `verticalstrike ]
-    to_attr
-
+  val movablelimits : bool to_attr
   val rowlines : [`none | `solid | `dashed] to_attr
   val rowspan : int to_attr
   val rspace : _ string_attr
@@ -919,10 +900,9 @@ module MathML : sig
   val stretchy : bool to_attr
   val symmetric : bool to_attr
   val voffset : _ string_attr
-  val xmlns : _ string_attr
+  val xmlns : attr
   val annotation : std_tag
   val annotation_xml : std_tag
-  val maction : std_tag
   val math : std_tag
   val merror : std_tag
   val mfrac : std_tag
@@ -933,7 +913,6 @@ module MathML : sig
   val mover : std_tag
   val mpadded : std_tag
   val mphantom : std_tag
-  val mprescripts : std_tag
   val mroot : std_tag
   val mrow : std_tag
   val ms : std_tag
