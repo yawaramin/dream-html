@@ -254,6 +254,7 @@ module HTML : sig
   val accept_charset : _ string_attr
   val accesskey : _ string_attr
   val action : _ string_attr
+  val align : _ string_attr
   val allow : _ string_attr
   val alt : _ string_attr
   val async : attr

@@ -180,6 +180,7 @@ module HTML = struct
   let accept_charset fmt = string_attr "accept-charset" fmt
   let accesskey fmt = string_attr "accesskey" fmt
   let action fmt = uri_attr "action" fmt
+  let align fmt = string_attr "align" fmt
   let allow fmt = string_attr "allow" fmt
   let alt fmt = string_attr "alt" fmt
   let async = attr "async"
