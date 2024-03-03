@@ -893,7 +893,6 @@ module MathML : sig
   val maxsize : _ string_attr
   val minsize : _ string_attr
   val movablelimits : bool to_attr
-  val rowlines : [`none | `solid | `dashed] to_attr
   val rowspan : int to_attr
   val rspace : _ string_attr
   val scriptlevel : _ string_attr

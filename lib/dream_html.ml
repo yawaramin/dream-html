@@ -895,14 +895,6 @@ module MathML = struct
   let maxsize fmt = string_attr "maxsize" fmt
   let minsize fmt = string_attr "minsize" fmt
   let movablelimits = bool_attr "movablelimits"
-
-  let rowlines value =
-    ( "rowlines",
-      match value with
-      | `none -> "none"
-      | `solid -> "solid"
-      | `dashed -> "dashed" )
-
   let rowspan = int_attr "rowspan"
   let rspace fmt = string_attr "rspace" fmt
   let scriptlevel fmt = string_attr "scriptlevel" fmt
