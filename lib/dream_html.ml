@@ -865,3 +865,72 @@ module Hx = struct
   let ws_connect fmt = string_attr "data-ws-connect" fmt
   let ws_send = attr "data-ws-send"
 end
+
+module MathML = struct
+  (* Attributes *)
+  let accent = bool_attr "accent"
+  let accentunder = bool_attr "accentunder"
+  let columnspan = int_attr "columnspan"
+  let depth fmt = string_attr "depth" fmt
+
+  let dir value =
+    ( "dir",
+      match value with
+      | `rtl -> "rtl"
+      | `ltr -> "ltr" )
+
+  let display value =
+    ( "display",
+      match value with
+      | `block -> "block"
+      | `inline -> "inline" )
+
+  let displaystyle = bool_attr "displaystyle"
+  let fence = bool_attr "fence"
+  let height fmt = string_attr "height" fmt
+  let largeop = bool_attr "largeop"
+  let linethickness fmt = string_attr "linethickness" fmt
+  let lspace fmt = string_attr "lspace" fmt
+  let mathvariant fmt = string_attr "mathvariant" fmt
+  let maxsize fmt = string_attr "maxsize" fmt
+  let minsize fmt = string_attr "minsize" fmt
+  let movablelimits = bool_attr "movablelimits"
+  let rowspan = int_attr "rowspan"
+  let rspace fmt = string_attr "rspace" fmt
+  let scriptlevel fmt = string_attr "scriptlevel" fmt
+  let separator = bool_attr "separator"
+  let stretchy = bool_attr "stretchy"
+  let symmetric = bool_attr "symmetric"
+  let voffset fmt = string_attr "voffset" fmt
+  let xmlns = string_attr "xmlns" "http://www.w3.1998/Math/MathML"
+
+  (* Tags *)
+  let annotation = std_tag "annotation"
+  let annotation_xml = std_tag "annotation-xml"
+  let math = std_tag "math"
+  let merror = std_tag "merror"
+  let mfrac = std_tag "mfrac"
+  let mi = std_tag "mi"
+  let mmultiscripts = std_tag "mmultiscripts"
+  let mn = std_tag "mn"
+  let mo = std_tag "mo"
+  let mover = std_tag "mover"
+  let mpadded = std_tag "mpadded"
+  let mphantom = std_tag "mphantom"
+  let mroot = std_tag "mroot"
+  let mrow = std_tag "mrow"
+  let ms = std_tag "ms"
+  let mspace = std_tag "mspace"
+  let msqrt = std_tag "msqrt"
+  let mstyle = std_tag "mstyle"
+  let msub = std_tag "msub"
+  let msubsup = std_tag "msubsup"
+  let msup = std_tag "msup"
+  let mtable = std_tag "mtable"
+  let mtd = std_tag "mtd"
+  let mtext = std_tag "mtext"
+  let mtr = std_tag "mtr"
+  let munder = std_tag "munder"
+  let munderover = std_tag "munderover"
+  let semantics = std_tag "semantics"
+end
