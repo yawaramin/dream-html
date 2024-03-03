@@ -380,6 +380,7 @@ module HTML = struct
   let label_ fmt = string_attr "label" fmt
   let lang fmt = string_attr "lang" fmt
   let list fmt = string_attr "list" fmt
+  let loading_lazy = string_attr "loading" "lazy"
   let loop = attr "loop"
   let low = float_attr "low"
   let max fmt = string_attr "max" fmt
@@ -879,12 +880,7 @@ module MathML = struct
       | `rtl -> "rtl"
       | `ltr -> "ltr" )
 
-  let display value =
-    ( "display",
-      match value with
-      | `block -> "block"
-      | `inline -> "inline" )
-
+  let display_block = string_attr "display" "block"
   let displaystyle = bool_attr "displaystyle"
   let fence = bool_attr "fence"
   let height fmt = string_attr "height" fmt

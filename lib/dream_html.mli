@@ -254,7 +254,11 @@ module HTML : sig
   val accept_charset : _ string_attr
   val accesskey : _ string_attr
   val action : _ string_attr
+
   val align : _ string_attr
+  [@@ocaml.deprecated
+    "See https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes"]
+
   val allow : _ string_attr
   val alt : _ string_attr
   val async : attr
@@ -327,7 +331,11 @@ module HTML : sig
   val checked : attr
   val cite_ : _ string_attr
   val class_ : _ string_attr
+
   val color : _ string_attr
+  [@@ocaml.deprecated
+    "See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/font#color"]
+
   val cols : int to_attr
   val colspan : int to_attr
   val content : _ string_attr
@@ -389,6 +397,13 @@ module HTML : sig
   val label_ : _ string_attr
   val lang : _ string_attr
   val list : _ string_attr
+
+  val loading_lazy : attr
+  (** See {: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#loading}.
+      [loading=eager] is the default so no need for specifically that value.
+
+      @since 3.1.0. *)
+
   val loop : attr
   val low : float to_attr
   val max : _ string_attr
@@ -524,7 +539,10 @@ module HTML : sig
   val scope : _ string_attr
   val selected : attr
   val shape : _ string_attr
+
   val size : _ string_attr
+  (** Required for {: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select#size}. *)
+
   val sizes : _ string_attr
   val slot_ : _ string_attr
   val span_ : int to_attr
@@ -875,14 +893,20 @@ module Hx : sig
   val ws_send : attr
 end
 
-(** {2 mathml support} *)
+(** {2 MathML support}
+
+    @since 3.1.0. *)
 module MathML : sig
   val accent : bool to_attr
   val accentunder : bool to_attr
   val columnspan : int to_attr
   val depth : _ string_attr
   val dir : [`ltr | `rtl] to_attr
-  val display : [`block | `inline] to_attr
+
+  val display_block : attr
+  (** See {: https://developer.mozilla.org/en-US/docs/Web/MathML/Element/math#display}.
+      [display=inline] is the default, so there is no need to bind its value. *)
+
   val displaystyle : bool to_attr
   val fence : bool to_attr
   val height : _ string_attr
