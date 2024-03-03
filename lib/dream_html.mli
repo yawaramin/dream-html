@@ -744,6 +744,66 @@ module SVG : sig
   val svg : std_tag
 end
 
+(** @since 3.1.0. *)
+module MathML : sig
+  val accent : bool to_attr
+  val accentunder : bool to_attr
+  val columnspan : int to_attr
+  val depth : _ string_attr
+  val dir : [`ltr | `rtl] to_attr
+
+  val display_block : attr
+  (** See {: https://developer.mozilla.org/en-US/docs/Web/MathML/Element/math#display}.
+      [display=inline] is the default, so there is no need to bind its value. *)
+
+  val displaystyle : bool to_attr
+  val fence : bool to_attr
+  val height : _ string_attr
+  val largeop : bool to_attr
+  val linethickness : _ string_attr
+  val lspace : _ string_attr
+  val mathvariant : _ string_attr
+  val maxsize : _ string_attr
+  val minsize : _ string_attr
+  val movablelimits : bool to_attr
+  val rowspan : int to_attr
+  val rspace : _ string_attr
+  val scriptlevel : _ string_attr
+  val separator : bool to_attr
+  val stretchy : bool to_attr
+  val symmetric : bool to_attr
+  val voffset : _ string_attr
+  val xmlns : attr
+  val annotation : std_tag
+  val annotation_xml : std_tag
+  val math : std_tag
+  val merror : std_tag
+  val mfrac : std_tag
+  val mi : std_tag
+  val mmultiscripts : std_tag
+  val mn : std_tag
+  val mo : std_tag
+  val mover : std_tag
+  val mpadded : std_tag
+  val mphantom : std_tag
+  val mroot : std_tag
+  val mrow : std_tag
+  val ms : std_tag
+  val mspace : std_tag
+  val msqrt : std_tag
+  val mstyle : std_tag
+  val msub : std_tag
+  val msubsup : std_tag
+  val msup : std_tag
+  val mtable : std_tag
+  val mtd : std_tag
+  val mtext : std_tag
+  val mtr : std_tag
+  val munder : std_tag
+  val munderover : std_tag
+  val semantics : std_tag
+end
+
 (** {2 ARIA support} *)
 
 (** {: https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/}
@@ -891,68 +951,6 @@ module Hx : sig
   val vals : _ string_attr
   val ws_connect : _ string_attr
   val ws_send : attr
-end
-
-(** {2 MathML support}
-
-    @since 3.1.0. *)
-module MathML : sig
-  val accent : bool to_attr
-  val accentunder : bool to_attr
-  val columnspan : int to_attr
-  val depth : _ string_attr
-  val dir : [`ltr | `rtl] to_attr
-
-  val display_block : attr
-  (** See {: https://developer.mozilla.org/en-US/docs/Web/MathML/Element/math#display}.
-      [display=inline] is the default, so there is no need to bind its value. *)
-
-  val displaystyle : bool to_attr
-  val fence : bool to_attr
-  val height : _ string_attr
-  val largeop : bool to_attr
-  val linethickness : _ string_attr
-  val lspace : _ string_attr
-  val mathvariant : _ string_attr
-  val maxsize : _ string_attr
-  val minsize : _ string_attr
-  val movablelimits : bool to_attr
-  val rowspan : int to_attr
-  val rspace : _ string_attr
-  val scriptlevel : _ string_attr
-  val separator : bool to_attr
-  val stretchy : bool to_attr
-  val symmetric : bool to_attr
-  val voffset : _ string_attr
-  val xmlns : attr
-  val annotation : std_tag
-  val annotation_xml : std_tag
-  val math : std_tag
-  val merror : std_tag
-  val mfrac : std_tag
-  val mi : std_tag
-  val mmultiscripts : std_tag
-  val mn : std_tag
-  val mo : std_tag
-  val mover : std_tag
-  val mpadded : std_tag
-  val mphantom : std_tag
-  val mroot : std_tag
-  val mrow : std_tag
-  val ms : std_tag
-  val mspace : std_tag
-  val msqrt : std_tag
-  val mstyle : std_tag
-  val msub : std_tag
-  val msubsup : std_tag
-  val msup : std_tag
-  val mtable : std_tag
-  val mtd : std_tag
-  val mtext : std_tag
-  val mtr : std_tag
-  val munder : std_tag
-  val munderover : std_tag
-  val semantics : std_tag
 end
 
 (** {2 Interop example–Markdown to HTML}
