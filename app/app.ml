@@ -41,6 +41,7 @@ module Page = struct
   let toast_id = "toast"
   let toast msg = span [id "%s" toast_id; Aria.live `polite] [txt "%s" msg]
 
+  (* outlet should be a <main> element *)
   let render titl_str outlet =
     html
       [lang "en"]
@@ -83,14 +84,20 @@ body {
               [name "viewport"; content "width=device-width, initial-scale=1.0"]
           ];
         body []
-          [ outlet;
-            toast "";
-            script [src "%s" htmx] "";
-            script []
-              {|document.addEventListener('htmx:responseError', evt => {
+          [ header []
+              [ a
+                  [href "%s" path; style_ "text-decoration:none"]
+                  [hgroup [] [h1 [] [txt "todos"]; p [] [txt "get stuff done."]]]
+              ];
+            outlet;
+            footer []
+              [ toast "";
+                script [src "%s" htmx] "";
+                script []
+                  {|document.addEventListener('htmx:responseError', evt => {
   document.getElementById('%s').outerHTML = `<span id="%s" class="error">${evt.detail.xhr.responseText}</span>`;
 });|}
-              toast_id toast_id ] ]
+                  toast_id toast_id ] ] ]
 
   let get req = Dream.redirect req "/todos"
 end
@@ -118,28 +125,23 @@ module Todos = struct
   let todolist = "todos"
 
   let render todos trgt outlet =
-    null
-      [ header []
-          [ a
-              [href "%s" trgt; style_ "text-decoration:none"]
-              [hgroup [] [h1 [] [txt "todos"]; p [] [txt "get stuff done."]]] ];
-        main
-          [class_ "grid"]
-          [ div []
-              [ form
-                  [ method_ `POST;
-                    action "%s" trgt;
-                    Hx.post "%s" trgt;
-                    Hx.swap "afterbegin settle:5s";
-                    Hx.target "#%s" todolist ]
-                  [ label []
-                      [ txt "new:";
-                        fieldset
-                          [role `group]
-                          [ input [name "desc"; autofocus];
-                            input [type_ "submit"; value "add"] ] ] ];
-                div [id "%s" todolist] (List.map (render_one trgt) todos) ];
-            div [id "%s" todo] [outlet] ] ]
+    main
+      [class_ "grid"]
+      [ div []
+          [ form
+              [ method_ `POST;
+                action "%s" trgt;
+                Hx.post "%s" trgt;
+                Hx.swap "afterbegin settle:5s";
+                Hx.target "#%s" todolist ]
+              [ label []
+                  [ txt "new:";
+                    fieldset
+                      [role `group]
+                      [ input [name "desc"; autofocus];
+                        input [type_ "submit"; value "add"] ] ] ];
+            div [id "%s" todolist] (List.map (render_one trgt) todos) ];
+        div [id "%s" todo] [outlet] ]
 
   let get req =
     []
