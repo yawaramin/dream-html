@@ -247,8 +247,7 @@ module HTML : sig
   (** An attribute that will not be rendered in the markup. Useful for conditional
       logic where you sometimes want to render an attribute and sometimes not.
 
-      {[p[if should_show then null_ else style_ "display:none"][
-          txt "Show and tell"]]} *)
+      {[p [if should_show then null_ else style_ "display:none"] [txt "Show and tell"]]} *)
 
   val accept : _ string_attr
   val accept_charset : _ string_attr
