@@ -61,8 +61,10 @@ val send :
   ?end_of_message:[< Dream.end_of_message] ->
   Dream.websocket ->
   node ->
-  unit Lwt.t
-(** @since 3.2.0 *)
+  unit Dream.promise
+(** Type-safe wrapper for [Dream.send].
+
+    @since 3.2.0. *)
 
 val set_body : Dream.response -> node -> unit
 (** Type-safe wrapper for [Dream.set_body]. Sets the body to the given [node] and

@@ -76,10 +76,10 @@ let to_string node =
 let pp ppf node = node |> to_string |> Format.pp_print_string ppf
 
 let respond ?status ?code ?headers node =
-  Dream.html ?status ?code ?headers @@ to_string node
+  Dream.html ?status ?code ?headers (to_string node)
 
 let send ?text_or_binary ?end_of_message websocket node =
-  to_string node |> Dream.send ?text_or_binary ?end_of_message websocket
+  Dream.send ?text_or_binary ?end_of_message websocket (to_string node)
 
 let set_body resp node =
   Dream.set_body resp (to_string node);
