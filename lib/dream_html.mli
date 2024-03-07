@@ -56,6 +56,14 @@ val respond :
   node ->
   Dream.response Dream.promise
 
+val send :
+  ?text_or_binary:[< Dream.text_or_binary] ->
+  ?end_of_message:[< Dream.end_of_message] ->
+  Dream.websocket ->
+  node ->
+  unit Lwt.t
+(** @since 3.2.0 *)
+
 val set_body : Dream.response -> node -> unit
 (** Type-safe wrapper for [Dream.set_body]. Sets the body to the given [node] and
     sets the [Content-Type] header to [text/html]. *)
