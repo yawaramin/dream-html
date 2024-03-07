@@ -912,7 +912,9 @@ module Hx : sig
   (** The [hx-on:*] set of attributes, where [*] represents DOM events:
       {: https://htmx.org/attributes/hx-on/}.
 
-      Note that the value of this attribute is not escaped. *)
+      Note that the value of this attribute is not escaped.
+
+      @since 2.1.0. *)
 
   val params : _ string_attr
   val patch : _ string_attr
