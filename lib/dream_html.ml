@@ -136,7 +136,7 @@ let txt ?(raw = false) fmt =
   Printf.ksprintf (fun s -> Txt (txt_escape raw s)) fmt
 
 let csrf_tag req = req |> Dream.csrf_tag |> txt ~raw:true "%s"
-let comment str = Comment (Dream.html_escape str)
+let comment str = Comment (txt_escape false str)
 
 let ( +@ ) node attr =
   match node with
