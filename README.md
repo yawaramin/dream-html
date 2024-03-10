@@ -18,21 +18,21 @@ dream-html. If not, see <https://www.gnu.org/licenses/>.
 
 ## What
 
-An HTML library that is closely integrated with
+An HTML, SVG, and MathML library that is closely integrated with
 [Dream](https://aantron.github.io/dream). Most HTML elements and attributes from
-the
-[Mozilla Developer Network references](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference)
-are now implemented. I have deliberately left out almost all non-standard or
-deprecated tags/attributes. Also, supporting CSS is out of scope for this library.
-However, I have included the [htmx](https://htmx.org/) attributes as I am
-personally using them.
+the [Mozilla Developer Network
+references](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference) are
+included. Almost all non-standard or deprecated tags/attributes deliberately
+omitted. CSS support is out of scope. [htmx](https://htmx.org/) attributes
+supported out of the box.
 
 ## Why
 
 - TyXML is a bit too complex.
 - Dream's built-in eml (Embedded ML) has some drawbacks like no editor support,
-  quirky syntax that can be hard to debug, and manual dune rule setup for each
-  view file. Also in general string-based HTML templating is
+  quirky syntax that can be hard to debug and refactor, and manual dune rule
+  setup for each view file
+- In general string-based HTML templating is
   [suboptimal](https://www.devever.net/~hl/stringtemplates).
 
 ## First look
@@ -178,3 +178,16 @@ Surface design obviously lifted straight from
 
 Implementation inspired by both elm-html and
 [Scalatags](https://com-lihaoyi.github.io/scalatags/).
+
+Many languages and libraries have similar HTML embedded DSLs:
+
+- [Phlex](https://www.phlex.fun/) - Ruby
+- [hiccl](https://github.com/garlic0x1/hiccl) - Common Lisp
+- [scribble-html-lib](https://docs.racket-lang.org/scribble-pp/html-html.html) -
+  Racket
+- [hiccup](https://github.com/weavejester/hiccup) - Clojure
+- [std/htmlgen](https://nim-lang.org/docs/htmlgen.html) - Nim
+- [Falco.Markup](https://github.com/pimbrouwers/Falco.Markup) - F#
+- [`html_dsl`](https://github.com/duyixian1234/html_dsl) - Python
+- [Arbre](https://activeadmin.github.io/arbre/) - Ruby
+
