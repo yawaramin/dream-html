@@ -112,14 +112,19 @@ val string_attr : string -> ?raw:bool -> _ string_attr
       {: https://github.com/aantron/dream/tree/master/example/7-template#security}. *)
 
 val uri_attr : string -> _ string_attr
-(** Convenience for attributes whose values should be URIs. Takes care of URI-
-    encoding.
+(** Convenience for attributes whose values should be URIs. Takes care of both
+    URI-encoding and attribute escaping, as recommended in
+    {: https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#common-mistake}.
 
-    {[a [href "/blog?tags=iamsafe\"></a><script>alert('Pwned')</script>"] [txt "Tags: tag1 | tag2"]]}
+    Examples
 
-    Output:
+    {[a [href "/blog?tags=iamsafe\"></a><script>alert('Pwned')</script>"] [txt "Tags: tag1 | tag2"]
+      ==>
+      <a href="/blog?tags=iamsafe%22%3E%3C/a%3E%3Cscript%3Ealert('Pwned')%3C/script%3E">Tags: tag1 | tag2</a>
 
-    {[<a href="/blog?tags=iamsafe%22%3E%3C/a%3E%3Cscript%3Ealert('Pwned')%3C/script%3E">Tags: tag1 | tag2</a>]} *)
+      a [href "/foo?a=1&b=2 3&c=4<5&d=6>5"] [txt "Test"]
+      ==>
+      <a href="/foo?a=1&amp;b=2%203&amp;c=4%3C5&amp;d=6%3E5">Test</a>]} *)
 
 val bool_attr : string -> bool to_attr
 val float_attr : string -> float to_attr
@@ -963,4 +968,3 @@ module Hx : sig
   val ws_connect : _ string_attr
   val ws_send : attr
 end
-

@@ -102,6 +102,7 @@ let txt_escape raw s =
     Buffer.contents buffer
 
 let attr_escape buffer = function
+  | '&' -> Buffer.add_string buffer "&amp;"
   | '"' -> Buffer.add_string buffer "&quot;"
   | c -> Buffer.add_char buffer c
 
@@ -119,7 +120,9 @@ let string_attr name ?(raw = false) fmt =
   Printf.ksprintf (fun s -> name, attr_escape raw s) fmt
 
 let uri_attr name fmt =
-  Printf.ksprintf (fun s -> name, s |> Uri.of_string |> Uri.to_string) fmt
+  Printf.ksprintf
+    (fun s -> name, s |> Uri.of_string |> Uri.to_string |> attr_escape false)
+    fmt
 
 let bool_attr name value = name, string_of_bool value
 let float_attr name value = name, Printf.sprintf "%f" value
