@@ -89,6 +89,12 @@ opam update
 opam install dream-html
 ```
 
+Alternatively, to install the latest commit that may not have been released yet:
+
+```
+opam pin add dream-html git+https://github.com/yawaramin/dream-html
+```
+
 ## Usage
 
 A convenience is provided to respond with an HTML node from a handler:
