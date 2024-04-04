@@ -47,18 +47,18 @@ let write_attr p = function
     p {|"|}
 
 (* Loosely based on https://www.w3.org/TR/DOM-Parsing/ *)
-let rec write_tag p = function
+let rec write_tag ~xml p = function
   | Tag { name = ""; children = Some children; _ } ->
-    List.iter (write_tag p) children
+    List.iter (write_tag ~xml p) children
   | Tag { name; attrs; children = None } ->
     p "<";
     p name;
     List.iter (write_attr p) attrs;
-    p ">"
+    p (if xml then " />" else ">")
   | Tag ({ name; children = Some children; _ } as non_void) ->
     if name = "html" then p "<!DOCTYPE html>\n";
-    write_tag p (Tag { non_void with children = None });
-    List.iter (write_tag p) children;
+    write_tag ~xml p (Tag { non_void with children = None });
+    List.iter (write_tag ~xml p) children;
     p "</";
     p name;
     p ">"
@@ -68,12 +68,15 @@ let rec write_tag p = function
     p str;
     p " -->"
 
-let to_string node =
+let to_string ~xml node =
   let buf = Buffer.create 256 in
-  write_tag (Buffer.add_string buf) node;
+  write_tag ~xml (Buffer.add_string buf) node;
   Buffer.contents buf
 
-let pp ppf node = node |> to_string |> Format.pp_print_string ppf
+let pp ppf node = node |> to_string ~xml:false |> Format.pp_print_string ppf
+let to_xml = to_string ~xml:true
+let to_string = to_string ~xml:false
+let pp_xml ppf node = node |> to_xml |> Format.pp_print_string ppf
 
 let respond ?status ?code ?headers node =
   Dream.html ?status ?code ?headers (to_string node)

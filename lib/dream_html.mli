@@ -47,7 +47,18 @@ type node
 (** {2 Output} *)
 
 val to_string : node -> string
+
+val to_xml : node -> string
+(** Same as [to_string] but render void tags as XML-style self-closing tags.
+
+    @since 3.3.0. *)
+
 val pp : Format.formatter -> node -> unit
+
+val pp_xml : Format.formatter -> node -> unit
+(** Same as [pp] but render void tags as XML-style self-closing tags.
+
+    @since 3.3.0. *)
 
 val respond :
   ?status:[< Dream.status] ->
