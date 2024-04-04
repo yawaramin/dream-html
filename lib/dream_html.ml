@@ -37,10 +37,10 @@ type 'a text_tag = attr list -> ('a, unit, string, node) format4 -> 'a
 let write_attr p = function
   | "", _ -> ()
   | name, "" ->
-    p " ";
+    p "\n";
     p name
   | name, value ->
-    p " ";
+    p "\n";
     p name;
     p {|="|};
     p value;
@@ -61,12 +61,12 @@ let rec write_tag p = function
     List.iter (write_tag p) children;
     p "</";
     p name;
-    p ">\n"
+    p ">"
   | Txt str -> p str
   | Comment str ->
     p "<!-- ";
     p str;
-    p " -->\n"
+    p " -->"
 
 let to_string node =
   let buf = Buffer.create 256 in
