@@ -324,5 +324,5 @@ let mathml_node =
 
 let () =
   html_node |> to_string |> print_endline;
-  svg_node |> to_string |> print_endline;
-  mathml_node |> to_string |> print_endline
+  svg_node |> to_xml |> print_endline;
+  mathml_node |> to_xml |> print_endline

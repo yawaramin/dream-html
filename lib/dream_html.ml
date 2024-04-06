@@ -50,14 +50,22 @@ let write_attr p = function
 let rec write_tag ~xml p = function
   | Tag { name = ""; children = Some children; _ } ->
     List.iter (write_tag ~xml p) children
+  | Tag { name; attrs; children = Some [] } when xml ->
+    p "<";
+    p name;
+    List.iter (write_attr p) attrs;
+    p " />"
   | Tag { name; attrs; children = None } ->
     p "<";
     p name;
     List.iter (write_attr p) attrs;
     p (if xml then " />" else ">")
-  | Tag ({ name; children = Some children; _ } as non_void) ->
+  | Tag { name; attrs; children = Some children } ->
     if name = "html" then p "<!DOCTYPE html>\n";
-    write_tag ~xml p (Tag { non_void with children = None });
+    p "<";
+    p name;
+    List.iter (write_attr p) attrs;
+    p ">";
     List.iter (write_tag ~xml p) children;
     p "</";
     p name;
