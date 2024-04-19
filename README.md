@@ -33,7 +33,8 @@ supported out of the box.
   quirky syntax that can be hard to debug and refactor, and manual dune rule
   setup for each view file
 - In general string-based HTML templating is
-  [suboptimal](https://www.devever.net/~hl/stringtemplates).
+  [suboptimal](https://www.devever.net/~hl/stringtemplates) and mostly driven by
+  [familiarity](https://github.com/tavisrudd/throw_out_your_templates).
 
 ## First look
 
@@ -194,6 +195,6 @@ Many languages and libraries have similar HTML embedded DSLs:
 - [hiccup](https://github.com/weavejester/hiccup) - Clojure
 - [std/htmlgen](https://nim-lang.org/docs/htmlgen.html) - Nim
 - [Falco.Markup](https://github.com/pimbrouwers/Falco.Markup) - F#
-- [`html_dsl`](https://github.com/duyixian1234/html_dsl) - Python
+- [htpy](https://htpy.dev/) - Python
 - [Arbre](https://activeadmin.github.io/arbre/) - Ruby
 
