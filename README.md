@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="https://yawaramin.github.io/dream-html/dream-html/Dream_html/">API Reference</a>
+</p>
+
 ## dream-html - generate HTML markup from your Dream backend server
 
 Copyright 2023 Yawar Amin
@@ -135,18 +139,6 @@ You can also embed HTML comments in the generated document:
 
 ```ocaml
 div [] [comment "TODO: xyz."; p [] [txt "Hello!"]]
-```
-
-## Explore in the REPL
-
-```
-$ utop
-utop # #require "dream-html";;
-utop # open Dream_html;;
-utop # open HTML;;
-utop # #install_printer pp;;
-utop # p [class_ "hello"] [txt "world"];;
-- : node = <p class="hello">world</p>
 ```
 
 ## Import HTML

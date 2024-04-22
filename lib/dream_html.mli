@@ -25,14 +25,22 @@
     {[let hello who =
         let open Dream_html in
         let open HTML in
-        html [] [body [] [h1 [] [txt "Hello, %s!" who]]]
+        html [] [
+          body [] [
+            h1 [] [txt "Hello, %s!" who];
+          ];
+        ]
 
       let () =
         Dream.run
         @@ Dream.logger
         @@ Dream.router [Dream.get "/" (fun _ -> Dream_html.respond (hello "world"))]]}
 
-    More examples shown below. *)
+    More examples shown below.
+
+    Note that the version of this library installed on your device may have
+    outdated documentation strings. To view the latest documentation, please
+    visit {{: https://github.com/yawaramin/dream-html} the repository page}. *)
 
 (** {2 Core types}
 
@@ -161,8 +169,7 @@ val txt : ?raw:bool -> ('a, unit, string, node) format4 -> 'a
 
     {[b [] [txt "Bold of you."]]}
 
-    HTML-escapes the text value using [Dream.html_escape]. You can use the [~raw]
-    param to bypass escaping:
+    HTML-escapes the text value. You can use the [~raw] param to bypass escaping:
 
     {[let user_input = "<script>alert('I like HTML injection')</script>" in
       txt ~raw:true "%s" user_input]} *)
