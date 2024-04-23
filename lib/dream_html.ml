@@ -947,3 +947,60 @@ module MathML = struct
   let munderover = std_tag "munderover"
   let semantics = std_tag "semantics"
 end
+
+module Livereload = struct
+  let enabled =
+    match Sys.getenv "ENV" with
+    | "dev" -> true
+    | _ | (exception _) -> false
+
+  let endpoint = "/_livereload"
+
+  let script =
+    HTML.script []
+      {|
+(() => {
+  const retryIntervalMs = 500;
+  const socketUrl = `ws://${location.host}%s`;
+  const s = new WebSocket(socketUrl);
+
+  s.onopen = _evt => {
+    console.debug("Live reload: WebSocket connection open");
+  };
+
+  s.onclose = _evt => {
+    console.debug("Live reload: WebSocket connection closed");
+
+    function reload() {
+      const s2 = new WebSocket(socketUrl);
+
+      s2.onerror = _evt => {
+        setTimeout(reload, retryIntervalMs);
+      };
+
+      s2.onopen = _evt => {
+        location.reload();
+      };
+    };
+
+    reload();
+  };
+
+  s.onerror = evt => {
+    console.debug("Live reload: WebSocket error:", evt);
+  };
+})()
+  |}
+      endpoint
+
+  let head attrs children =
+    HTML.head attrs ((if enabled then script else HTML.null []) :: children)
+
+  open Lwt.Syntax
+
+  let route =
+    Dream.any endpoint (fun _ ->
+        Dream.websocket (fun sock ->
+            let* _ = Dream.receive sock in
+            Dream.close_websocket sock))
+end

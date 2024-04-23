@@ -986,3 +986,53 @@ module Hx : sig
   val ws_connect : _ string_attr
   val ws_send : attr
 end
+
+(** {2 Live reload support}*)
+
+(** Live reload script injection and handling. Adapted from [Dream.livereload]
+    middleware. This version is not a middleware so it's not as plug-and-play as
+    that, but on the other hand it's much simpler to implement because it uses
+    type-safe dream-html nodes rather than parsing and printing raw HTML. See
+    below for the 3-step process to use it.
+
+    This module is adapted from Dream, released under the MIT license. For
+    details, visit {{: https://github.com/aantron/dream}}.
+
+    Copyright 2021-2023 Thibaut Mattio, Anton Bachin.
+
+    @since 3.4.0. *)
+module Livereload : sig
+  val route : Dream.route
+  (** (1) Put this in your top-level router:
+
+      {[let () = Dream.run
+        @@ Dream.logger
+        @@ Dream.router [
+          Dream_html.Livereload.route;
+          (* ...other routes... *)
+      ]]} *)
+
+  val head : std_tag
+  (** (2) Use this instead of the default [HTML.head]:
+
+      {[html [
+        Livereload.head [] [
+          title [] "Dream-html livereload example";
+        ];
+        body [] [
+          (* ... *)
+        ];
+      ]]}
+
+      (3) And run the server with environment variable [ENV=dev]. If this env var
+      is not set, then livereload is turned off. *)
+
+  val script : node
+  (** If you are using your own custom head implementation and just need the live
+      reload script, use:
+
+      {[custom_head [] [
+        Livereload.script;
+        (* ... *)
+      ]]} *)
+end
