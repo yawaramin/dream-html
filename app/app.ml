@@ -45,7 +45,7 @@ module Page = struct
   let render titl_str outlet =
     html
       [lang "en"]
-      [ head []
+      [ Livereload.head []
           [ titl titl_str;
             link
               [ rel "stylesheet";
@@ -87,8 +87,8 @@ body {
           [ header []
               [ a
                   [href "%s" path; style_ "text-decoration:none"]
-                  [hgroup [] [h1 [] [txt "todos"]; p [] [txt "get stuff done."]]]
-              ];
+                  [ hgroup []
+                      [h1 [] [txt "todos"]; p [] [txt "get stuff done ✔"]] ] ];
             outlet;
             footer []
               [ toast "";
@@ -264,7 +264,8 @@ let () =
   @@ logger
   @@ dreamcatcher
   @@ router
-       [ get Page.path Page.get;
+       [ Dream_html.Livereload.route;
+         get Page.path Page.get;
          get (Page.path / Todos.path) Todos.get;
          post (Page.path / Todos.path) Todos.post;
          get (Page.path / Todos.path / Todo.path) Todo.get;
