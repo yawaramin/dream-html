@@ -996,14 +996,13 @@ module Livereload = struct
   let head attrs children =
     HTML.head attrs ((if enabled then script else HTML.null []) :: children)
 
-  open Lwt.Syntax
-
   let route =
     Dream.get endpoint (fun req ->
         if enabled then
           Dream.websocket (fun sock ->
-              let* _ = Dream.receive sock in
-              Dream.close_websocket sock)
+              Lwt.Syntax.(
+                let* _ = Dream.receive sock in
+                Dream.close_websocket sock))
         else
           Dream.not_found req)
 end
