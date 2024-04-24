@@ -1012,27 +1012,18 @@ module Livereload : sig
           (* ...other routes... *)
       ]]} *)
 
-  val head : std_tag
-  (** (2) Use this instead of the default [HTML.head]:
-
-      {[html [
-        Livereload.head [] [
-          title [] "Dream-html livereload example";
-        ];
-        body [] [
-          (* ... *)
-        ];
-      ]]}
-
-      (3) And run the server with environment variable [ENV=dev]. {b ⚠️ If this
-      env var is not set, then livereload is turned off.} *)
-
   val script : node
-  (** If you are using your own custom head implementation and just need the live
-      reload script, use:
+  (** (2) Put this inside your [head]:
 
-      {[custom_head [] [
+      {[head [] [
         Livereload.script;
         (* ... *)
       ]]} *)
+
+  (**
+      (3) And run the server with environment variable [ENV=dev].
+
+      {b ⚠️ If this env var is not set, then livereload is turned off.} This means
+      that the [route] will respond with [404] status and the script will be
+      omitted from the rendered HTML. *)
 end

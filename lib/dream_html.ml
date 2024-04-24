@@ -957,8 +957,9 @@ module Livereload = struct
   let endpoint = "/_livereload"
 
   let script =
-    HTML.script []
-      {|
+    if enabled then
+      HTML.script []
+        {|
 (() => {
   const retryIntervalMs = 500;
   const socketUrl = `ws://${location.host}%s`;
@@ -991,10 +992,9 @@ module Livereload = struct
   };
 })()
   |}
-      endpoint
-
-  let head attrs children =
-    HTML.head attrs ((if enabled then script else HTML.null []) :: children)
+        endpoint
+    else
+      HTML.null []
 
   let route =
     Dream.get endpoint (fun req ->
