@@ -1024,8 +1024,8 @@ module Livereload : sig
         ];
       ]]}
 
-      (3) And run the server with environment variable [ENV=dev]. If this env var
-      is not set, then livereload is turned off. *)
+      (3) And run the server with environment variable [ENV=dev]. {b ⚠️ If this
+      env var is not set, then livereload is turned off.} *)
 
   val script : node
   (** If you are using your own custom head implementation and just need the live

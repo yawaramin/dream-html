@@ -999,8 +999,11 @@ module Livereload = struct
   open Lwt.Syntax
 
   let route =
-    Dream.any endpoint (fun _ ->
-        Dream.websocket (fun sock ->
-            let* _ = Dream.receive sock in
-            Dream.close_websocket sock))
+    Dream.get endpoint (fun req ->
+        if enabled then
+          Dream.websocket (fun sock ->
+              let* _ = Dream.receive sock in
+              Dream.close_websocket sock)
+        else
+          Dream.not_found req)
 end
