@@ -11,7 +11,7 @@
   body [] [
     (* ... *)
   ];
-]</code></pre><p>(3) And run the server with environment variable <code>ENV=dev</code>. If this env var is not set, then livereload is turned off.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-script"><a href="#val-script" class="anchor"></a><code><span><span class="keyword">val</span> script : <a href="../index.html#type-node">node</a></span></code></div><div class="spec-doc"><p>If you are using your own custom head implementation and just need the live reload script, use:</p><pre class="language-ocaml"><code>custom_head [] [
+]</code></pre><p>(3) And run the server with environment variable <code>ENV=dev</code>. <b>⚠️ If this env var is not set, then livereload is turned off.</b></p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-script"><a href="#val-script" class="anchor"></a><code><span><span class="keyword">val</span> script : <a href="../index.html#type-node">node</a></span></code></div><div class="spec-doc"><p>If you are using your own custom head implementation and just need the live reload script, use:</p><pre class="language-ocaml"><code>custom_head [] [
   Livereload.script;
   (* ... *)
 ]</code></pre></div></div></div></body></html>
