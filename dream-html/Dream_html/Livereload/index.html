@@ -4,14 +4,7 @@
   @@ Dream.router [
     Dream_html.Livereload.route;
     (* ...other routes... *)
-]</code></pre></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-head"><a href="#val-head" class="anchor"></a><code><span><span class="keyword">val</span> head : <a href="../index.html#type-std_tag">std_tag</a></span></code></div><div class="spec-doc"><p>(2) Use this instead of the default <code>HTML.head</code>:</p><pre class="language-ocaml"><code>html [
-  Livereload.head [] [
-    title [] &quot;Dream-html livereload example&quot;;
-  ];
-  body [] [
-    (* ... *)
-  ];
-]</code></pre><p>(3) And run the server with environment variable <code>ENV=dev</code>. <b>⚠️ If this env var is not set, then livereload is turned off.</b></p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-script"><a href="#val-script" class="anchor"></a><code><span><span class="keyword">val</span> script : <a href="../index.html#type-node">node</a></span></code></div><div class="spec-doc"><p>If you are using your own custom head implementation and just need the live reload script, use:</p><pre class="language-ocaml"><code>custom_head [] [
+]</code></pre></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-script"><a href="#val-script" class="anchor"></a><code><span><span class="keyword">val</span> script : <a href="../index.html#type-node">node</a></span></code></div><div class="spec-doc"><p>(2) Put this inside your <code>head</code>:</p><pre class="language-ocaml"><code>head [] [
   Livereload.script;
   (* ... *)
-]</code></pre></div></div></div></body></html>
+]</code></pre></div></div><p>(3) And run the server with environment variable <code>ENV=dev</code>.</p><p><b>⚠️ If this env var is not set, then livereload is turned off.</b> This means that the <code>route</code> will respond with <code>404</code> status and the script will be omitted from the rendered HTML.</p></div></body></html>
