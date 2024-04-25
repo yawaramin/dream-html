@@ -45,8 +45,9 @@ module Page = struct
   let render titl_str outlet =
     html
       [lang "en"]
-      [ Livereload.head []
-          [ titl titl_str;
+      [ head []
+          [ Livereload.script;
+            titl titl_str;
             link
               [ rel "stylesheet";
                 href
@@ -87,8 +88,8 @@ body {
           [ header []
               [ a
                   [href "%s" path; style_ "text-decoration:none"]
-                  [ hgroup []
-                      [h1 [] [txt "todos"]; p [] [txt "get stuff done ✔"]] ] ];
+                  [hgroup [] [h1 [] [txt "todos"]; p [] [txt "get stuff done"]]]
+              ];
             outlet;
             footer []
               [ toast "";
