@@ -141,6 +141,9 @@ You can also embed HTML comments in the generated document:
 div [] [comment "TODO: xyz."; p [] [txt "Hello!"]]
 ```
 
+You can also conveniently hot-reload the webapp in the browser using the
+`Dream_html.Livereload` module. See the API reference for details.
+
 ## Import HTML
 
 One issue that you may come across is that the syntax of HTML is different from
