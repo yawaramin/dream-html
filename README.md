@@ -22,7 +22,7 @@ dream-html. If not, see <https://www.gnu.org/licenses/>.
 
 ## What
 
-An HTML, SVG, and MathML library that is closely integrated with
+An HTML, SVG, and MathML rendering library that is closely integrated with
 [Dream](https://aantron.github.io/dream). Most HTML elements and attributes from
 the [Mozilla Developer Network
 references](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference) are
@@ -115,8 +115,8 @@ DOM node, like [React fragments](https://react.dev/reference/react/Fragment):
 let view = null [p [] [txt "Hello"]; p [] [txt "World"]]
 ```
 
-You can do string interpolation of text nodes using `txt` and of any
-attribute which takes a string value:
+You can do string interpolation of text nodes using `txt` and any attribute which
+takes a string value:
 
 ```ocaml
 let greet name = p [id "greet-%s" name] [txt "Hello, %s!" name]
@@ -139,6 +139,16 @@ You can also embed HTML comments in the generated document:
 
 ```ocaml
 div [] [comment "TODO: xyz."; p [] [txt "Hello!"]]
+(* <div><!-- TODO: xyz. -->Hello!</div> *)
+```
+
+You have precise control over whitespace in the rendered HTML; dream-html does
+not insert any whitespace by itself–all whitespace must be inserted inside text
+nodes explicitly:
+
+```ocaml
+p [] [txt "hello, "; txt "world!"];;
+(* <p>hello, world!</p> *)
 ```
 
 You can also conveniently hot-reload the webapp in the browser using the
@@ -179,7 +189,7 @@ Surface design obviously lifted straight from
 [elm-html](https://package.elm-lang.org/packages/elm/html/latest/).
 
 Implementation inspired by both elm-html and
-[Scalatags](https://com-lihaoyi.github.io/scalatags/).
+[ScalaTags](https://com-lihaoyi.github.io/scalatags/).
 
 Many languages and libraries have similar HTML embedded DSLs:
 
@@ -192,4 +202,6 @@ Many languages and libraries have similar HTML embedded DSLs:
 - [Falco.Markup](https://github.com/pimbrouwers/Falco.Markup) - F#
 - [htpy](https://htpy.dev/) - Python
 - [Arbre](https://activeadmin.github.io/arbre/) - Ruby
+- [j2html](https://j2html.com/) - Java
+- [Lucid](https://github.com/chrisdone/lucid) - Haskell
 
