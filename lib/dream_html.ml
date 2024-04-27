@@ -1000,9 +1000,8 @@ module Livereload = struct
     Dream.get endpoint (fun req ->
         if enabled then
           Dream.websocket (fun sock ->
-              Lwt.Syntax.(
-                let* _ = Dream.receive sock in
-                Dream.close_websocket sock))
+              Lwt.bind (Dream.receive sock) (fun _ ->
+                  Dream.close_websocket sock))
         else
           Dream.not_found req)
 end
