@@ -1020,7 +1020,7 @@ module Livereload : sig
         (* ... *)
       ]]} *)
 
-  (** (3) And run the server with environment variable [ENV=dev].
+  (** (3) And run the server with environment variable [LIVERELOAD=1].
 
       {b ⚠️ If this env var is not set, then livereload is turned off.} This means
       that the [route] will respond with [404] status and the script will be

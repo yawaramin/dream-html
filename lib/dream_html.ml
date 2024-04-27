@@ -950,8 +950,8 @@ end
 
 module Livereload = struct
   let enabled =
-    match Sys.getenv "ENV" with
-    | "dev" -> true
+    match Sys.getenv "LIVERELOAD" with
+    | "1" -> true
     | _ | (exception _) -> false
 
   let endpoint = "/_livereload"
