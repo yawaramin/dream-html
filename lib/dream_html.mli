@@ -256,9 +256,10 @@ module HTML : sig
     However, boolean attributes which may be inherited and toggled on/off in
     children, are constructed by passing in a value:
 
-    {[div
-        [contenteditable true]
-        [p [] [txt "Edit me!"]; p [contenteditable false] [txt "Can't edit me!"]]]}
+    {[div [contenteditable true] [
+        p [] [txt "Edit me!"];
+        p [contenteditable false] [txt "Can't edit me!"];
+      ]]}
 
     Enumerated attributes accept specific values:
 
@@ -596,7 +597,7 @@ module HTML : sig
 
   val type_ : _ string_attr
   (** Note: this can't be restricted to just the allowed values for [<input type>],
-      because it's used on other elements e.g. [<link type>]. *)
+      because it's used in other elements e.g. [<link type>]. *)
 
   val usemap : _ string_attr
   val value : _ string_attr
@@ -615,7 +616,7 @@ module HTML : sig
       {[input [required; type_ "email"; name "email-addr"]]}
 
       Finally, a few (text elements) are constructed with a list of attributes
-      and a single text child:
+      and a single format string child:
 
       {[title [] "Document title"
 
@@ -629,12 +630,14 @@ module HTML : sig
       of child nodes inside a single node without having to litter the DOM with an
       actual node. Also may be called 'splicing'.
 
-      {[null
-          [ p [] [txt "This paragraph."];
-            p [] [txt "And this paragraph."];
-            p []
-              [txt "Are spliced directly into the document without a containing node."]
-          ]]} *)
+      {[null [
+          p [] [txt "This paragraph."];
+          p [] [txt "And this paragraph."];
+          p [] [txt "Are spliced directly into the document without a containing node."];
+        ]]}
+
+      Also useful for constructing a completely empty node that is erased when
+      printing: {[null []]} *)
 
   val a : std_tag
   val address : std_tag
@@ -686,7 +689,7 @@ module HTML : sig
   val hr : void_tag
 
   val html : std_tag
-  (** A <!DOCTYPE html> declaration is automatically prefixed when this tag is
+  (** A [<!DOCTYPE html>] declaration is automatically prefixed when this tag is
       printed. *)
 
   val i : std_tag
