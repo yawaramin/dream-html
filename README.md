@@ -194,6 +194,7 @@ Implementation inspired by both elm-html and
 Many languages and libraries have similar HTML embedded DSLs:
 
 - [Phlex](https://www.phlex.fun/) - Ruby
+- [Arbre](https://activeadmin.github.io/arbre/) - Ruby
 - [hiccl](https://github.com/garlic0x1/hiccl) - Common Lisp
 - [scribble-html-lib](https://docs.racket-lang.org/scribble-pp/html-html.html) -
   Racket
@@ -201,7 +202,7 @@ Many languages and libraries have similar HTML embedded DSLs:
 - [std/htmlgen](https://nim-lang.org/docs/htmlgen.html) - Nim
 - [Falco.Markup](https://github.com/pimbrouwers/Falco.Markup) - F#
 - [htpy](https://htpy.dev/) - Python
-- [Arbre](https://activeadmin.github.io/arbre/) - Ruby
+- [HTML::Tiny](https://metacpan.org/pod/HTML::Tiny) - Perl
 - [j2html](https://j2html.com/) - Java
 - [Lucid](https://github.com/chrisdone/lucid) - Haskell
 
