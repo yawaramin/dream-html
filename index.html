@@ -2,11 +2,30 @@
 <html lang="en">
 
 <head>
-  <title>dream-html</title>
+  <title>dream-html - Render HTML, SVG, MathML, htmx markup from your OCaml Dream backend server</title>
   <meta charset="utf-8">
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/ocaml.min.js"></script>
   <script async src="https://buttons.github.io/buttons.js"></script>
+
+  <script>
+    const dreamHtmlSnippet = (() => {
+      let txt = '';
+
+      return {
+        get() {
+          return txt;
+        },
+        set(newTxt) {
+          txt = newTxt;
+        },
+      };
+    })();
+  </script>
 </head>
 
 <body class="container">
@@ -30,10 +49,10 @@
       <div class="grid">
         <script>
           const cp = async () => {
-            await navigator.clipboard.writeText(document.getElementById('dream-html-snippet').innerHTML);
+            await navigator.clipboard.writeText(dreamHtmlSnippet.get());
           };
         </script>
-        <div>
+        <div class="overflow-auto">
           <p>Renders OCaml: <button onclick="cp()" class="secondary" style="padding: 0 4px 0 4px">Copy</button></p>
           <pre><code class="language-ocaml">open Dream_html
 open HTML</code></pre>
@@ -175,6 +194,7 @@ open HTML</code></pre>
               };
 
               document.getElementById('html-snippet').addEventListener('input', evt => {
+                let inHead = false;
                 let res = '';
 
                 const writeTag = t => {
@@ -185,14 +205,25 @@ open HTML</code></pre>
                       break;
 
                     case Node.TEXT_NODE:
+                      if (inHead) {
+                        res += 'comment "**"';
+                        break;
+                      }
+
                       res += 'txt ';
                       res += stringify(t.data);
                       break;
 
                     case Node.ELEMENT_NODE:
                       const name = t.tagName.toLowerCase();
-                      res += name;
 
+                      if (name == 'head') {
+                        inHead = true;
+                      } else if (name == 'body') {
+                        inHead = false;
+                      }
+
+                      res += name;
                       res += ' [';
                       for (const a of t.attributes) {
                         res += attr(a.name);
@@ -223,14 +254,23 @@ open HTML</code></pre>
                 };
 
                 writeTag(parser.parseFromString(evt.target.value, 'text/html').getElementsByTagName('html')[0]);
-                document.getElementById('dream-html-snippet').innerText = res;
+                dreamHtmlSnippet.set(res);
+
+                const { value: markup } = hljs.highlight(res, { language: 'ocaml' });
+                document.getElementById('dream-html-snippet').innerHTML = markup;
               })
             })()
           </script>
         </div>
       </div>
     </section>
+    <section>
+      <h2>Install & use</h2>
+
+      <p>See the <a href="https://github.com/yawaramin/dream-html">readme</a>.</p>
+    </section>
   </main>
+  <script>hljs.highlightAll();</script>
 </body>
 
 </html>
