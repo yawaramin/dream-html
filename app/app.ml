@@ -31,6 +31,7 @@ let dreamcatcher next req =
 
 module Page = struct
   let htmx = "https://unpkg.com/htmx.org@2.0.0-alpha2/dist/htmx.min.js"
+  let preld = "https://unpkg.com/htmx.org@1.9.12/dist/ext/preload.js"
   let path = "/"
 
   open Dream_html
@@ -84,7 +85,8 @@ body {
             meta
               [name "viewport"; content "width=device-width, initial-scale=1.0"]
           ];
-        body []
+        body
+          [Hx.ext "preload"]
           [ header []
               [ a
                   [href "%s" path; style_ "text-decoration:none"]
@@ -94,6 +96,7 @@ body {
             footer []
               [ toast "";
                 script [src "%s" htmx] "";
+                script [src "%s" preld] "";
                 script []
                   {|document.addEventListener('htmx:responseError', evt => {
   document.getElementById('%s').outerHTML = `<span id="%s" class="error">${evt.detail.xhr.responseText}</span>`;
@@ -118,6 +121,7 @@ module Todos = struct
       [ id "todos-%d" idval;
         style_ "text-decoration:none";
         href "%s" trgt;
+        Hx.preload;
         Hx.get "%s" trgt;
         Hx.target "#%s" todo;
         Hx.push_url "true" ]
