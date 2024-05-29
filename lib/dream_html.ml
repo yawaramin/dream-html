@@ -997,11 +997,11 @@ module Livereload = struct
       HTML.null []
 
   let route =
-    Dream.get endpoint (fun req ->
+    Dream.get endpoint (fun _ ->
         if enabled then
           Dream.websocket (fun sock ->
               Lwt.bind (Dream.receive sock) (fun _ ->
                   Dream.close_websocket sock))
         else
-          Dream.not_found req)
+          Dream.empty `Not_Found)
 end
