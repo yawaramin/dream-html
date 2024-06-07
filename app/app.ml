@@ -55,13 +55,13 @@ module Page = struct
                   "https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
               ];
             style []
-              {|#%s {
+              {|
+#%s {
   display:none;
   position:fixed;
   bottom:1rem;
   right:1rem;
-  transition:display;
-  duration:5s;
+  transition:display 5s ease-in-out;
   padding:1rem;
   border-radius:var(--pico-border-radius);
 }
@@ -69,6 +69,19 @@ module Page = struct
 #%s.htmx-added {
   display:block;
   background-color:#E9F2FC;
+}
+
+.htmx-added * {
+  animation:yellowfade 5s !important;
+}
+
+@keyframes yellowfade {
+  from {
+    background:#FDF1B4;
+  }
+  to {
+    background:transparent;
+  }
 }
 
 #%s.error {
