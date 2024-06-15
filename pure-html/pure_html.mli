@@ -15,8 +15,10 @@
    You should have received a copy of the GNU General Public License along with
    dream-html. If not, see <https://www.gnu.org/licenses/>. *)
 
-(** Constructing HTML. Detailed explanation in
-    {: https://github.com/yawaramin/dream-html}. *)
+(** Use this module for constructing HTML without any dependency on the Dream
+    web framework.
+
+    @since 3.5.0. *)
 
 (** {2 Core types}
 
