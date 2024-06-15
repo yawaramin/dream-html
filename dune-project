@@ -2,7 +2,7 @@
 
 (name dream-html)
 
-(version v3.5.0)
+(version v3.5.1)
 
 (generate_opam_files true)
 
@@ -21,7 +21,12 @@
  (description
   "Write HTML directly in your OCaml source files with editor support.")
  (documentation "https://yawaramin.github.io/dream-html/")
- (tags (org:yawaramin)))
+ (tags (org:yawaramin))
+ (depends
+  (uri
+   (and
+    (>= 4.4.0)
+    (< 5.0.0)))))
 
 (package
  (name dream-html)
