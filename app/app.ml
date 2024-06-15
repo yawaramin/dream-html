@@ -156,7 +156,7 @@ module Todos = struct
                   [ txt "new:";
                     fieldset
                       [role `group]
-                      [ input [name "desc"; autofocus];
+                      [ input [name "desc"; autofocus; required];
                         input [type_ "submit"; value "add"] ] ] ];
             div [id "%s" todolist] (List.map (render_one trgt) todos) ];
         div [id "%s" todo] [outlet] ]
@@ -216,7 +216,11 @@ module Todo = struct
             label [for_ "%s" todo_desc] [txt "#%d:" todo.id];
             fieldset
               [role `group]
-              [ input [id "%s" todo_desc; name "desc"; value "%s" todo.desc];
+              [ input
+                  [ id "%s" todo_desc;
+                    name "desc";
+                    value "%s" todo.desc;
+                    required ];
                 input [type_ "submit"; value "update"] ] ];
         form
           [ method_ `POST;
