@@ -6,7 +6,6 @@ publish_doc : odoc
 	cp index.html $(DOCPATH)/ &&\
 	git checkout gh-pages &&\
 	cp -R $(DOCPATH)/* . &&\
-	rm -rf dream_html &&\
 	git add . &&\
 	git commit --amend -mdocs &&\
 	git push --force &&\
