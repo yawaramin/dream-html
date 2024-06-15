@@ -1,4 +1,4 @@
 (library
  (name dream_html)
  (public_name dream-html)
- (libraries dream))
+ (libraries dream pure-html))

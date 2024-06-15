@@ -30,6 +30,10 @@ included. Almost all non-standard or deprecated tags/attributes deliberately
 omitted. CSS support is out of scope. [htmx](https://htmx.org/) attributes
 supported out of the box.
 
+> [!NOTE]
+> Don't want to use Dream? You can use the eDSL without it! Just use the
+> `pure-html` package instead of `dream-html`.
+
 ## Why
 
 - TyXML is a bit too complex.
