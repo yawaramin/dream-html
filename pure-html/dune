@@ -1,0 +1,4 @@
+(library
+ (name pure_html)
+ (public_name pure-html)
+ (libraries uri))

@@ -1,4 +1,4 @@
-(* Copyright 2023 Yawar Amin
+(* Copyright 2024 Yawar Amin
 
    This file is part of dream-html.
 
@@ -86,18 +86,6 @@ let to_xml = to_string ~xml:true
 let to_string = to_string ~xml:false
 let pp_xml ppf node = node |> to_xml |> Format.pp_print_string ppf
 
-let respond ?status ?code ?headers node =
-  Dream.html ?status ?code ?headers (to_string node)
-
-let send ?text_or_binary ?end_of_message websocket node =
-  Dream.send ?text_or_binary ?end_of_message websocket (to_string node)
-
-let set_body resp node =
-  Dream.set_body resp (to_string node);
-  Dream.set_header resp "Content-Type" "text/html"
-
-let write stream node = Dream.write stream (to_string node)
-
 let txt_escape buffer = function
   | '&' -> Buffer.add_string buffer "&amp;"
   | '<' -> Buffer.add_string buffer "&lt;"
@@ -149,7 +137,6 @@ let text_tag name ?(raw = false) attrs fmt =
 let txt ?(raw = false) fmt =
   Printf.ksprintf (fun s -> Txt (txt_escape raw s)) fmt
 
-let csrf_tag req = req |> Dream.csrf_tag |> txt ~raw:true "%s"
 let comment str = Comment (txt_escape false str)
 
 let ( +@ ) node attr =
@@ -946,62 +933,4 @@ module MathML = struct
   let munder = std_tag "munder"
   let munderover = std_tag "munderover"
   let semantics = std_tag "semantics"
-end
-
-module Livereload = struct
-  let enabled =
-    match Sys.getenv "LIVERELOAD" with
-    | "1" -> true
-    | _ | (exception _) -> false
-
-  let endpoint = "/_livereload"
-
-  let script =
-    if enabled then
-      HTML.script []
-        {|
-(() => {
-  const retryIntervalMs = 500;
-  const socketUrl = `ws://${location.host}%s`;
-  const s = new WebSocket(socketUrl);
-
-  s.onopen = _evt => {
-    console.debug("Live reload: WebSocket connection open");
-  };
-
-  s.onclose = _evt => {
-    console.debug("Live reload: WebSocket connection closed");
-
-    function reload() {
-      const s2 = new WebSocket(socketUrl);
-
-      s2.onerror = _evt => {
-        setTimeout(reload, retryIntervalMs);
-      };
-
-      s2.onopen = _evt => {
-        location.reload();
-      };
-    };
-
-    reload();
-  };
-
-  s.onerror = evt => {
-    console.debug("Live reload: WebSocket error:", evt);
-  };
-})()
-  |}
-        endpoint
-    else
-      HTML.null []
-
-  let route =
-    Dream.get endpoint (fun _ ->
-        if enabled then
-          Dream.websocket (fun sock ->
-              Lwt.bind (Dream.receive sock) (fun _ ->
-                  Dream.close_websocket sock))
-        else
-          Dream.empty `Not_Found)
 end

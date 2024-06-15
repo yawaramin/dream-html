@@ -2,7 +2,7 @@
 
 (name dream-html)
 
-(version v3.4.2)
+(version v3.5.0)
 
 (generate_opam_files true)
 
@@ -16,6 +16,14 @@
  (github yawaramin/dream-html))
 
 (package
+ (name pure-html)
+ (synopsis "HTML generator eDSL")
+ (description
+  "Write HTML directly in your OCaml source files with editor support.")
+ (documentation "https://yawaramin.github.io/dream-html/")
+ (tags (org:yawaramin)))
+
+(package
  (name dream-html)
  (synopsis "HTML generator eDSL for Dream")
  (description
@@ -23,5 +31,6 @@
  (documentation "https://yawaramin.github.io/dream-html/")
  (tags (org:yawaramin))
  (depends
+  pure-html
   (dream
    (>= 1.0.0~alpha3))))
