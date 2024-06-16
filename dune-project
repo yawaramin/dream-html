@@ -2,7 +2,7 @@
 
 (name dream-html)
 
-(version v3.5.1)
+(version v3.5.2)
 
 (generate_opam_files true)
 
@@ -36,6 +36,7 @@
  (documentation "https://yawaramin.github.io/dream-html/")
  (tags (org:yawaramin))
  (depends
-  pure-html
+  (pure-html
+   (= :version))
   (dream
    (>= 1.0.0~alpha3))))
