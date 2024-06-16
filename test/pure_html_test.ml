@@ -15,7 +15,7 @@
    You should have received a copy of the GNU General Public License along with
    dream-html. If not, see <https://www.gnu.org/licenses/>. *)
 
-open Dream_html
+open Pure_html
 
 let greet nm =
   let open HTML in

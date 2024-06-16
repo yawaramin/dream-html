@@ -1,13 +1,11 @@
 (test
- (name dream_html_test)
- (libraries dream_html))
+ (name pure_html_test)
+ (package pure-html)
+ (libraries pure_html)
+ (action
+  (diff expected.html got.html)))
 
 (rule
  (with-stdout-to
   got.html
-  (run ./dream_html_test.exe)))
-
-(rule
- (alias runtest)
- (action
-  (diff expected.html got.html)))
+  (run ./pure_html_test.exe)))
