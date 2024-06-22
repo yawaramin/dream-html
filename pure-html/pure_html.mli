@@ -917,6 +917,7 @@ module Hx : sig
   (** Note that the value of this attribute is not escaped as it may include a
       CSS selector. *)
 
+  val sse_close : _ string_attr
   val sse_connect : _ string_attr
   val sse_swap : _ string_attr
 

@@ -860,6 +860,7 @@ module Hx = struct
   let request fmt = string_attr "data-hx-request" fmt
   let select fmt = string_attr ~raw:true "data-hx-select" fmt
   let select_oob fmt = string_attr ~raw:true "data-hx-select-oob" fmt
+  let sse_close fmt = string_attr "data-sse-close" fmt
   let sse_connect fmt = string_attr "data-sse-connect" fmt
   let sse_swap fmt = string_attr "data-sse-swap" fmt
   let swap fmt = string_attr ~raw:true "data-hx-swap" fmt
