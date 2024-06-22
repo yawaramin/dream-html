@@ -857,6 +857,10 @@ module Hx : sig
   val confirm : _ string_attr
   val delete : _ string_attr
   val disable : attr
+
+  val disabled_elt : _ string_attr
+  (** @since 3.6.0. *)
+
   val disinherit : _ string_attr
 
   val encoding_formdata : attr
@@ -875,6 +879,9 @@ module Hx : sig
   val indicator : _ string_attr
   (** Note that the value of this attribute is not escaped as it may include a
       CSS selector. *)
+
+  val inherit_ : _ string_attr
+  (** @since 3.6.0. *)
 
   val on : _ string_attr
   [@@ocaml.deprecated "See https://htmx.org/attributes/hx-on/#hx-on-deprecated"]
