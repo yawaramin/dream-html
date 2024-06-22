@@ -918,6 +918,8 @@ module Hx : sig
       CSS selector. *)
 
   val sse_close : _ string_attr
+  (** @since 3.6.0. *)
+
   val sse_connect : _ string_attr
   val sse_swap : _ string_attr
 
