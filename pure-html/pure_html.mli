@@ -34,15 +34,23 @@ type node
 
 val to_string : node -> string
 
-val to_xml : node -> string
+val to_xml : ?header:bool -> node -> string
 (** Same as [to_string] but render void tags as XML-style self-closing tags.
+
+    @param header print the XML header string if [true]. This is to allow both
+      use cases where the XML code is embedded inside HTML, and standalone XML
+      documents. Default is [false]. Since 3.6.0.
 
     @since 3.3.0. *)
 
 val pp : Format.formatter -> node -> unit
 
-val pp_xml : Format.formatter -> node -> unit
+val pp_xml : Format.formatter -> ?header:bool -> node -> unit
 (** Same as [pp] but render void tags as XML-style self-closing tags.
+
+    @param header print the XML header string if [true]. This is to allow both
+      use cases where the XML code is embedded inside HTML, and standalone XML
+      documents. Default is [false]. Since 3.6.0.
 
     @since 3.3.0. *)
 

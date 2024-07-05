@@ -82,9 +82,17 @@ let to_string ~xml node =
   Buffer.contents buf
 
 let pp ppf node = node |> to_string ~xml:false |> Format.pp_print_string ppf
-let to_xml = to_string ~xml:true
+
+let xml_header = {|<?xml version="1.0" encoding="UTF-8"?>
+|}
+
+let to_xml ?(header = false) node =
+  (if header then xml_header else "") ^ to_string ~xml:true node
+
 let to_string = to_string ~xml:false
-let pp_xml ppf node = node |> to_xml |> Format.pp_print_string ppf
+
+let pp_xml ppf ?header node =
+  node |> to_xml ?header |> Format.pp_print_string ppf
 
 let txt_escape buffer = function
   | '&' -> Buffer.add_string buffer "&amp;"
