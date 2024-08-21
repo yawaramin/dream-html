@@ -34,9 +34,9 @@ type std_tag = attr list -> node list -> node
 type void_tag = attr list -> node
 type 'a text_tag = attr list -> ('a, unit, string, node) format4 -> 'a
 
-let write_attr p = function
+let write_attr ~xml p = function
   | "", _ -> ()
-  | name, "" ->
+  | name, "" when not xml->
     p "\n";
     p name
   | name, value ->
@@ -53,18 +53,18 @@ let rec write_tag ~xml p = function
   | Tag { name; attrs; children = Some [] } when xml ->
     p "<";
     p name;
-    List.iter (write_attr p) attrs;
+    List.iter (write_attr ~xml p) attrs;
     p " />"
   | Tag { name; attrs; children = None } ->
     p "<";
     p name;
-    List.iter (write_attr p) attrs;
+    List.iter (write_attr ~xml p) attrs;
     p (if xml then " />" else ">")
   | Tag { name; attrs; children = Some children } ->
     if name = "html" then p "<!DOCTYPE html>\n";
     p "<";
     p name;
-    List.iter (write_attr p) attrs;
+    List.iter (write_attr ~xml p) attrs;
     p ">";
     List.iter (write_tag ~xml p) children;
     p "</";
