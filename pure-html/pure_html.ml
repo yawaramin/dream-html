@@ -36,7 +36,7 @@ type 'a text_tag = attr list -> ('a, unit, string, node) format4 -> 'a
 
 let write_attr ~xml p = function
   | "", _ -> ()
-  | name, "" when not xml->
+  | name, "" when not xml ->
     p "\n";
     p name
   | name, value ->
@@ -56,11 +56,13 @@ let rec write_tag ~xml p = function
     List.iter (write_attr ~xml p) attrs;
     p " />"
   | Tag { name; attrs; children = None } ->
+    let xml = name = "math" || name = "svg" || xml in
     p "<";
     p name;
     List.iter (write_attr ~xml p) attrs;
     p (if xml then " />" else ">")
   | Tag { name; attrs; children = Some children } ->
+    let xml = name = "math" || name = "svg" || xml in
     if name = "html" then p "<!DOCTYPE html>\n";
     p "<";
     p name;
