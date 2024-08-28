@@ -46,6 +46,11 @@ let write_attr ~xml p = function
     p value;
     p {|"|}
 
+let xml_mode xml name =
+  match xml, name with
+  | true, _ | _, ("math" | "svg") -> true
+  | _ -> false
+
 (* Loosely based on https://www.w3.org/TR/DOM-Parsing/ *)
 let rec write_tag ~xml p = function
   | Tag { name = ""; children = Some children; _ } ->
@@ -56,13 +61,13 @@ let rec write_tag ~xml p = function
     List.iter (write_attr ~xml p) attrs;
     p " />"
   | Tag { name; attrs; children = None } ->
-    let xml = name = "math" || name = "svg" || xml in
+    let xml = xml_mode xml name in
     p "<";
     p name;
     List.iter (write_attr ~xml p) attrs;
     p (if xml then " />" else ">")
   | Tag { name; attrs; children = Some children } ->
-    let xml = name = "math" || name = "svg" || xml in
+    let xml = xml_mode xml name in
     if name = "html" then p "<!DOCTYPE html>\n";
     p "<";
     p name;
