@@ -39,12 +39,14 @@ let user_form =
   { name; age }
 
 let () =
-  Format.printf "
-  %a
-  %a
-  %a
-  %a
-  " pp_user
+  Format.printf
+    "
+  OK with age: %a
+  OK without age: %a
+  Error without name: %a
+  Error with too low age and empty name: %a
+  "
+    pp_user
     (Result.get_ok (validate user_form ["age", "42"; "name", "Bob"]))
     pp_user
     (Result.get_ok (validate user_form ["name", "Bob"]))
