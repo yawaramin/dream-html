@@ -112,6 +112,8 @@ module Form : sig
   val char : char ty
   val float : float ty
   val int : int ty
+  val int32 : int32 ty
+  val int64 : int64 ty
   val string : string ty
 
   (** {3 Form fields} *)

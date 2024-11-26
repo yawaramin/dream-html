@@ -59,6 +59,14 @@ let string s = Ok s
 let int s =
   try Ok (int_of_string s) with Failure _ -> Error "Please enter an integer"
 
+let int32 s =
+  try Ok (Int32.of_string s)
+  with Failure _ -> Error "Please enter a 32-bit integer"
+
+let int64 s =
+  try Ok (Int64.of_string s)
+  with Failure _ -> Error "Please enter a 64-bit integer"
+
 let char s =
   if String.length s = 1 then
     Ok s.[0]
@@ -71,7 +79,7 @@ let float s =
 let bool = function
   | "true" -> Ok true
   | "false" -> Ok false
-  | s -> Error s
+  | _ -> Error "Please enter 'true' or 'false'"
 
 let ( let+ ) decoder f values =
   match decoder values with
@@ -88,9 +96,7 @@ let ( and+ ) decoder1 decoder2 values =
 let validate form values =
   let htbl = Hashtbl.create 10 in
   List.iter (fun (name, value) -> Hashtbl.add htbl name value) values;
-  match form htbl with
-  | Ok _ as ok -> ok
-  | Error _ as e -> e
+  form htbl
 
 let pp_error =
   let open Fmt in
