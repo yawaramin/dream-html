@@ -16,6 +16,7 @@
    dream-html. If not, see <https://www.gnu.org/licenses/>. *)
 
 include Pure_html
+module Form = Form
 
 let respond ?status ?code ?headers node =
   Dream.html ?status ?code ?headers (to_string node)

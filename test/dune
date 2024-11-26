@@ -9,3 +9,15 @@
  (with-stdout-to
   got.html
   (run ./pure_html_test.exe)))
+
+(test
+ (name dream_html_test)
+ (package dream-html)
+ (libraries dream_html)
+ (action
+  (diff expected.txt got.txt)))
+
+(rule
+ (with-stdout-to
+  got.txt
+  (run ./dream_html_test.exe)))

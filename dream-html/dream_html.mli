@@ -51,7 +51,7 @@ val csrf_tag : Dream.request -> node
         [action "/foo"]
         [csrf_tag req; input [name "bar"]; input [type_ "submit"]]]} *)
 
-(** {2 Live reload support}*)
+(** {2 Live reload support} *)
 
 (** Live reload script injection and handling. Adapted from [Dream.livereload]
     middleware. This version is not a middleware so it's not as plug-and-play as
@@ -89,4 +89,132 @@ module Livereload : sig
       {b ⚠️ If this env var is not set, then livereload is turned off.} This means
       that the [route] will respond with [404] status and the script will be
       omitted from the rendered HTML. *)
+end
+
+(** {2 Form decoding} *)
+
+(** Typed, extensible HTML form decoder with complete error reporting. See the
+    bottom of the page for complete examples.
+
+    @since 3.7.0. *)
+module Form : sig
+  type 'a t
+  (** The type of a form which can decode values of type ['a] or fail with a list
+      of error messages. *)
+
+  (** {3 Basic type decoders } *)
+
+  type 'a ty = string -> ('a, string) result
+  (** The type of a decoder for a single form field value of type ['a] which can
+      successfully decode the field value or fail with an error message. *)
+
+  val bool : bool ty
+  val char : char ty
+  val float : float ty
+  val int : int ty
+  val string : string ty
+
+  (** {3 Form fields} *)
+
+  type ('a, 'b) field = string -> 'a ty -> 'b t
+  (** The type of a decoder of a form field which may contain zero or more values. *)
+
+  val list : ('a, 'a list) field
+  (** [list name ty] is a form field which can decode a list of values which can
+      each be decoded by [ty]. *)
+
+  val optional : ('a, 'a option) field
+  (** [optional name ty] is a form field which can decode an optional value from
+      the form. *)
+
+  val required : ('a, 'a) field
+  (** [required name ty] is a form field which can decode a required value from
+      the form. If the at least one value corresponding to the given [name] does
+      not appear in the form, the decoding fails with an error. *)
+
+  val ensure : string -> ('b -> bool) -> ('a, 'b) field -> ('a, 'b) field
+  (** [ensure message condition field] is a form field which imposes an
+      additional [condition] on top of the existing [field]. If the condition
+      fails, the result is an error [message]. *)
+
+  (** {3 Form decoders} *)
+
+  val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
+  (** [let+ email = required "email" string] decodes a form field named [email]
+      as a [string]. *)
+
+  val ( and+ ) : 'a t -> 'b t -> ('a * 'b) t
+  (** [and+ password = required "password" string] continues decoding in an
+      existing form declaration and decodes a form field [password] as a [string]. *)
+
+  val validate :
+    'a t -> (string * string) list -> ('a, (string * string) list) result
+  (** [validate form values] is a result of validating the given [form]'s
+        [values]. It may be either some value of type ['a] or a list of form
+        field names and the corresponding error messages. *)
+
+  val pp_error : (string * string) list Fmt.t
+  (** [pp_error] is a helper pretty-printer for debugging/troubleshooting form
+      validation errors. *)
+
+  (** {3 Examples}
+
+  Basic complete example:
+
+  {[
+  type user = { name : string; age : int option}
+
+  open Dream_html.Form
+
+  let user_form =
+    let+ name = required "name" string
+    and+ age = optional "age" int in
+    { name; age }
+
+  let dream_form = ["age", 42; "name", "Bob"]
+  let user_result = validate user_form dream_form
+  ]}
+
+  Result: [Ok { name = "Bob"; age = Some 42 }]
+
+  Sad path:
+
+  {[validate user_form ["age", "42"]]}
+
+  Result: [Error [("name", "Please fill out this field")]]
+
+  Decode list of values from form:
+
+  {[
+  type plan = { id : string; features : string list }
+
+  let plan_form =
+    let+ id = required "id" string
+    and+ features = list "features" string in
+    { id; features }
+
+  validate plan_form ["id", "foo"]
+  ]}
+
+  Result: [Ok {id = "foo"; features = []}]
+
+  {[validate plan_form ["id", "foo"; "features", "f1"; "features", "f2"]]}
+
+  Result: [Ok {id = "foo"; features = ["f1"; "f2"]}]
+
+  Note that the names can be anything, eg ["features[]"] if you prefer.
+
+  Add further requirements to field values:
+
+  {[
+  let plan_form =
+    let+ id = ensure "Must not be empty" (( <> ) "") required "id" string
+    and+ features = list "features" string in
+    { id; features }
+
+  validate plan_form ["id", ""]
+  ]}
+
+  Result: [Error [("id", "Must not be empty")]]
+  *)
 end

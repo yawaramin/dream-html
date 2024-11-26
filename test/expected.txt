@@ -1,0 +1,11 @@
+
+  {name: Bob;
+    age: 42}
+  {name: Bob;
+                age: }
+  [name, Please fill out this field]
+  [age,
+                                                               Must be > 16;
+                                                               name,
+                                                               Must not be empty]
+  
