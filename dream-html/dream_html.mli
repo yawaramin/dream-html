@@ -149,6 +149,9 @@ module Form : sig
   (** [and+ password = required "password" string] continues decoding in an
       existing form declaration and decodes a form field [password] as a [string]. *)
 
+  val ( or ) : 'a t -> 'a t -> 'a t
+  (** [decoder1 or decoder2] is [decoder1] if it succeeds, else [decoder2]. *)
+
   val validate :
     'a t -> (string * string) list -> ('a, (string * string) list) result
   (** [validate form values] is a result of validating the given [form]'s

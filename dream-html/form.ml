@@ -93,6 +93,11 @@ let ( and+ ) decoder1 decoder2 values =
   | Error e1, Ok _ -> Error e1
   | Error e1, Error e2 -> Error (e2 @ e1)
 
+let ( or ) decoder1 decoder2 values =
+  match decoder1 values with
+  | Ok _ as ok -> ok
+  | Error _ -> decoder2 values
+
 let validate form values =
   let htbl = Hashtbl.create 10 in
   List.iter (fun (name, value) -> Hashtbl.add htbl name value) values;
