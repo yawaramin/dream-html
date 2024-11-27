@@ -128,8 +128,8 @@ module Form : sig
 
   val required : string -> 'a ty -> 'a t
   (** [required name ty] is a form field which can decode a required value from
-      the form. If the at least one value corresponding to the given [name] does
-      not appear in the form, the decoding fails with an error. *)
+      the form. If at least one value corresponding to the given [name] does not
+      appear in the form, the decoding fails with an error. *)
 
   val ensure :
     string ->
