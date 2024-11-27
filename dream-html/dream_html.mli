@@ -214,7 +214,7 @@ module Form : sig
     and+ age = optional "age" int in
     { name; age }
 
-  let dream_form = ["age", 42; "name", "Bob"]
+  let dream_form = ["age", "42"; "name", "Bob"]
   let user_result = validate user_form dream_form
   ]}
 
@@ -222,9 +222,13 @@ module Form : sig
 
   Sad path:
 
-  {[validate user_form ["age", "42"]]}
+  {[validate user_form ["age", "none"]]}
 
-  Result: [Error [("name", "error.required")]]
+  Result: [Error [("age", "error.expected.int"); ("name", "error.required")]]
+
+  Notice that validation errors for {i all} fields are reported. This is a
+  critical design decision that differentiates this module from others available
+  in OCaml.
 
   Decode list of values from form:
 
@@ -251,13 +255,13 @@ module Form : sig
 
   {[
   let plan_form =
-    let+ id = ensure "Must not be empty" (( <> ) "") required "id" string
+    let+ id = ensure "error.expected.nonempty" (( <> ) "") required "id" string
     and+ features = list "features" string in
     { id; features }
 
   validate plan_form ["id", ""]
   ]}
 
-  Result: [Error [("id", "Must not be empty")]]
+  Result: [Error [("id", "error.expected.nonempty")]]
   *)
 end
