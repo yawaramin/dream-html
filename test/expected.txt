@@ -1,0 +1,15 @@
+
+  OK with age: {name: Bob;
+                 age: 42}
+
+  OK without age: {name: Bob;
+                                              age: }
+
+  Error without name: 
+[name, error.required]
+
+  Error with too low age and empty name: [age,
+                                                                  Must be > 16;
+                                                                  name,
+                                                                  Must not be empty]
+  

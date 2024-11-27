@@ -51,7 +51,7 @@ val csrf_tag : Dream.request -> node
         [action "/foo"]
         [csrf_tag req; input [name "bar"]; input [type_ "submit"]]]} *)
 
-(** {2 Live reload support}*)
+(** {2 Live reload support} *)
 
 (** Live reload script injection and handling. Adapted from [Dream.livereload]
     middleware. This version is not a middleware so it's not as plug-and-play as
@@ -89,4 +89,175 @@ module Livereload : sig
       {b ⚠️ If this env var is not set, then livereload is turned off.} This means
       that the [route] will respond with [404] status and the script will be
       omitted from the rendered HTML. *)
+end
+
+(** {2 Form decoding} *)
+
+(** Typed, extensible HTML form decoder with complete error reporting. See the
+    bottom of the page for complete examples.
+
+    @since 3.7.0. *)
+module Form : sig
+  (** {2 Basic type decoders} *)
+
+  type 'a ty = string -> ('a, string) result
+  (** The type of a decoder for a single form field value of type ['a] which can
+      successfully decode the field value or fail with an error message key. *)
+
+  val bool : bool ty
+  val char : char ty
+  val float : float ty
+  val int : int ty
+  val int32 : int32 ty
+  val int64 : int64 ty
+  val string : string ty
+
+  (** {2 Forms and fields} *)
+
+  type 'a t
+  (** The type of a form (a form field by itself is also considered a form) which
+      can decode values of type ['a] or fail with a list of error message keys. *)
+
+  val list : string -> 'a ty -> 'a list t
+  (** [list name ty] is a form field which can decode a list of values which can
+      each be decoded by [ty]. *)
+
+  val optional : string -> 'a ty -> 'a option t
+  (** [optional name ty] is a form field which can decode an optional value from
+      the form. *)
+
+  val required : string -> 'a ty -> 'a t
+  (** [required name ty] is a form field which can decode a required value from
+      the form. If at least one value corresponding to the given [name] does not
+      appear in the form, the decoding fails with an error. *)
+
+  val ensure :
+    string ->
+    ('b -> bool) ->
+    (string -> 'a ty -> 'b t) ->
+    string ->
+    'a ty ->
+    'b t
+  (** [ensure message condition field name ty] is a form field which imposes an
+      additional [condition] on top of the existing [field]. If the condition
+      fails, the result is an error [message]. It is suggested that the [message]
+      be a translation key so that the application can be localized to different
+      languages. *)
+
+  (** {2 Form decoders} *)
+
+  val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
+  (** [let+ email = required "email" string] decodes a form field named [email]
+      as a [string]. *)
+
+  val ( and+ ) : 'a t -> 'b t -> ('a * 'b) t
+  (** [and+ password = required "password" string] continues decoding in an
+      existing form declaration and decodes a form field [password] as a [string]. *)
+
+  val ( or ) : 'a t -> 'a t -> 'a t
+  (** [decoder1 or decoder2] is [decoder1] if it succeeds, else [decoder2]. *)
+
+  val validate :
+    'a t -> (string * string) list -> ('a, (string * string) list) result
+  (** [validate form values] is a result of validating the given [form]'s
+      [values]. It may be either some value of type ['a] or a list of form field
+      names and the corresponding error message keys. *)
+
+  val pp_error : (string * string) list Fmt.t
+  (** [pp_error] is a helper pretty-printer for debugging/troubleshooting form
+      validation errors. *)
+
+  (** {2 Error keys}
+
+      When errors are reported, the following keys are used instead of English
+      strings. These keys can be used for localizing the error messages. The
+      suggested default English translations are given below.
+
+      These keys are modelled after
+      {{: https://github.com/playframework/playframework/blob/6f5129e6e3b9c784948b56d486d1ef1e5efef163/core/play/src/main/resources/messages.default} Play Framework}. *)
+
+  val error_expected_bool : string
+  (** Please enter [true] or [false]. *)
+
+  val error_expected_char : string
+  (** Please enter a single character. *)
+
+  val error_expected_single : string
+  (** Please enter a single value. *)
+
+  val error_expected_int : string
+  (** Please enter a valid integer. *)
+
+  val error_expected_int32 : string
+  (** Please enter a valid 32-bit integer. *)
+
+  val error_expected_int64 : string
+  (** Please enter a valid 64-bit integer. *)
+
+  val error_expected_number : string
+  (** Please enter a valid number. *)
+
+  val error_required : string
+  (** Please enter a value. *)
+
+  (** {2 Examples}
+
+  Basic complete example:
+
+  {[
+  type user = { name : string; age : int option}
+
+  open Dream_html.Form
+
+  let user_form =
+    let+ name = required "name" string
+    and+ age = optional "age" int in
+    { name; age }
+
+  let dream_form = ["age", 42; "name", "Bob"]
+  let user_result = validate user_form dream_form
+  ]}
+
+  Result: [Ok { name = "Bob"; age = Some 42 }]
+
+  Sad path:
+
+  {[validate user_form ["age", "42"]]}
+
+  Result: [Error [("name", "error.required")]]
+
+  Decode list of values from form:
+
+  {[
+  type plan = { id : string; features : string list }
+
+  let plan_form =
+    let+ id = required "id" string
+    and+ features = list "features" string in
+    { id; features }
+
+  validate plan_form ["id", "foo"]
+  ]}
+
+  Result: [Ok {id = "foo"; features = []}]
+
+  {[validate plan_form ["id", "foo"; "features", "f1"; "features", "f2"]]}
+
+  Result: [Ok {id = "foo"; features = ["f1"; "f2"]}]
+
+  Note that the names can be anything, eg ["features[]"] if you prefer.
+
+  Add further requirements to field values:
+
+  {[
+  let plan_form =
+    let+ id = ensure "Must not be empty" (( <> ) "") required "id" string
+    and+ features = list "features" string in
+    { id; features }
+
+  validate plan_form ["id", ""]
+  ]}
+
+  Result: [Error [("id", "Must not be empty")]]
+  *)
 end
