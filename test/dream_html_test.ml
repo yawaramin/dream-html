@@ -42,8 +42,11 @@ let () =
   Format.printf
     "
   OK with age: %a
+
   OK without age: %a
+
   Error without name: %a
+
   Error with too low age and empty name: %a
   "
     pp_user
