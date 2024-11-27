@@ -93,8 +93,10 @@ end
 
 (** {2 Form decoding} *)
 
-(** Typed, extensible HTML form decoder with complete error reporting. See the
-    bottom of the page for complete examples.
+(** Typed, extensible HTML form decoder with error reporting for {i all} form
+    field validation failures.
+
+    See the bottom of the page for complete examples.
 
     @since 3.7.0. *)
 module Form : sig
@@ -118,27 +120,27 @@ module Form : sig
   (** The type of a form (a form field by itself is also considered a form) which
       can decode values of type ['a] or fail with a list of error message keys. *)
 
-  val list : string -> 'a ty -> 'a list t
-  (** [list name ty] is a form field which can decode a list of values which can
+  val list : 'a ty -> string -> 'a list t
+  (** [list ty name] is a form field which can decode a list of values which can
       each be decoded by [ty]. *)
 
-  val optional : string -> 'a ty -> 'a option t
-  (** [optional name ty] is a form field which can decode an optional value from
+  val optional : 'a ty -> string -> 'a option t
+  (** [optional ty name] is a form field which can decode an optional value from
       the form. *)
 
-  val required : string -> 'a ty -> 'a t
-  (** [required name ty] is a form field which can decode a required value from
+  val required : 'a ty -> string -> 'a t
+  (** [required ty name] is a form field which can decode a required value from
       the form. If at least one value corresponding to the given [name] does not
       appear in the form, the decoding fails with an error. *)
 
   val ensure :
     string ->
     ('b -> bool) ->
-    (string -> 'a ty -> 'b t) ->
-    string ->
+    ('a ty -> string -> 'b t) ->
     'a ty ->
+    string ->
     'b t
-  (** [ensure message condition field name ty] is a form field which imposes an
+  (** [ensure message condition field ty name] is a form field which imposes an
       additional [condition] on top of the existing [field]. If the condition
       fails, the result is an error [message]. It is suggested that the [message]
       be a translation key so that the application can be localized to different
@@ -147,15 +149,15 @@ module Form : sig
   (** {2 Form decoders} *)
 
   val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
-  (** [let+ email = required "email" string] decodes a form field named [email]
+  (** [let+ email = required string "email"] decodes a form field named [email]
       as a [string]. *)
 
   val ( and+ ) : 'a t -> 'b t -> ('a * 'b) t
-  (** [and+ password = required "password" string] continues decoding in an
+  (** [and+ password = required string "password"] continues decoding in an
       existing form declaration and decodes a form field [password] as a [string]. *)
 
   val ( or ) : 'a t -> 'a t -> 'a t
-  (** [decoder1 or decoder2] is [decoder1] if it succeeds, else [decoder2]. *)
+  (** [form1 or form2] is [form1] if it succeeds, else [form2]. *)
 
   val validate :
     'a t -> (string * string) list -> ('a, (string * string) list) result
@@ -210,8 +212,8 @@ module Form : sig
   open Dream_html.Form
 
   let user_form =
-    let+ name = required "name" string
-    and+ age = optional "age" int in
+    let+ name = required string "name"
+    and+ age = optional int "age" in
     { name; age }
 
   let dream_form = ["age", "42"; "name", "Bob"]
@@ -236,8 +238,8 @@ module Form : sig
   type plan = { id : string; features : string list }
 
   let plan_form =
-    let+ id = required "id" string
-    and+ features = list "features" string in
+    let+ id = required string "id"
+    and+ features = list string "features" in
     { id; features }
 
   validate plan_form ["id", "foo"]
@@ -255,8 +257,8 @@ module Form : sig
 
   {[
   let plan_form =
-    let+ id = ensure "error.expected.nonempty" (( <> ) "") required "id" string
-    and+ features = list "features" string in
+    let+ id = ensure "error.expected.nonempty" (( <> ) "") required string "id"
+    and+ features = list string "features" in
     { id; features }
 
   validate plan_form ["id", ""]

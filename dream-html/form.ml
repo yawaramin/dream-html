@@ -28,8 +28,8 @@ let error_expected_number = "error.expected.number"
 let error_required = "error.required"
 let error name msg = Error [name, msg]
 
-let ensure message condition field name ty values =
-  match field name ty values with
+let ensure message condition field ty name values =
+  match field ty name values with
   | Ok v as ok -> if condition v then ok else error name message
   | Error _ as error -> error
 
@@ -43,12 +43,12 @@ let rec all ty result = function
 
 let all ty = all ty (Ok [])
 
-let list name ty values =
+let list ty name values =
   match all ty (Hashtbl.find_all values name) with
   | Ok _ as ok -> ok
   | Error msg -> error name msg
 
-let optional name ty values =
+let optional ty name values =
   match Hashtbl.find_opt values name with
   | None -> Ok None
   | Some s -> (
@@ -56,7 +56,7 @@ let optional name ty values =
     | Ok v -> Ok (Some v)
     | Error msg -> error name msg)
 
-let required name ty values =
+let required ty name values =
   match Hashtbl.find_opt values name with
   | None -> error name error_required
   | Some s -> (
@@ -89,22 +89,22 @@ let bool = function
   | "false" -> Ok false
   | _ -> Error error_expected_bool
 
-let ( let+ ) decoder f values =
-  match decoder values with
+let ( let+ ) form f values =
+  match form values with
   | Ok v -> Ok (f v)
   | Error e -> Error e
 
-let ( and+ ) decoder1 decoder2 values =
-  match decoder1 values, decoder2 values with
+let ( and+ ) form1 form2 values =
+  match form1 values, form2 values with
   | Ok v1, Ok v2 -> Ok (v1, v2)
   | Ok _, Error e2 -> Error e2
   | Error e1, Ok _ -> Error e1
   | Error e1, Error e2 -> Error (e2 @ e1)
 
-let ( or ) decoder1 decoder2 values =
-  match decoder1 values with
+let ( or ) form1 form2 values =
+  match form1 values with
   | Ok _ as ok -> ok
-  | Error _ -> decoder2 values
+  | Error _ -> form2 values
 
 let validate form values =
   let htbl = Hashtbl.create 10 in
