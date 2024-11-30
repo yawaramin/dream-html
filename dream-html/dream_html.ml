@@ -18,6 +18,36 @@
 include Pure_html
 module Form = Form
 
+let form f ?csrf req =
+  req
+  |> Dream.form ?csrf
+  |> Lwt.map @@ function
+     | `Ok values -> (
+       match Form.validate f values with
+       | Ok a -> `Ok a
+       | Error list -> `Invalid list)
+     | `Expired (values, float) -> (
+       match Form.validate f values with
+       | Ok a -> `Expired (a, float)
+       | Error list -> `Invalid list)
+     | `Wrong_session values -> (
+       match Form.validate f values with
+       | Ok a -> `Wrong_session a
+       | Error list -> `Invalid list)
+     | `Invalid_token values -> (
+       match Form.validate f values with
+       | Ok a -> `Invalid_token a
+       | Error list -> `Invalid list)
+     | `Missing_token values -> (
+       match Form.validate f values with
+       | Ok a -> `Missing_token a
+       | Error list -> `Invalid list)
+     | `Many_tokens values -> (
+       match Form.validate f values with
+       | Ok a -> `Many_tokens a
+       | Error list -> `Invalid list)
+     | `Wrong_content_type -> `Wrong_content_type
+
 let respond ?status ?code ?headers node =
   Dream.html ?status ?code ?headers (to_string node)
 
