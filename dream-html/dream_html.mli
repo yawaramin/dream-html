@@ -218,6 +218,15 @@ val form :
 
     @since 3.8.0 *)
 
+val query :
+  'a Form.t ->
+  Dream.request ->
+  [> `Ok of 'a | `Invalid of (string * string) list]
+(** Type-safe wrapper for [Dream.all_queries]. Can be used to decode the query
+    parameters into a typed value.
+
+    @since 3.8.0 *)
+
 (** {2 Output} *)
 
 include module type of Pure_html

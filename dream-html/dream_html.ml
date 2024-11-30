@@ -48,6 +48,11 @@ let form f ?csrf req =
        | Error list -> `Invalid list)
      | `Wrong_content_type -> `Wrong_content_type
 
+let query f req =
+  match Form.validate f (Dream.all_queries req) with
+  | Ok a -> `Ok a
+  | Error list -> `Invalid list
+
 let respond ?status ?code ?headers node =
   Dream.html ?status ?code ?headers (to_string node)
 
