@@ -25,6 +25,8 @@ let error_expected_int = "error.expected.int"
 let error_expected_int32 = "error.expected.int32"
 let error_expected_int64 = "error.expected.int64"
 let error_expected_number = "error.expected.number"
+let error_length = "error.length"
+let error_range = "error.range"
 let error_required = "error.required"
 let error name msg = Error [name, msg]
 
@@ -64,25 +66,43 @@ let required ty name values =
     | Ok v -> Ok v
     | Error msg -> error name msg)
 
-let string s = Ok s
+let string ?(min_length = 0) ?(max_length = Sys.max_string_length) s =
+  let len = String.length s in
+  if min_length <= len && len <= max_length then Ok s else Error error_length
 
-let int s =
-  try Ok (int_of_string s) with Failure _ -> Error error_expected_int
+let int ?(min = Int.min_int) ?(max = Int.max_int) s =
+  match int_of_string s with
+  | i when min <= i && i <= max -> Ok i
+  | _ -> Error error_range
+  | exception Failure _ -> Error error_expected_int
 
-let int32 s =
-  try Ok (Int32.of_string s) with Failure _ -> Error error_expected_int32
+let int32 ?(min = Int32.min_int) ?(max = Int32.max_int) s =
+  match Int32.of_string s with
+  | i32 when Int32.compare min i32 <= 0 && Int32.compare i32 max <= 0 -> Ok i32
+  | _ -> Error error_range
+  | exception Failure _ -> Error error_expected_int
 
-let int64 s =
-  try Ok (Int64.of_string s) with Failure _ -> Error error_expected_int64
+let int64 ?(min = Int64.min_int) ?(max = Int64.max_int) s =
+  match Int64.of_string s with
+  | i64 when Int64.compare min i64 <= 0 && Int64.compare i64 max <= 0 -> Ok i64
+  | _ -> Error error_range
+  | exception Failure _ -> Error error_expected_int
 
-let char s =
+let min_char = Char.chr 0
+let max_char = Char.chr 255
+
+let char ?(min = min_char) ?(max = max_char) s =
   if String.length s = 1 then
-    Ok s.[0]
+    let c = s.[0] in
+    if min <= c && c <= max then Ok c else Error error_range
   else
     Error error_expected_char
 
-let float s =
-  try Ok (float_of_string s) with Failure _ -> Error error_expected_number
+let float ?(min = Float.min_float) ?(max = Float.max_float) s =
+  match float_of_string s with
+  | i when min <= i && i <= max -> Ok i
+  | _ -> Error error_range
+  | exception Failure _ -> Error error_expected_int
 
 let bool = function
   | "true" -> Ok true

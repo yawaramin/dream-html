@@ -17,7 +17,7 @@ publish_opam :
 
 .PHONY : doc
 doc : odoc
-	@echo "Documentation generated at file://$(DOCPATH)/index.html"
+	@echo "Documentation generated at file://$(DOCPATH)/dream-html/Dream_html/index.html"
 
 .PHONY : odoc
 odoc :

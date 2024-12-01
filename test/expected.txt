@@ -9,7 +9,7 @@
 [name, error.required]
 
   Error with too low age and empty name: [age,
-                                                                  Must be > 16;
+                                                                  error.range;
                                                                   name,
                                                                   Must not be empty]
   

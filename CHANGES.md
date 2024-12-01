@@ -1,3 +1,3 @@
 ## v0.0.1
 
-Please refer to release notes in tags.
+See https://github.com/yawaramin/dream-html/tags

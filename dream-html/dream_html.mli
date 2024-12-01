@@ -30,13 +30,16 @@ module Form : sig
   (** The type of a decoder for a single form field value of type ['a] which can
       successfully decode the field value or fail with an error message key. *)
 
+  (** In the following type decoders, the minimum and maximum values are all
+      {i inclusive}. *)
+
   val bool : bool ty
-  val char : char ty
-  val float : float ty
-  val int : int ty
-  val int32 : int32 ty
-  val int64 : int64 ty
-  val string : string ty
+  val char : ?min:char -> ?max:char -> char ty
+  val float : ?min:float -> ?max:float -> float ty
+  val int : ?min:int -> ?max:int -> int ty
+  val int32 : ?min:int32 -> ?max:int32 -> int32 ty
+  val int64 : ?min:int64 -> ?max:int64 -> int64 ty
+  val string : ?min_length:int -> ?max_length:int -> string ty
 
   (** {2 Forms and fields} *)
 
@@ -123,6 +126,12 @@ module Form : sig
   val error_expected_number : string
   (** Please enter a valid number. *)
 
+  val error_length : string
+  (** Please enter a value of the expected length. *)
+
+  val error_range : string
+  (** Please enter a value in the expected range. *)
+
   val error_required : string
   (** Please enter a value. *)
 
@@ -137,7 +146,7 @@ module Form : sig
 
   let user_form =
     let+ name = required string "name"
-    and+ age = optional int "age" in
+    and+ age = optional (int ~min:16) "age" in (* Thanks, Australia! *)
     { name; age }
 
   let dream_form = ["age", "42"; "name", "Bob"]

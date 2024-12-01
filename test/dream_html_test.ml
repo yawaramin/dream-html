@@ -31,11 +31,7 @@ open Dream_html.Form
 
 let user_form =
   let+ name = ensure "Must not be empty" (( <> ) "") required string "name"
-  and+ age =
-    ensure "Must be > 16"
-      (Option.fold ~none:true ~some:(( < ) 16))
-      optional int "age"
-  in
+  and+ age = optional (int ~min:16) "age" in
   { name; age }
 
 let () =
