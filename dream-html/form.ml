@@ -35,18 +35,28 @@ let ensure message condition field ty name values =
   | Ok v as ok -> if condition v then ok else error name message
   | Error _ as error -> error
 
-let rec all ty result = function
-  | [] -> result
+let rec all ~min_length ~max_length ~len ty result = function
+  | [] ->
+    if len < min_length then
+      Error error_length
+    else
+      result
   | x :: xs -> (
-    match ty x, result with
-    | Ok t, Ok r -> all ty (Ok (t :: r)) xs
-    | (Error _ as e), _ -> e
-    | _, (Error _ as e) -> e)
+    let new_len = succ len in
+    if new_len > max_length then
+      Error error_length
+    else
+      match ty x, result with
+      | Ok t, Ok r ->
+        all ~min_length ~max_length ~len:new_len ty (Ok (t :: r)) xs
+      | (Error _ as e), _ -> e
+      | _, (Error _ as e) -> e)
 
-let all ty = all ty (Ok [])
+let all ~min_length ~max_length ty =
+  all ~min_length ~max_length ~len:0 ty (Ok [])
 
-let list ty name values =
-  match all ty (Hashtbl.find_all values name) with
+let list ?(min_length = 0) ?(max_length = Int.max_int) ty name values =
+  match all ~min_length ~max_length ty (Hashtbl.find_all values name) with
   | Ok _ as ok -> ok
   | Error msg -> error name msg
 
@@ -58,10 +68,11 @@ let optional ty name values =
     | Ok v -> Ok (Some v)
     | Error msg -> error name msg)
 
-let required ty name values =
-  match Hashtbl.find_opt values name with
-  | None -> error name error_required
-  | Some s -> (
+let required ?default ty name values =
+  match Hashtbl.find_opt values name, default with
+  | None, None -> error name error_required
+  | None, Some v -> Ok v
+  | Some s, _ -> (
     match ty s with
     | Ok v -> Ok v
     | Error msg -> error name msg)

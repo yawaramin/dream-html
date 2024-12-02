@@ -47,18 +47,20 @@ module Form : sig
   (** The type of a form (a form field by itself is also considered a form) which
       can decode values of type ['a] or fail with a list of error message keys. *)
 
-  val list : 'a ty -> string -> 'a list t
-  (** [list ty name] is a form field which can decode a list of values which can
-      each be decoded by [ty]. *)
+  val list : ?min_length:int -> ?max_length:int -> 'a ty -> string -> 'a list t
+  (** [list ?min_length ?max_length ty name] is a form field which can decode a
+      list of values which can each be decoded by [ty]. The list must have at
+      least [min_length] and at most [max_length] (inclusive). *)
 
   val optional : 'a ty -> string -> 'a option t
   (** [optional ty name] is a form field which can decode an optional value from
       the form. *)
 
-  val required : 'a ty -> string -> 'a t
-  (** [required ty name] is a form field which can decode a required value from
-      the form. If at least one value corresponding to the given [name] does not
-      appear in the form, the decoding fails with an error. *)
+  val required : ?default:'a -> 'a ty -> string -> 'a t
+  (** [required ?default ty name] is a form field which can decode a required
+      value from the form. If at least one value corresponding to the given
+      [name] does not appear in the form, and if a [default] value is not
+      specified, the decoding fails with an error. *)
 
   val ensure :
     string ->

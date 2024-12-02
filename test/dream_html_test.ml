@@ -17,7 +17,9 @@
 
 type user =
   { name : string;
-    age : int option
+    age : int option;
+    accept_tos : bool;
+    permissions : string list
   }
 
 let pp_user =
@@ -25,14 +27,20 @@ let pp_user =
   braces
     (record ~sep:semi
        [ field "name" (fun u -> u.name) string;
-         field "age" (fun u -> u.age) (option int) ])
+         field "age" (fun u -> u.age) (option int);
+         field "accept_tos" (fun u -> u.accept_tos) bool;
+         field "permissions"
+           (fun u -> u.permissions)
+           (brackets (list ~sep:semi string)) ])
 
 open Dream_html.Form
 
 let user_form =
   let+ name = ensure "Must not be empty" (( <> ) "") required string "name"
-  and+ age = optional (int ~min:16) "age" in
-  { name; age }
+  and+ age = optional (int ~min:16) "age"
+  and+ accept_tos = required ~default:false bool "accept-tos"
+  and+ permissions = list ~max_length:3 (string ~min_length:1) "permissions" in
+  { name; age; accept_tos; permissions }
 
 let () =
   Format.printf
@@ -44,12 +52,24 @@ let () =
   Error without name: %a
 
   Error with too low age and empty name: %a
+
+  Error too many permissions: %a
   "
     pp_user
-    (Result.get_ok (validate user_form ["age", "42"; "name", "Bob"]))
+    (Result.get_ok
+       (validate user_form ["age", "42"; "name", "Bob"; "permissions", "r"]))
     pp_user
     (Result.get_ok (validate user_form ["name", "Bob"]))
     pp_error
     (Result.get_error (validate user_form []))
     pp_error
     (Result.get_error (validate user_form ["age", "10"; "name", ""]))
+    pp_error
+    (Result.get_error
+       (validate user_form
+          [ "age", "42";
+            "name", "Bob";
+            "permissions", "r";
+            "permissions", "w";
+            "permissions", "x";
+            "permissions", "" ]))

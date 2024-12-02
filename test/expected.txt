@@ -1,9 +1,13 @@
 
   OK with age: {name: Bob;
-                 age: 42}
+                 age: 42;
+                 accept_tos: false;
+                 permissions: [r]}
 
   OK without age: {name: Bob;
-                                              age: }
+                                                       age: ;
+                                                       accept_tos: false;
+                                                       permissions: []}
 
   Error without name: 
 [name, error.required]
@@ -12,4 +16,7 @@
                                                                   error.range;
                                                                   name,
                                                                   Must not be empty]
+
+  Error too many permissions: 
+[permissions, error.length]
   
