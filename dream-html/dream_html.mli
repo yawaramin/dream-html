@@ -45,7 +45,9 @@ module Form : sig
   (** This can parse strings with the formats [2024-01-01] or
       [2024-01-01T00:00:00] into a timestamp.
 
-      Note that this is {i not} timezone-aware. *)
+      Note that this is {i not} timezone-aware.
+
+      @since 3.8.0 *)
 
   (** {2 Forms and fields} *)
 
