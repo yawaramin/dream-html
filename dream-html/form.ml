@@ -25,6 +25,7 @@ let error_expected_int = "error.expected.int"
 let error_expected_int32 = "error.expected.int32"
 let error_expected_int64 = "error.expected.int64"
 let error_expected_number = "error.expected.number"
+let error_expected_time = "error.expected.time"
 let error_length = "error.length"
 let error_range = "error.range"
 let error_required = "error.required"
@@ -119,6 +120,44 @@ let bool = function
   | "true" -> Ok true
   | "false" -> Ok false
   | _ -> Error error_expected_bool
+
+let make_tm ?min ?max ?(hour = 0) ?(minute = 0) ?(second = 0) year month day =
+  let tm =
+    { Unix.tm_year = year - 1900;
+      tm_mon = month - 1;
+      tm_mday = day;
+      tm_hour = hour;
+      tm_min = minute;
+      tm_sec = second;
+      tm_wday = 0;
+      tm_yday = 0;
+      tm_isdst = false
+    }
+  in
+  let f, tm = Unix.mktime tm in
+  match min, max with
+  | Some min, Some max ->
+    let fmin, _ = Unix.mktime min
+    and fmax, _ = Unix.mktime max in
+    if fmin <= f && f <= fmax then Ok tm else Error error_range
+  | Some min, None ->
+    let fmin, _ = Unix.mktime min in
+    if fmin <= f then Ok tm else Error error_range
+  | None, Some max ->
+    let fmax, _ = Unix.mktime max in
+    if f <= fmax then Ok tm else Error error_range
+  | None, None -> Ok tm
+
+let unix_tm ?min ?max s =
+  try
+    Scanf.sscanf s "%4d-%2d-%d" (fun year month day ->
+        make_tm ?min ?max year month day)
+  with End_of_file -> (
+    try
+      Scanf.sscanf s "%4d-%d-%dT%2d:%2d:%2d"
+        (fun year month day hour minute second ->
+          make_tm ?min ?max ~hour ~minute ~second year month day)
+    with End_of_file -> Error error_expected_time)
 
 let ( let+ ) form f values =
   match form values with

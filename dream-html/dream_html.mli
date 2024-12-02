@@ -41,6 +41,12 @@ module Form : sig
   val int64 : ?min:int64 -> ?max:int64 -> int64 ty
   val string : ?min_length:int -> ?max_length:int -> string ty
 
+  val unix_tm : ?min:Unix.tm -> ?max:Unix.tm -> Unix.tm ty
+  (** This can parse strings with the formats [2024-01-01] or
+      [2024-01-01T00:00:00] into a timestamp.
+
+      Note that this is {i not} timezone-aware. *)
+
   (** {2 Forms and fields} *)
 
   type 'a t
@@ -127,6 +133,9 @@ module Form : sig
 
   val error_expected_number : string
   (** Please enter a valid number. *)
+
+  val error_expected_time : string
+  (** Please enter a valid date or date-time. *)
 
   val error_length : string
   (** Please enter a value of the expected length. *)
