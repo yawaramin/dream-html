@@ -85,6 +85,18 @@ module Form : sig
 
   (** {2 Form decoders} *)
 
+  val ( let* ) : 'a t -> ('a -> 'b t) -> 'b t
+  (** [let* start_date = required unix_tm "start-date"] decodes a form field and
+      allows accessing it in the subsequent decoders. Eg:
+
+      {[
+      let* start_date = required unix_tm "start-date" in
+      let+ end_date = required (unix_tm ~min:start_date) "end-date" in
+      ...
+      ]}
+
+      @since 3.8.0 *)
+
   val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
   (** [let+ email = required string "email"] decodes a form field named [email]
       as a [string]. *)

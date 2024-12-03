@@ -159,10 +159,12 @@ let unix_tm ?min ?max s =
           make_tm ?min ?max ~hour ~minute ~second year month day)
     with End_of_file -> Error error_expected_time)
 
-let ( let+ ) form f values =
+let ( let* ) form f values =
   match form values with
-  | Ok v -> Ok (f v)
-  | Error e -> Error e
+  | Ok v -> f v values
+  | Error _ as e -> e
+
+let ( let+ ) form f = ( let* ) form (fun v _ -> Ok (f v))
 
 let ( and+ ) form1 form2 values =
   match form1 values, form2 values with

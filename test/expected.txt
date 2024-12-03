@@ -1,22 +1,28 @@
 
-  OK with age: {name: Bob;
-                 age: 42;
-                 accept_tos: false;
-                 permissions: [r]}
+OK with age:
+[permissions, error.length]
 
-  OK without age: {name: Bob;
-                                                       age: ;
-                                                       accept_tos: false;
-                                                       permissions: []}
+OK without age:
+{name: Bob;
+                                                            age: ;
+                                                            accept_tos: false;
+                                                            permissions: []}
 
-  Error without name: 
+Error without name:
+
 [name, error.required]
 
-  Error with too low age and empty name: [age,
-                                                                  error.range;
-                                                                  name,
-                                                                  Must not be empty]
+Error with too low age and empty name:
+[age,
+                                                                error.range;
+                                                                name,
+                                                                Must not be empty]
 
-  Error too many permissions: 
+Error too many permissions:
+
+[permissions, error.length]
+
+Error no permissions if not accept TOS:
+
 [permissions, error.length]
   

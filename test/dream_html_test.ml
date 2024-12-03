@@ -33,43 +33,56 @@ let pp_user =
            (fun u -> u.permissions)
            (brackets (list ~sep:semi string)) ])
 
+let pp fmt = function
+  | Ok user -> pp_user fmt user
+  | Error e -> Dream_html.Form.pp_error fmt e
+
 open Dream_html.Form
 
 let user_form =
-  let+ name = ensure "Must not be empty" (( <> ) "") required string "name"
-  and+ age = optional (int ~min:16) "age"
-  and+ accept_tos = required ~default:false bool "accept-tos"
-  and+ permissions = list ~max_length:3 (string ~min_length:1) "permissions" in
+  let* accept_tos = required ~default:false bool "accept-tos" in
+  let+ permissions =
+    list
+      ~max_length:(if accept_tos then 3 else 0)
+      (string ~min_length:1) "permissions"
+  and+ name = ensure "Must not be empty" (( <> ) "") required string "name"
+  and+ age = optional (int ~min:16) "age" in
   { name; age; accept_tos; permissions }
 
 let () =
   Format.printf
     "
-  OK with age: %a
+OK with age:
+%a
 
-  OK without age: %a
+OK without age:
+%a
 
-  Error without name: %a
+Error without name:
+%a
 
-  Error with too low age and empty name: %a
+Error with too low age and empty name:
+%a
 
-  Error too many permissions: %a
+Error too many permissions:
+%a
+
+Error no permissions if not accept TOS:
+%a
   "
-    pp_user
-    (Result.get_ok
-       (validate user_form ["age", "42"; "name", "Bob"; "permissions", "r"]))
-    pp_user
-    (Result.get_ok (validate user_form ["name", "Bob"]))
-    pp_error
-    (Result.get_error (validate user_form []))
-    pp_error
-    (Result.get_error (validate user_form ["age", "10"; "name", ""]))
-    pp_error
-    (Result.get_error
-       (validate user_form
-          [ "age", "42";
-            "name", "Bob";
-            "permissions", "r";
-            "permissions", "w";
-            "permissions", "x";
-            "permissions", "" ]))
+    pp
+    (validate user_form ["age", "42"; "name", "Bob"; "permissions", "r"])
+    pp
+    (validate user_form ["name", "Bob"])
+    pp (validate user_form []) pp
+    (validate user_form ["age", "10"; "name", ""])
+    pp
+    (validate user_form
+       [ "age", "42";
+         "name", "Bob";
+         "permissions", "r";
+         "permissions", "w";
+         "permissions", "x";
+         "permissions", "" ])
+    pp
+    (validate user_form ["permissions", "r"; "name", "Bob"])
