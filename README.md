@@ -158,20 +158,21 @@ p [] [txt "hello, "; txt "world!"];;
 You can also conveniently hot-reload the webapp in the browser using the
 `Dream_html.Livereload` module. See the API reference for details.
 
+## Form validation
+
+There is also a module with helpers for request form and query validation; see
+[`Dream_html.Form`](https://yawaramin.github.io/dream-html/dream-html/Dream_html/Form/index.html)
+for details. See also the convenience helpers `Dream_html.form` and
+`Dream_html.query`.
+
 ## Import HTML
 
 One issue that you may come across is that the syntax of HTML is different from
 the syntax of dream-html markup. To ease this problem, you may use the
-bookmarklet `import_html.js` provided in this project. Simply create a new
-bookmark in your browser with any name, and set the URL to the content of that
-file (make sure it is exactly the given content).
+translation webapp in the [landing page](https://yawaramin.github.io/dream-html/).
 
-Then, whenever you have a web page open, just click on the bookmarklet to copy
-its markup to the clipboard in dream-html format. From there you can simple
-paste it into your project.
-
-Note that the dream-html version is not formatted nicely, because the
-expectation is that you will use ocamlformat to fix the formatting.
+Note that the dream-html code is not formatted nicely, because the expectation is
+that you will use ocamlformat to fix the formatting.
 
 Also note that the translation done by this bookmarklet is on a best-effort
 basis. Many web pages don't strictly conform to the rules of correct HTML

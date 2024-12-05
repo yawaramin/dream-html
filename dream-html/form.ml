@@ -183,6 +183,4 @@ let validate form values =
   List.iter (fun (name, value) -> Hashtbl.add htbl name value) values;
   form htbl
 
-let pp_error =
-  let open Fmt in
-  brackets (list ~sep:semi (pair ~sep:comma string string))
+let pp_error = Fmt.(brackets (list ~sep:semi (pair ~sep:comma string string)))

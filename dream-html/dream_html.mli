@@ -17,8 +17,9 @@
 
 (** {2 Input} *)
 
-(** Typed, extensible HTML form decoder with error reporting for {i all} form
-    field validation failures.
+(** Typed, extensible HTML form decoder with error reporting for form field
+    validation failures. Powerful chained decoding functionality–the validation
+    of one field can depend on the values of other decoded fields.
 
     See the bottom of the page for complete examples.
 
@@ -185,10 +186,6 @@ module Form : sig
   {[validate user_form ["age", "none"]]}
 
   Result: [Error [("age", "error.expected.int"); ("name", "error.required")]]
-
-  Notice that validation errors for {i all} fields are reported. This is a
-  critical design decision that differentiates this module from others available
-  in OCaml.
 
   Decode list of values from form:
 
