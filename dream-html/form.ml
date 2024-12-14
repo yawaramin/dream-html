@@ -78,6 +78,9 @@ let required ?default ty name values =
     | Ok v -> Ok v
     | Error msg -> error name msg)
 
+let ok value _ = Ok value
+let error name message _ = error name message
+
 let string ?(min_length = 0) ?(max_length = Sys.max_string_length) s =
   let len = String.length s in
   if min_length <= len && len <= max_length then Ok s else Error error_length

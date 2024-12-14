@@ -53,8 +53,24 @@ module Form : sig
   (** {2 Forms and fields} *)
 
   type 'a t
-  (** The type of a form (a form field by itself is also considered a form) which
-      can decode values of type ['a] or fail with a list of error message keys. *)
+  (** The type of a form (a form field by itself is also considered a form)
+      which can decode values of type ['a] or fail with a list of error message
+      keys. *)
+
+  val ok : 'a -> 'a t
+  (** [ok value] is a form field that always successfully returns [value].
+
+      @since 3.8.0 *)
+
+  val error : string -> string -> 'a t
+  (** [error name message] is a form field that always errors the field [name]
+      with the [message].
+
+      These allow adding adding further checks to the entire form using all
+      decoded field values and then attaching more errors to specific fields (or
+      not).
+
+      @since 3.8.0 *)
 
   val list : ?min_length:int -> ?max_length:int -> 'a ty -> string -> 'a list t
   (** [list ?min_length ?max_length ty name] is a form field which can decode a
@@ -96,6 +112,12 @@ module Form : sig
       ...
       ]}
 
+      However, note that [let*] uses a 'fail-fast' decoding strategy. If there is
+      a decoding error, it immediately returns the error without decoding the
+      subsequent fields. (Which makes sense if you think about the example above.)
+      So, in order to ensure complete error reporting for all fields, you would
+      need to use [let+] and [and+].
+
       @since 3.8.0 *)
 
   val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
@@ -126,7 +148,8 @@ module Form : sig
       suggested default English translations are given below.
 
       These keys are modelled after
-      {{: https://github.com/playframework/playframework/blob/6f5129e6e3b9c784948b56d486d1ef1e5efef163/core/play/src/main/resources/messages.default} Play Framework}. *)
+      {{:https://github.com/playframework/playframework/blob/6f5129e6e3b9c784948b56d486d1ef1e5efef163/core/play/src/main/resources/messages.default}
+       Play Framework}. *)
 
   val error_expected_bool : string
   (** Please enter [true] or [false]. *)
@@ -163,64 +186,96 @@ module Form : sig
 
   (** {2 Examples}
 
-  Basic complete example:
+      Basic complete example:
 
-  {[
-  type user = { name : string; age : int option}
+      {[
+      type user = { name : string; age : int option }
 
-  open Dream_html.Form
+      open Dream_html.Form
 
-  let user_form =
-    let+ name = required string "name"
-    and+ age = optional (int ~min:16) "age" in (* Thanks, Australia! *)
-    { name; age }
+      let user_form =
+        let+ name = required string "name"
+        and+ age = optional (int ~min:16) "age" in
+        (* Thanks, Australia! *)
+        { name; age }
 
-  let dream_form = ["age", "42"; "name", "Bob"]
-  let user_result = validate user_form dream_form
-  ]}
+      let dream_form = ["age", "42"; "name", "Bob"]
+      let user_result = validate user_form dream_form
+      ]}
 
-  Result: [Ok { name = "Bob"; age = Some 42 }]
+      Result: [Ok { name = "Bob"; age = Some 42 }]
 
-  Sad path:
+      Sad path:
 
-  {[validate user_form ["age", "none"]]}
+      {[validate user_form ["age", "none"]]}
 
-  Result: [Error [("age", "error.expected.int"); ("name", "error.required")]]
+      Result:
+      [Error [("age", "error.expected.int"); ("name", "error.required")]]
 
-  Decode list of values from form:
+      Decode list of values from form:
 
-  {[
-  type plan = { id : string; features : string list }
+      {[
+      type plan = { id : string; features : string list }
 
-  let plan_form =
-    let+ id = required string "id"
-    and+ features = list string "features" in
-    { id; features }
+      let plan_form =
+        let+ id = required string "id"
+        and+ features = list string "features" in
+        { id; features }
 
-  validate plan_form ["id", "foo"]
-  ]}
+      validate plan_form ["id", "foo"]
+      ]}
 
-  Result: [Ok {id = "foo"; features = []}]
+      Result: [Ok {id = "foo"; features = []}]
 
-  {[validate plan_form ["id", "foo"; "features", "f1"; "features", "f2"]]}
+      {[validate plan_form ["id", "foo"; "features", "f1"; "features", "f2"]]}
 
-  Result: [Ok {id = "foo"; features = ["f1"; "f2"]}]
+      Result: [Ok {id = "foo"; features = ["f1"; "f2"]}]
 
-  Note that the names can be anything, eg ["features[]"] if you prefer.
+      Note that the names can be anything, eg ["features[]"] if you prefer.
 
-  Add further requirements to field values:
+      Add further requirements to field values:
 
-  {[
-  let plan_form =
-    let+ id = ensure "error.expected.nonempty" (( <> ) "") required string "id"
-    and+ features = list string "features" in
-    { id; features }
+      {[
+      let plan_form =
+        let+ id = ensure "error.expected.nonempty" (( <> ) "") required string "id"
+        and+ features = list string "features" in
+        { id; features }
 
-  validate plan_form ["id", ""]
-  ]}
+      validate plan_form ["id", ""]
+      ]}
 
-  Result: [Error [("id", "error.expected.nonempty")]]
-  *)
+      Result: [Error [("id", "error.expected.nonempty")]]
+
+      Complex validation rules with multiple fields:
+
+      {[
+      type req = {
+        id : string;
+        years : int option;
+        months : int option;
+        weeks : int option;
+        days : int option;
+      }
+
+      let req_form =
+        let+ id = required string "id" (* Both id... *)
+        and+ days, weeks, months, years = (* ...and period are required *)
+          let* days = optional int "days" in
+          let* weeks = optional int "weeks" in
+          let* months = optional int "months" in
+          let* years = optional int "years" in
+          match days, weeks, months, years with
+          | None, None, None, None -> error "years" "Please enter a period"
+          (* Only one period component is required *)
+          | _ -> ok (days, weeks, months, years)
+        in
+        { id; days; weeks; months; years }
+
+      validate req []
+      ]}
+
+      Result: [Error [("years", "Please enter a period"); ("id", "error.required")]]
+      *)
 end
 
 val form :
@@ -290,9 +345,13 @@ val csrf_tag : Dream.request -> node
 (** Convenience to add a CSRF token generated by Dream into your form. Type-safe
     wrapper for [Dream.csrf_tag].
 
-    {[form
-        [action "/foo"]
-        [csrf_tag req; input [name "bar"]; input [type_ "submit"]]]} *)
+    {[
+    form [action "/foo"] [
+      csrf_tag req;
+      input [name "bar"];
+      input [type_ "submit"];
+    ]
+    ]} *)
 
 (** {2 Live reload support} *)
 
@@ -303,7 +362,7 @@ val csrf_tag : Dream.request -> node
     below for the 3-step process to use it.
 
     This module is adapted from Dream, released under the MIT license. For
-    details, visit {{: https://github.com/aantron/dream}}.
+    details, visit {:https://github.com/aantron/dream}.
 
     Copyright 2021-2023 Thibaut Mattio, Anton Bachin.
 
@@ -312,24 +371,24 @@ module Livereload : sig
   val route : Dream.route
   (** (1) Put this in your top-level router:
 
-      {[let () = Dream.run
+      {[
+      let () =
+        Dream.run
         @@ Dream.logger
         @@ Dream.router [
           Dream_html.Livereload.route;
           (* ...other routes... *)
-      ]]} *)
+        ]
+      ]} *)
 
   val script : node
   (** (2) Put this inside your [head]:
 
-      {[head [] [
-        Livereload.script;
-        (* ... *)
-      ]]} *)
+      {[head [] [Livereload.script (* ... *)]]} *)
 
   (** (3) And run the server with environment variable [LIVERELOAD=1].
 
-      {b ⚠️ If this env var is not set, then livereload is turned off.} This means
-      that the [route] will respond with [404] status and the script will be
-      omitted from the rendered HTML. *)
+      {b ⚠️ If this env var is not set, then livereload is turned off.} This
+      means that the [route] will respond with [404] status and the script will
+      be omitted from the rendered HTML. *)
 end
