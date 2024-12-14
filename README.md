@@ -63,7 +63,10 @@ let page req =
 
         label [for_ "what-you-think"] [txt "Tell us what you think!"];
         input [name "what-you-think"; id "what-you-think"];
-        input [type_ "submit"; value "Send"] ] ] ]
+        input [type_ "submit"; value "Send"];
+      ];
+    ];
+  ]
 
 (* Integrated with Dream response *)
 let handler req = Dream_html.respond (page req)
@@ -132,11 +135,12 @@ are statically enforced as childless:
 
 ```ocaml
 let entry =
-  input
-    [ if should_focus then autofocus else null_;
-      id "email";
-      name "email";
-      value "Email address" ]
+  input [
+    if should_focus then autofocus else null_;
+    id "email";
+    name "email";
+    value "Email address";
+  ]
 ```
 
 You can also embed HTML comments in the generated document:
