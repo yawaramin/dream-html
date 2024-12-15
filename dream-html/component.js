@@ -19,6 +19,11 @@
         typeError('input is null');
       }
 
+      const placeholderAttr = this.getAttribute('placeholder');
+      if (placeholderAttr != null) {
+        inp.setAttribute('placeholder', placeholderAttr);
+      }
+
       const itemContainer = this.querySelector('.dropdown-content');
       if (itemContainer == null) {
         typeError('items container is null');

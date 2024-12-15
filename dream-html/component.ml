@@ -5,7 +5,10 @@ let combo_box = std_tag "combo-box"
 
 let combo_box ~id ~list ~label ~placeholder =
   combo_box
-    [HTML.id "%s" id; HTML.list "%s" list; class_ "field is-horizontal"]
+    [ HTML.id "%s" id;
+      HTML.list "%s" list;
+      class_ "field is-horizontal";
+      HTML.placeholder "%s" placeholder ]
     [ div
         [class_ "field-label"]
         [HTML.label [class_ "label"; for_ "%s-input" id] [txt "%s" label]];
@@ -19,7 +22,6 @@ let combo_box ~id ~list ~label ~placeholder =
                     [ HTML.id "%s-input" id;
                       type_ "search";
                       class_ "input";
-                      HTML.placeholder "%s" placeholder;
                       Aria.haspopup `true_;
                       Aria.controls "%s-menu" id ] ];
               div
