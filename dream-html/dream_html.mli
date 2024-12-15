@@ -392,3 +392,12 @@ module Livereload : sig
       means that the [route] will respond with [404] status and the script will
       be omitted from the rendered HTML. *)
 end
+
+(** Web components with markup rendered partially server-side and using Bulma CSS
+    for styling. *)
+module Component : sig
+  val combo_box :
+    id:string -> list:string -> label:string -> placeholder:string -> node
+
+  val combo_box_js : node
+end
