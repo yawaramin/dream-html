@@ -53,7 +53,8 @@ let page req =
   (* automatically injects <!doctype html> *)
   html [lang "en"] [
     head [] [
-      title [] "Dream-html" ];
+      title [] "Dream-html";
+    ];
     body [] [
       h1 [] [txt "Dream-html"];
       p [] [txt "Is cool!"];
