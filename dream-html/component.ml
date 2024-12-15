@@ -5,39 +5,36 @@ let combo_box = std_tag "combo-box"
 
 let combo_box ~id ~list ~label ~placeholder =
   combo_box
-    [HTML.id "%s" id; HTML.list "%s" list]
+    [HTML.id "%s" id; HTML.list "%s" list; class_ "field is-horizontal"]
     [ div
-        [class_ "field is-horizontal"]
+        [class_ "field-label"]
+        [HTML.label [class_ "label"; for_ "%s-input" id] [txt "%s" label]];
+      div
+        [class_ "field-body"]
         [ div
-            [class_ "field-label"]
-            [HTML.label [class_ "label"; for_ "%s-input" id] [txt "%s" label]];
-          div
-            [class_ "field-body"]
+            [class_ "dropdown field"]
             [ div
-                [class_ "dropdown field"]
+                [class_ "dropdown-trigger"]
+                [ p
+                    [class_ "control"]
+                    [ input
+                        [ HTML.id "%s-input" id;
+                          class_ "input";
+                          HTML.placeholder "%s" placeholder;
+                          Aria.haspopup `true_;
+                          Aria.controls "%s-menu" id ] ] ];
+              div
+                [class_ "dropdown-menu"; HTML.id "%s-menu" id; role `menu]
                 [ div
-                    [class_ "dropdown-trigger"]
-                    [ p
-                        [class_ "control"]
-                        [ input
-                            [ HTML.id "%s-input" id;
-                              class_ "input";
-                              HTML.placeholder "%s" placeholder;
-                              Aria.haspopup `true_;
-                              Aria.controls "%s-menu" id ] ] ];
-                  div
-                    [class_ "dropdown-menu"; HTML.id "%s-menu" id; role `menu]
-                    [ div
-                        [class_ "dropdown-content"]
-                        [ a
-                            [ href "#";
-                              class_ "clear dropdown-item has-background-light"
-                            ]
-                            [ span [] [txt "Clear"];
-                              span
-                                [class_ "icon is-small"; Aria.hidden true]
-                                [txt "🚫"] ];
-                          hr [class_ "dropdown-divider"] ] ] ] ] ] ]
+                    [class_ "dropdown-content"]
+                    [ a
+                        [ href "#";
+                          class_ "clear dropdown-item has-background-light" ]
+                        [ span [] [txt "Clear"];
+                          span
+                            [class_ "icon is-small"; Aria.hidden true]
+                            [txt "🚫"] ];
+                      hr [class_ "dropdown-divider"] ] ] ] ] ]
 
 let combo_box_js =
   script []

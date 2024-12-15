@@ -393,11 +393,17 @@ module Livereload : sig
       be omitted from the rendered HTML. *)
 end
 
-(** Web components with markup rendered partially server-side and using Bulma CSS
-    for styling. *)
+(** Web components with markup rendered partially server-side and using
+    {{: https://bulma.io/} Bulma CSS} for styling. *)
 module Component : sig
   val combo_box :
     id:string -> list:string -> label:string -> placeholder:string -> node
+  (** [combo_box ~id ~list ~label ~placeholder] is a combo box component with a
+      searchable drop-down menu.
+
+      @param list is the [id] attribute of a [datalist] element. It works the
+      same as described in
+      {{: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist} MDN}.  *)
 
   val combo_box_js : node
 end
