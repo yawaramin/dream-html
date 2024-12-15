@@ -75,7 +75,7 @@ module Livereload = struct
 
   let endpoint = "/_livereload"
 
-  let script =
+  let js =
     if enabled then
       HTML.script []
         {|
@@ -123,4 +123,6 @@ module Livereload = struct
                   Dream.close_websocket sock))
         else
           Dream.empty `Not_Found)
+
+  let script = js
 end

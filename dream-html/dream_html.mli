@@ -23,7 +23,7 @@
 
     See the bottom of the page for complete examples.
 
-    @since 3.7.0. *)
+    @since 3.7.0 *)
 module Form : sig
   (** {2 Basic type decoders} *)
 
@@ -332,7 +332,7 @@ val send :
   unit Dream.promise
 (** Type-safe wrapper for [Dream.send].
 
-    @since 3.2.0. *)
+    @since 3.2.0 *)
 
 val set_body : Dream.response -> node -> unit
 (** Type-safe wrapper for [Dream.set_body]. Sets the body to the given [node] and
@@ -366,7 +366,7 @@ val csrf_tag : Dream.request -> node
 
     Copyright 2021-2023 Thibaut Mattio, Anton Bachin.
 
-    @since 3.4.0. *)
+    @since 3.4.0 *)
 module Livereload : sig
   val route : Dream.route
   (** (1) Put this in your top-level router:
@@ -381,29 +381,34 @@ module Livereload : sig
         ]
       ]} *)
 
-  val script : node
+  val js : node
   (** (2) Put this inside your [head]:
 
-      {[head [] [Livereload.script (* ... *)]]} *)
+      {[head [] [Livereload.js (* ... *)]]}
+
+      @since 3.9.0 *)
 
   (** (3) And run the server with environment variable [LIVERELOAD=1].
 
       {b ⚠️ If this env var is not set, then livereload is turned off.} This
       means that the [route] will respond with [404] status and the script will
       be omitted from the rendered HTML. *)
+
+  val script : node [@@ocaml.deprecated "Use js instead"]
 end
 
 (** Web components with markup rendered partially server-side and using
-    {{: https://bulma.io/} Bulma CSS} for styling. *)
+    {{: https://bulma.io/} Bulma CSS} for styling.
+
+    @since 3.9.0 *)
 module Component : sig
   val combo_box :
     id:string -> list:string -> label:string -> placeholder:string -> node
   (** [combo_box ~id ~list ~label ~placeholder] is a combo box component with a
-      searchable drop-down menu.
+      searchable drop-down menu. The corresponding JavaScript code for this
+      component is in the file [component.js].
 
       @param list is the [id] attribute of a [datalist] element. It works the
       same as described in
       {{: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist} MDN}.  *)
-
-  val combo_box_js : node
 end
