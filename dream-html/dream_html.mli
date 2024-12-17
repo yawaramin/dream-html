@@ -392,3 +392,35 @@ module Livereload : sig
       means that the [route] will respond with [404] status and the script will
       be omitted from the rendered HTML. *)
 end
+
+(** @since v3.9.0 *)
+module Route : sig
+  type (_, _, _) t
+
+  val make :
+    ?meth:Dream.method_ ->
+    ('r, 'u, Dream.response Dream.promise) format ->
+    ('p, unit, string, attr) format4 ->
+    (Dream.request -> 'r) ->
+    ('r, 'p, 'u) t
+  (** Examples:
+
+    {[
+    let get_account_version =
+      make ~meth:`GET "/accounts/%s/versions/%d" "/accounts/%s/versions/%d" (fun _req acc ver ->
+        Dream.html (Printf.sprintf "Account: %s, version: %d" acc ver))
+
+    let get_order =
+      make ~meth:`GET "/orders/%s" "/orders/%s" (fun _ id -> Dream.html id)
+    ]}
+    *)
+
+  val format : (_, _, _) t -> string
+  val href : (_, 'p, _) t -> ('p, unit, string, attr) format4
+
+  val handler : (_, _, _) t -> Dream.handler
+  (** [handler route] converts a [route] into a Dream handler. *)
+
+  val ( || ) :
+    (_, _, _) t -> (_, _, _) t -> (Dream.response Dream.promise, attr, _) t
+end
