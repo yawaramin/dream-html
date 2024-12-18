@@ -62,10 +62,7 @@ let xml_mode xml name =
 module Indent_level = struct
   type t = int option
 
-  let next (t : t) =
-    match t with
-    | None -> None
-    | Some n -> Some (n + 1)
+  let next (t : t) = Option.map succ t
 
   (* The following functions return string that should be inserted before or
     after the open or closing tag with indent level t. Some of them also need to
@@ -92,16 +89,16 @@ module Indent_level = struct
     | Some _ -> "\n"
 end
 
+let should_indent_next children =
+  match children with
+  | [] -> false
+  | children -> not (List.exists is_txt children)
+
 (* Loosely based on https://www.w3.org/TR/DOM-Parsing/. Pretty prints using two
   spaces for indentation. On high level, the algorithm indents the children of a
   tag if they do not contain a txt node. No newline is inserted if there are no
   children nodes. *)
 let rec write_tag ~indent_level ~xml p node =
-  let should_indent_next children =
-    match children with
-    | [] -> false
-    | children -> not (List.exists is_txt children)
-  in
   if not (is_null node) then p (Indent_level.open_prefix indent_level);
   (match node with
   | Tag { name = ""; children = Some children; _ } ->
