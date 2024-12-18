@@ -28,6 +28,14 @@ and node =
   | Txt of string
   | Comment of string
 
+let is_txt = function
+  | Txt _ -> true
+  | _ -> false
+
+let is_null = function
+  | Tag { name = ""; _ } -> true
+  | _ -> false
+
 type 'a to_attr = 'a -> attr
 type 'a string_attr = ('a, unit, string, attr) format4 -> 'a
 type std_tag = attr list -> node list -> node
@@ -37,10 +45,10 @@ type 'a text_tag = attr list -> ('a, unit, string, node) format4 -> 'a
 let write_attr ~xml p = function
   | "", _ -> ()
   | name, "" when not xml ->
-    p "\n";
+    p " ";
     p name
   | name, value ->
-    p "\n";
+    p " ";
     p name;
     p {|="|};
     p value;
@@ -51,41 +59,101 @@ let xml_mode xml name =
   | true, _ | _, ("math" | "svg") -> true
   | _ -> false
 
-(* Loosely based on https://www.w3.org/TR/DOM-Parsing/ *)
-let rec write_tag ~xml p = function
+module Indent_level = struct
+  type t = int option
+
+  let next (t : t) =
+    match t with
+    | None -> None
+    | Some n -> Some (n + 1)
+
+  (* The following functions return string that should be inserted before or
+    after the open or closing tag with indent level t. Some of them also need to
+    know if the next tag is going to be indented one more level. *)
+
+  let open_prefix (t : t) =
+    match t with
+    | None -> ""
+    | Some n -> String.make (n * 2) ' '
+
+  let open_suffix (t : t) ~indent_next =
+    match t, indent_next with
+    | Some _, true -> "\n"
+    | _, _ -> ""
+
+  let close_prefix (t : t) ~indent_next =
+    match t, indent_next with
+    | Some n, true -> String.make (n * 2) ' '
+    | _, _ -> ""
+
+  let close_suffix (t : t) =
+    match t with
+    | None -> ""
+    | Some _ -> "\n"
+end
+
+(* Loosely based on https://www.w3.org/TR/DOM-Parsing/. Pretty prints using two
+  spaces for indentation. On high level, the algorithm indents the children of a
+  tag if they do not contain a txt node. No newline is inserted if there are no
+  children nodes. *)
+let rec write_tag ~indent_level ~xml p node =
+  let should_indent_next children =
+    match children with
+    | [] -> false
+    | children -> not (List.exists is_txt children)
+  in
+  if not (is_null node) then p (Indent_level.open_prefix indent_level);
+  (match node with
   | Tag { name = ""; children = Some children; _ } ->
-    List.iter (write_tag ~xml p) children
+    List.iter
+      (write_tag
+         ~indent_level:
+           (if should_indent_next children then indent_level else None)
+         ~xml p)
+      children
   | Tag { name; attrs; children = Some [] } when xml ->
     p "<";
     p name;
     List.iter (write_attr ~xml p) attrs;
     p " />"
+  | Tag { name; attrs; children = Some children } ->
+    let xml = xml_mode xml name in
+    let indent_next = should_indent_next children in
+    if name = "html" then (
+      p "<!DOCTYPE html>";
+      p (Indent_level.open_suffix indent_level ~indent_next);
+      p (Indent_level.open_prefix indent_level));
+    p "<";
+    p name;
+    List.iter (write_attr ~xml p) attrs;
+    p ">";
+    p (Indent_level.open_suffix indent_level ~indent_next);
+    List.iter
+      (write_tag
+         ~indent_level:
+           (if indent_next then Indent_level.next indent_level else None)
+         ~xml p)
+      children;
+    p (Indent_level.close_prefix indent_level ~indent_next);
+    p "</";
+    p name;
+    p ">"
   | Tag { name; attrs; children = None } ->
     let xml = xml_mode xml name in
     p "<";
     p name;
     List.iter (write_attr ~xml p) attrs;
     p (if xml then " />" else ">")
-  | Tag { name; attrs; children = Some children } ->
-    let xml = xml_mode xml name in
-    if name = "html" then p "<!DOCTYPE html>\n";
-    p "<";
-    p name;
-    List.iter (write_attr ~xml p) attrs;
-    p ">";
-    List.iter (write_tag ~xml p) children;
-    p "</";
-    p name;
-    p ">"
   | Txt str -> p str
   | Comment str ->
     p "<!-- ";
     p str;
-    p " -->"
+    p " -->");
+  if not (is_null node) then p (Indent_level.close_suffix indent_level)
 
 let to_string ~xml node =
   let buf = Buffer.create 256 in
-  write_tag ~xml (Buffer.add_string buf) node;
+  write_tag ~indent_level:(Some 0) ~xml (Buffer.add_string buf) node;
   Buffer.contents buf
 
 let pp ppf node = node |> to_string ~xml:false |> Format.pp_print_string ppf
@@ -169,10 +237,6 @@ let ( .@[] ) node attr =
   match node with
   | Tag { attrs; _ } -> List.assoc attr attrs
   | _ -> invalid_arg "cannot get value of attribute from non-tag node"
-
-let is_null = function
-  | Tag { name = ""; _ } -> true
-  | _ -> false
 
 let is_null_ (name, _) = name = ""
 
