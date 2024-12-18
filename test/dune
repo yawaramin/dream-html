@@ -1,0 +1,35 @@
+(test
+ (name pure_html_test)
+ (package pure-html)
+ (libraries pure_html)
+ (action
+  (diff expected.html got.html)))
+
+(rule
+ (with-stdout-to
+  got.html
+  (run ./pure_html_test.exe)))
+
+(test
+ (name dream_html_test)
+ (package dream-html)
+ (libraries dream_html)
+ (action
+  (diff expected.txt got.txt)))
+
+(rule
+ (with-stdout-to
+  got.txt
+  (run ./dream_html_test.exe)))
+
+(test
+ (name route_test)
+ (package dream-html)
+ (libraries dream_html)
+ (action
+  (diff expected_route.txt got_route.txt)))
+
+(rule
+ (with-stdout-to
+  got_route.txt
+  (run ./route_test.exe)))

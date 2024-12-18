@@ -9,6 +9,7 @@ let make ?meth rfmt afmt hdlr = { meth; rfmt; afmt; hdlr }
 let format { rfmt = CamlinternalFormatBasics.Format (_, str); _ } = str
 let link route = route.afmt
 let nf () = Dream.empty `Not_Found
+let sub = StringLabels.sub
 
 let pos_field =
   Dream.new_field ~name:"dream-html-route-pos" ~show_value:string_of_int ()
@@ -76,23 +77,24 @@ let rec handler' :
       (lit, Char_literal ('/', String (Arg_padding Right, End_of_format))) ->
     let lit_len = String.length lit + 1
     and remaining_len = len - pos in
-    if lit_len < remaining_len then
+    if
+      lit_len <= remaining_len
+      && sub path ~pos ~len:(lit_len - 1) = lit
+      && path.[pos + lit_len - 1] = '/'
+    then
       let rest_len = remaining_len - lit_len in
       if rest_len >= 0 then
         handler' ~pos:len ~len path End_of_format
           (hdlr rest_len
              (* Eg from /v2/orders/1, extract /orders/1 *)
-             (StringLabels.sub path
-                ~pos:(pos + lit_len - 1)
-                ~len:(rest_len + 1)))
+             (sub path ~pos:(pos + lit_len - 1) ~len:(rest_len + 1)))
       else
         nf ()
     else
       nf ()
   | String_literal (lit, fmt) ->
     let lit_len = String.length lit in
-    if len - pos >= lit_len && StringLabels.sub path ~pos ~len:lit_len = lit
-    then
+    if len - pos >= lit_len && sub path ~pos ~len:lit_len = lit then
       handler' ~pos:(pos + lit_len) ~len path fmt hdlr
     else
       nf ()

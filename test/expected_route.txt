@@ -1,0 +1,29 @@
+🔎 Path params of different types
+200 OK
+Content-Type: text/html; charset=utf-8
+
+Account: yxzefac, version: 2
+
+🔎 Route search with fallthrough
+200 OK
+Content-Type: text/html; charset=utf-8
+
+Account: yxzefac, version: 2
+
+🔎 Route not found
+404 Not Found
+
+
+
+🔎 Scoped middleware
+200 OK
+Content-Type: text/html; charset=utf-8
+X-Api-Version: 2
+
+yzlkjh
+
+🔎 Scoped middleware no match
+404 Not Found
+
+
+
