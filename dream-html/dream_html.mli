@@ -393,9 +393,15 @@ module Livereload : sig
       be omitted from the rendered HTML. *)
 end
 
-(** @since v3.9.0 *)
+(** {2 Type-safe routing} *)
+
+(** Routes with type-safe path segments using OCaml's built-in format strings.
+
+    @since v3.9.0 *)
 module Route : sig
   type (_, _, _) t
+  (** A route that can handle a templated request path and also print the filled
+      value of the templated path using its parameters. *)
 
   val make :
     ?meth:Dream.method_ ->
@@ -403,24 +409,113 @@ module Route : sig
     ('p, unit, string, attr) format4 ->
     (Dream.request -> 'r) ->
     ('r, 'p, 'u) t
-  (** Examples:
+  (** [make ?meth request_fmt attr_fmt handler] is a route which handles requests
+      with [meth] if specified, or any method otherwise.
 
-    {[
-    let get_account_version =
-      make ~meth:`GET "/accounts/%s/versions/%d" "/accounts/%s/versions/%d" (fun _req acc ver ->
-        Dream.html (Printf.sprintf "Account: %s, version: %d" acc ver))
+      The [request_fmt] format string is used to match against requests, and the
+      [attr_fmt] format string is used to print out the filled value of the route
+      with its parameters as a dream-html typed attribute. The two are different
+      because they must be specified as literals and have different types for
+      parsing and printing.
 
-    let get_order =
-      make ~meth:`GET "/orders/%s" "/orders/%s" (fun _ id -> Dream.html id)
-    ]}
-    *)
+      [handler] takes the Dream request and any parameters that are parsed from
+      the path as arguments and returns a Dream response.
+
+      Examples:
+
+      {[
+      let get_account_version =
+        make ~meth:`GET "/accounts/%s/versions/%d" "/accounts/%s/versions/%d" (fun _req acc ver ->
+          Dream.html (Printf.sprintf "Account: %s, version: %d" acc ver))
+
+      let get_order =
+        make ~meth:`GET "/orders/%s" "/orders/%s" (fun _ id -> Dream.html id)
+      ]} *)
 
   val format : (_, _, _) t -> string
-  val href : (_, 'p, _) t -> ('p, unit, string, attr) format4
+  (** [format route] is the template string used to match request paths against
+      the [route]. *)
+
+  val link : (_, 'p, _) t -> ('p, unit, string, attr) format4
+  (** [link route] is a dream-html attribute value that prints out the filled
+      path of the [route] given its parameters. Use this instead of hard-coding
+      your route URLs throughout your app, to make it easy to refactor routes
+      with minimal effort.
+
+      Eg:
+
+      {[
+      open Dream_html
+      open HTML
+
+      a [href (Route.link get_order) "yzxyzc"] [txt "My Order"]
+      ]}
+
+      Renders: [<a href="/orders/yzxyzc">My Order</a>] *)
 
   val handler : (_, _, _) t -> Dream.handler
-  (** [handler route] converts a [route] into a Dream handler. *)
+  (** [handler route] converts the [route] into a Dream handler. *)
 
   val ( || ) :
     (_, _, _) t -> (_, _, _) t -> (Dream.response Dream.promise, attr, _) t
+  (** [route1 || route2] joins together [route1] and [route2] into a new route so
+      that requests targeting either of them will match. Use this to build your
+      app's routes. Eg, in Dream your routes might look like:
+
+      {[
+      Dream.router [
+        Dream.get "/echo/:word" Echo.get;
+        Dream.post "/echo/:word" Echo.post;
+      ]
+      ]}
+
+      With [( || )] it would look like:
+
+      {[
+      let open Route in
+      handler (
+        make ~meth:`GET "/echo/%s" "/echo/%s" Echo.get
+        || make ~meth:`POST "/echo/%s" "/echo/%s" Echo.post
+      )
+      ]} *)
+
+  val ( && ) : Dream.middleware -> Dream.middleware -> Dream.middleware
+  (** [middleware1 && middleware2] joins together two Dream middlewares so that
+      [middleware1] is applied first, then [middleware2]. *)
+
+  val scope :
+    ( int -> string -> 'c,
+      'd,
+      Dream.response Dream.promise,
+      Dream.response Dream.promise,
+      Dream.response Dream.promise,
+      int -> string -> Dream.response Dream.promise )
+    format6 ->
+    ((Dream.request -> Dream.response Dream.promise) -> Dream.request -> 'c) ->
+    (_, _, _) t ->
+    (int -> string -> 'c, attr, 'd) t
+  (** [scope prefix middleware route] is a route that matches against paths which
+      have a [prefix], and handles those requests by applying the [middleware]
+      and the [route] handler. Eg:
+
+      {[
+      let add_header prev req =
+        let open Lwt.Syntax in
+        let+ resp = prev req in
+        Dream.add_header resp "X-Api-Server" "Dream";
+        resp
+
+      let get_order =
+        make ~meth:`GET "/orders/%s" "/orders/%s" (fun _ id -> Dream.html id)
+
+      let get_order_v2 = scope "/v2" add_header get_order
+      ]}
+
+      In the example above, [get_order_v2] will match against requests with paths
+      like "/v2/orders/%s", then strip out the [/v2] prefix, apply the
+      [add_header] middleware, and handle the request with the [get_order] route. *)
+
+  val pp : (_, _, _) t Fmt.t
+  (** [pp route] is a formatter that prints out a simple summary of the route, eg
+      [GET /foo] or just [/foo] if the route matches any method. *)
 end
