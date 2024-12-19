@@ -98,13 +98,21 @@ let rec handler' :
       handler' ~pos:(pos + lit_len) ~len path fmt hdlr
     else
       nf ()
+  | Char_literal ('/', String (Arg_padding Right, End_of_format)) ->
+    let remaining_len = len - pos in
+    if remaining_len > 0 && path.[pos] = '/' then
+      let len = remaining_len - 1 in
+      handler' ~pos:len ~len path End_of_format
+        (hdlr len (sub path ~pos:(pos + 1) ~len))
+    else
+      nf ()
   | Char_literal (lit, fmt) ->
     if len - pos >= 1 && path.[pos] = lit then
       handler' ~pos:(succ pos) ~len path fmt hdlr
     else
       nf ()
   | End_of_format -> hdlr
-  | _ -> assert false
+  | _ -> nf ()
 
 let handler { rfmt; hdlr; meth; _ } req =
   match meth with

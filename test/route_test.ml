@@ -44,6 +44,11 @@ let () =
   test "Route not found"
     R.(get_order || get_account_version)
     "/v2/orders/yzlkjh";
+  test "Empty target" get_order "";
+  test "Rest param alone" (R.make "%*s" "" (fun _ _ s -> Dream.html s)) "/abc";
+  test "Rest param after /"
+    (R.make "/%*s" "" (fun _ _ s -> Dream.html s))
+    "/abc";
   let scoped_v2 = R.(scope "/v2" v2_header get_order) in
   test "Scoped middleware" scoped_v2 "/v2/orders/yzlkjh";
   test "Scoped middleware no match" scoped_v2 "/v1/orders/yzlkjh"

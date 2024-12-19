@@ -15,6 +15,22 @@ Account: yxzefac, version: 2
 
 
 
+🔎 Empty target
+404 Not Found
+
+
+
+🔎 Rest param alone
+404 Not Found
+
+
+
+🔎 Rest param after /
+200 OK
+Content-Type: text/html; charset=utf-8
+
+abc
+
 🔎 Scoped middleware
 200 OK
 Content-Type: text/html; charset=utf-8

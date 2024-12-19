@@ -412,14 +412,26 @@ module Route : sig
   (** [make ?meth request_fmt attr_fmt handler] is a route which handles requests
       with [meth] if specified, or any method otherwise.
 
-      The [request_fmt] format string is used to match against requests, and the
-      [attr_fmt] format string is used to print out the filled value of the route
-      with its parameters as a dream-html typed attribute. The two are different
-      because they must be specified as literals and have different types for
-      parsing and printing.
+      @param request_fmt format string is used to match against requests. It
+        accepts the following format specifiers:
 
-      [handler] takes the Dream request and any parameters that are parsed from
-      the path as arguments and returns a Dream response.
+        [%s] matches against any sequence of characters upto (excluding) a [/].
+
+        [/%*s] matches against paths which end with a [/] character followed by
+        any number of other characters, and then passes as handler params the
+        number of characters captured as well as the captured substring.
+
+        [%d] matches against any integer.
+
+        [%c] matches against any single character.
+
+      @param attr_fmt format string is used to print out the filled value of the
+        route with its parameters as a dream-html typed attribute. The two are
+        different because they must be specified as literals and have different
+        types for parsing and printing.
+
+      @param handler takes the Dream request and any parameters that are parsed
+        from the path as arguments and returns a Dream response.
 
       Examples:
 
@@ -473,8 +485,8 @@ module Route : sig
       {[
       let open Route in
       handler (
-        make ~meth:`GET "/echo/%s" "/echo/%s" Echo.get
-        || make ~meth:`POST "/echo/%s" "/echo/%s" Echo.post
+        make ~meth:`GET "/echo/%s" "/echo/%s" Echo.get ||
+        make ~meth:`POST "/echo/%s" "/echo/%s" Echo.post
       )
       ]} *)
 
@@ -486,10 +498,8 @@ module Route : sig
     ( int -> string -> 'r,
       unit,
       Dream.response Dream.promise,
-      Dream.response Dream.promise,
-      Dream.response Dream.promise,
       int -> string -> Dream.response Dream.promise )
-    format6 ->
+    format4 ->
     ((Dream.request -> Dream.response Dream.promise) -> Dream.request -> 'r) ->
     (_, _) t ->
     (int -> string -> 'r, attr) t
@@ -516,5 +526,5 @@ module Route : sig
 
   val pp : (_, _) t Fmt.t
   (** [pp] is a formatter that prints out a simple summary of the route, eg
-      [GET /foo] or just [/foo] if the route matches any method. *)
+      [GET /foo/%s] or just [/foo/%s] if the route matches any method. *)
 end
