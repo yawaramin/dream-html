@@ -499,10 +499,18 @@ module Route : sig
       With [( || )] it would look like:
 
       {[
-      let open Route in
+      (* echo.ml *)
+      open Route
+
+      let get = make ~meth:`GET "/echo/%s" "/echo/%s" (fun _ word ->
+        Dream.html word)
+
+      let post = make ~meth:`POST "/echo/%s" "/echo/%s" (fun _ word ->
+        Dream.html ~status:`Created word)
+
       handler (
-        make ~meth:`GET "/echo/%s" "/echo/%s" Echo.get ||
-        make ~meth:`POST "/echo/%s" "/echo/%s" Echo.post
+        Echo.get ||
+        Echo.post
       )
       ]} *)
 
