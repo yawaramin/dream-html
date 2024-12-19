@@ -41,6 +41,17 @@ abc
 
 
 
+🔎 Recover from method not allowed
+201 Created
+Content-Type: text/html; charset=utf-8
+
+foo
+
+🔎 Fail with method not allowed
+405 Method Not Allowed
+
+
+
 🔎 Scoped middleware
 200 OK
 Content-Type: text/html; charset=utf-8

@@ -16,10 +16,10 @@ let debug resp =
     (Dream.status_to_string st)
     headers b
 
-let test msg route target =
+let test ?method_ msg route target =
   Lwt_main.run
     (let* () = Lwt_io.printlf "🔎 %s" msg in
-     let* resp = R.handler route (Dream.request ~target "") in
+     let* resp = R.handler route (Dream.request ?method_ ~target "") in
      debug resp)
 
 let v2_header prev req =
@@ -34,6 +34,13 @@ let get_account_version =
 
 let get_order =
   R.make ~meth:`GET "/orders/%s" "/orders/%s" (fun _ id -> Dream.html id)
+
+let post_order =
+  R.make ~meth:`POST "/orders/%s" "/orders/%s" (fun _ id ->
+      Dream.html ~status:`Created id)
+
+let put_order =
+  R.make ~meth:`PUT "/orders/%s" "/orders/%s" (fun _ id -> Dream.html id)
 
 let opt_slash = R.make "/foo%%" "/foo" (fun _ -> Dream.empty `OK)
 
@@ -53,6 +60,12 @@ let () =
     "/abc";
   test "Optional slash at end" opt_slash "/foo/";
   test "Optional slash missing at end" opt_slash "/foo";
+  test ~method_:`POST "Recover from method not allowed"
+    R.(get_order || put_order || post_order)
+    "/orders/foo";
+  test ~method_:`POST "Fail with method not allowed"
+    R.(get_account_version || get_order)
+    "/orders/foo";
   let scoped_v2 = R.(scope "/v2" v2_header get_order) in
   test "Scoped middleware" scoped_v2 "/v2/orders/yzlkjh";
   test "Scoped middleware no match" scoped_v2 "/v1/orders/yzlkjh"

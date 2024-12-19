@@ -2,11 +2,14 @@ type ('r, 'p) t =
   { meth : Dream.method_ option;
     rfmt : ('r, unit, Dream.response Dream.promise) format;
     afmt : ('p, unit, string, Pure_html.attr) format4;
+    fmtstr : string;
     hdlr : Dream.request -> 'r
   }
 
-let make ?meth rfmt afmt hdlr = { meth; rfmt; afmt; hdlr }
-let format { rfmt = CamlinternalFormatBasics.Format (_, str); _ } = str
+let make ?meth rfmt afmt hdlr =
+  { meth; rfmt; afmt; fmtstr = string_of_format rfmt; hdlr }
+
+let format route = route.fmtstr
 let link route = route.afmt
 let nf () = Dream.empty `Not_Found
 let sub = StringLabels.sub
@@ -129,14 +132,18 @@ let handler { rfmt; hdlr; meth; _ } req =
       handler' ?pos ~len path fmt (hdlr req))
 
 let ( || ) route1 route2 =
+  let same_fmt = format route1 = format route2 in
   let open Lwt.Syntax in
   let hdlr req =
     let* resp = handler route1 req in
     match Dream.status resp with
-    | `Not_Found | `Method_Not_Allowed -> handler route2 req
+    | `Method_Not_Allowed ->
+      if same_fmt then handler route2 req else Lwt.return resp
+    | `Not_Found -> handler route2 req
     | _ -> Lwt.return resp
   in
-  make "" "" hdlr
+  let rt = make "" "" hdlr in
+  { rt with fmtstr = (if same_fmt then route1.fmtstr else rt.fmtstr) }
 
 let ( && ) mware1 mware2 handler = handler |> mware1 |> mware2
 
