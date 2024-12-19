@@ -147,9 +147,10 @@ let ( || ) route1 route2 =
 
 let ( && ) mware1 mware2 handler = handler |> mware1 |> mware2
 
-let scope prefix mware route =
-  make (prefix ^^ "/%*s") "" (fun req _ _ ->
-      Dream.set_field req pos_field (prefix |> string_of_format |> String.length);
+let scope rprefix aprefix mware route =
+  make (rprefix ^^ "/%*s") (aprefix ^^ route.afmt) (fun req _ _ ->
+      Dream.set_field req pos_field
+        (rprefix |> string_of_format |> String.length);
       (route |> handler |> mware) req)
 
 let pp f route =

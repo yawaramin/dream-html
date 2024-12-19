@@ -529,12 +529,13 @@ module Route : sig
       Dream.response Dream.promise,
       int -> string -> Dream.response Dream.promise )
     format4 ->
+    ('d, unit, string, 'e) format4 ->
     ((Dream.request -> Dream.response Dream.promise) -> Dream.request -> 'r) ->
-    (_, _) t ->
-    (int -> string -> 'r, attr) t
-  (** [scope prefix middleware route] is a route that matches against paths which
-      have a [prefix], and handles those requests by applying the [middleware]
-      and the [route] handler. Eg:
+    (_, 'e) t ->
+    (int -> string -> 'r, 'd) t
+  (** [scope request_prefix attr_prefix middleware route] is a route that matches
+      against paths which have a [request_prefix], and handles those requests by
+      applying the [middleware] and the [route] handler. Eg:
 
       {[
       let add_header prev req =
@@ -546,12 +547,15 @@ module Route : sig
       let get_order =
         make ~meth:`GET "/orders/%s" "/orders/%s" (fun _ id -> Dream.html id)
 
-      let get_order_v2 = scope "/v2" add_header get_order
+      let get_order_v2 = scope "/v2" "/v2" add_header get_order
       ]}
 
       In the example above, [get_order_v2] will match against requests with paths
       like "/v2/orders/%s", then strip out the [/v2] prefix, apply the
-      [add_header] middleware, and handle the request with the [get_order] route. *)
+      [add_header] middleware, and handle the request with the [get_order] route.
+
+      @param attr_prefix is used to prefix the route link correctly as well when
+        it is printed as an attribute. *)
 
   val pp : (_, _) t Fmt.t
   (** [pp] is a formatter that prints out a simple summary of the route, eg

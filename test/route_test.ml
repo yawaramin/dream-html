@@ -66,6 +66,6 @@ let () =
   test ~method_:`POST "Fail with method not allowed"
     R.(get_account_version || get_order)
     "/orders/foo";
-  let scoped_v2 = R.(scope "/v2" v2_header get_order) in
+  let scoped_v2 = R.(scope "/v2" "/v2" v2_header get_order) in
   test "Scoped middleware" scoped_v2 "/v2/orders/yzlkjh";
   test "Scoped middleware no match" scoped_v2 "/v1/orders/yzlkjh"
