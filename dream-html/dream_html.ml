@@ -17,6 +17,7 @@
 
 include Pure_html
 module Form = Form
+module Route = Route
 
 let form f ?csrf req =
   req
