@@ -1,0 +1,7 @@
+(library
+ (name pure_html_test)
+ (package pure-html)
+ (inline_tests)
+ (libraries pure_html)
+ (preprocess
+  (pps ppx_expect)))
