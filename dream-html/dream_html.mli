@@ -401,7 +401,19 @@ end
 module Route : sig
   type (_, _) t
   (** A route that can handle a templated request path and also print the filled
-      value of the templated path using its parameters. *)
+      value of the templated path using its parameters.
+
+      The first type parameter represents the type of the request handler. Eg, if
+      the format string is ["/foo"], the handler will have type
+      [Dream.request -> Dream.response Dream.promise]. If the format string is
+      ["/foo/%s"], the handler will have type
+      [Dream.request -> string -> Dream.response Dream.promise], and so on
+      depending on the type specifiers in the format string.
+
+      The second type parameter represents the type of the [link] attribute
+      printer. Eg, if the format string is ["/foo"], the printer will have type
+      [Dream_html.attr]. If the format string is ["/foo/%s"], the printer will
+      have type [string -> Dream_html.attr], and so on. *)
 
   val make :
     ?meth:Dream.method_ ->
@@ -437,8 +449,12 @@ module Route : sig
 
       {[
       let get_account_version =
-        make ~meth:`GET "/accounts/%s/versions/%d" "/accounts/%s/versions/%d" (fun _req acc ver ->
-          Dream.html (Printf.sprintf "Account: %s, version: %d" acc ver))
+        make
+          ~meth:`GET
+          "/accounts/%s/versions/%d"
+          "/accounts/%s/versions/%d"
+          (fun _req acc ver ->
+            Dream.html (Printf.sprintf "Account: %s, version: %d" acc ver))
 
       let get_order =
         make ~meth:`GET "/orders/%s" "/orders/%s" (fun _ id -> Dream.html id)
