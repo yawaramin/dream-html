@@ -31,6 +31,16 @@ Content-Type: text/html; charset=utf-8
 
 abc
 
+🔎 Optional slash at end
+200 OK
+
+
+
+🔎 Optional slash missing at end
+200 OK
+
+
+
 🔎 Scoped middleware
 200 OK
 Content-Type: text/html; charset=utf-8

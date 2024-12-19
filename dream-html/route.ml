@@ -98,6 +98,8 @@ let rec handler' :
       handler' ~pos:(pos + lit_len) ~len path fmt hdlr
     else
       nf ()
+  | Char_literal ('%', End_of_format)
+    when pos = len || (len - pos = 1 && path.[pos] = '/') -> hdlr
   | Char_literal ('/', String (Arg_padding Right, End_of_format)) ->
     let remaining_len = len - pos in
     if remaining_len > 0 && path.[pos] = '/' then

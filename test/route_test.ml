@@ -35,6 +35,8 @@ let get_account_version =
 let get_order =
   R.make ~meth:`GET "/orders/%s" "/orders/%s" (fun _ id -> Dream.html id)
 
+let opt_slash = R.make "/foo%%" "/foo" (fun _ -> Dream.empty `OK)
+
 let () =
   test "Path params of different types" get_account_version
     "/accounts/yxzefac/versions/2";
@@ -49,6 +51,8 @@ let () =
   test "Rest param after /"
     (R.make "/%*s" "" (fun _ _ s -> Dream.html s))
     "/abc";
+  test "Optional slash at end" opt_slash "/foo/";
+  test "Optional slash missing at end" opt_slash "/foo";
   let scoped_v2 = R.(scope "/v2" v2_header get_order) in
   test "Scoped middleware" scoped_v2 "/v2/orders/yzlkjh";
   test "Scoped middleware no match" scoped_v2 "/v1/orders/yzlkjh"

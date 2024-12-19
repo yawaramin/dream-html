@@ -437,6 +437,10 @@ module Route : sig
 
         [%c] matches against any single character.
 
+        [%%] at the {i end} of the route format string matches against an
+        optional trailing [/] character, allowing you to flexibly handle requests
+        either way.
+
       @param attr_fmt format string is used to print out the filled value of the
         route with its parameters as a dream-html typed attribute. The two are
         different because they must be specified as literals and have different
@@ -508,6 +512,7 @@ module Route : sig
       let post = make ~meth:`POST "/echo/%s" "/echo/%s" (fun _ word ->
         Dream.html ~status:`Created word)
 
+      (* main.ml *)
       handler (
         Echo.get ||
         Echo.post
