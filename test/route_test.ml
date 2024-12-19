@@ -28,21 +28,22 @@ let v2_header prev req =
   Dream.add_header resp "X-Api-Version" "2";
   resp
 
-let get_account_version () =
+let get_account_version =
   R.make ~meth:`GET "/accounts/%s/versions/%d" "/accounts/%s/versions/%d"
     (fun _req acc ver -> Dream.html (spf "Account: %s, version: %d" acc ver))
 
-let get_order () =
+let get_order =
   R.make ~meth:`GET "/orders/%s" "/orders/%s" (fun _ id -> Dream.html id)
 
 let () =
-  let gav = get_account_version ()
-  and go = get_order () in
-  test "Path params of different types" gav "/accounts/yxzefac/versions/2";
-  test "Route search with fallthrough"
-    R.(go || gav)
+  test "Path params of different types" get_account_version
     "/accounts/yxzefac/versions/2";
-  test "Route not found" R.(go || gav) "/v2/orders/yzlkjh";
-  let scoped_v2 = R.(scope "/v2" v2_header go) in
+  test "Route search with fallthrough"
+    R.(get_order || get_account_version)
+    "/accounts/yxzefac/versions/2";
+  test "Route not found"
+    R.(get_order || get_account_version)
+    "/v2/orders/yzlkjh";
+  let scoped_v2 = R.(scope "/v2" v2_header get_order) in
   test "Scoped middleware" scoped_v2 "/v2/orders/yzlkjh";
   test "Scoped middleware no match" scoped_v2 "/v1/orders/yzlkjh"

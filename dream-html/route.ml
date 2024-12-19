@@ -1,6 +1,6 @@
-type ('r, 'p, 'u) t =
+type ('r, 'p) t =
   { meth : Dream.method_ option;
-    rfmt : ('r, 'u, Dream.response Dream.promise) format;
+    rfmt : ('r, unit, Dream.response Dream.promise) format;
     afmt : ('p, unit, string, Pure_html.attr) format4;
     hdlr : Dream.request -> 'r
   }

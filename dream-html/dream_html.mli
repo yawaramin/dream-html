@@ -399,16 +399,16 @@ end
 
     @since v3.9.0 *)
 module Route : sig
-  type (_, _, _) t
+  type (_, _) t
   (** A route that can handle a templated request path and also print the filled
       value of the templated path using its parameters. *)
 
   val make :
     ?meth:Dream.method_ ->
-    ('r, 'u, Dream.response Dream.promise) format ->
+    ('r, unit, Dream.response Dream.promise) format ->
     ('p, unit, string, attr) format4 ->
     (Dream.request -> 'r) ->
-    ('r, 'p, 'u) t
+    ('r, 'p) t
   (** [make ?meth request_fmt attr_fmt handler] is a route which handles requests
       with [meth] if specified, or any method otherwise.
 
@@ -432,11 +432,11 @@ module Route : sig
         make ~meth:`GET "/orders/%s" "/orders/%s" (fun _ id -> Dream.html id)
       ]} *)
 
-  val format : (_, _, _) t -> string
+  val format : (_, _) t -> string
   (** [format route] is the template string used to match request paths against
       the [route]. *)
 
-  val link : (_, 'p, _) t -> ('p, unit, string, attr) format4
+  val link : (_, 'p) t -> ('p, unit, string, attr) format4
   (** [link route] is a dream-html attribute value that prints out the filled
       path of the [route] given its parameters. Use this instead of hard-coding
       your route URLs throughout your app, to make it easy to refactor routes
@@ -453,11 +453,10 @@ module Route : sig
 
       Renders: [<a href="/orders/yzxyzc">My Order</a>] *)
 
-  val handler : (_, _, _) t -> Dream.handler
+  val handler : (_, _) t -> Dream.handler
   (** [handler route] converts the [route] into a Dream handler. *)
 
-  val ( || ) :
-    (_, _, _) t -> (_, _, _) t -> (Dream.response Dream.promise, attr, _) t
+  val ( || ) : (_, _) t -> (_, _) t -> (Dream.response Dream.promise, attr) t
   (** [route1 || route2] joins together [route1] and [route2] into a new route so
       that requests targeting either of them will match. Use this to build your
       app's routes. Eg, in Dream your routes might look like:
@@ -484,16 +483,16 @@ module Route : sig
       [middleware1] is applied first, then [middleware2]. *)
 
   val scope :
-    ( int -> string -> 'c,
-      'd,
+    ( int -> string -> 'r,
+      unit,
       Dream.response Dream.promise,
       Dream.response Dream.promise,
       Dream.response Dream.promise,
       int -> string -> Dream.response Dream.promise )
     format6 ->
-    ((Dream.request -> Dream.response Dream.promise) -> Dream.request -> 'c) ->
-    (_, _, _) t ->
-    (int -> string -> 'c, attr, 'd) t
+    ((Dream.request -> Dream.response Dream.promise) -> Dream.request -> 'r) ->
+    (_, _) t ->
+    (int -> string -> 'r, attr) t
   (** [scope prefix middleware route] is a route that matches against paths which
       have a [prefix], and handles those requests by applying the [middleware]
       and the [route] handler. Eg:
@@ -515,7 +514,7 @@ module Route : sig
       like "/v2/orders/%s", then strip out the [/v2] prefix, apply the
       [add_header] middleware, and handle the request with the [get_order] route. *)
 
-  val pp : (_, _, _) t Fmt.t
-  (** [pp route] is a formatter that prints out a simple summary of the route, eg
+  val pp : (_, _) t Fmt.t
+  (** [pp] is a formatter that prints out a simple summary of the route, eg
       [GET /foo] or just [/foo] if the route matches any method. *)
 end
