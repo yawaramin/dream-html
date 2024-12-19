@@ -49,40 +49,53 @@ let user_form =
   and+ age = optional (int ~min:16) "age" in
   { name; age; accept_tos; permissions }
 
-let () =
-  Format.printf
-    "
-OK with age:
-%a
-
-OK without age:
-%a
-
-Error without name:
-%a
-
-Error with too low age and empty name:
-%a
-
-Error too many permissions:
-%a
-
-Error no permissions if not accept TOS:
-%a
-  "
-    pp
-    (validate user_form ["age", "42"; "name", "Bob"; "permissions", "r"])
-    pp
-    (validate user_form ["name", "Bob"])
-    pp (validate user_form []) pp
-    (validate user_form ["age", "10"; "name", ""])
-    pp
+let%expect_test "OK with age" =
+  Format.printf "%a" pp
     (validate user_form
-       [ "age", "42";
+       ["accept-tos", "true"; "age", "42"; "name", "Bob"; "permissions", "r"]);
+  [%expect
+    {|
+    {name: Bob;
+     age: 42;
+     accept_tos: true;
+     permissions: [r]}
+    |}]
+
+let%expect_test "OK without age" =
+  Format.printf "%a" pp
+    (validate user_form
+       ["accept-tos", "true"; "name", "Bob"; "permissions", "r"]);
+  [%expect
+    {|
+    {name: Bob;
+     age: ;
+     accept_tos: true;
+     permissions: [r]}
+    |}]
+
+let%expect_test "Error without name" =
+  Format.printf "%a" pp
+    (validate user_form ["accept-tos", "true"; "age", "42"; "permissions", "r"]);
+  [%expect {| [name, error.required] |}]
+
+let%expect_test "Error with too low age and empty name" =
+  Format.printf "%a" pp
+    (validate user_form
+       ["accept-tos", "true"; "age", "1"; "name", ""; "permissions", "r"]);
+  [%expect {| [age, error.range; name, Must not be empty] |}]
+
+let%expect_test "Error too many permissions" =
+  Format.printf "%a" pp
+    (validate user_form
+       [ "accept-tos", "true";
+         "age", "42";
          "name", "Bob";
          "permissions", "r";
          "permissions", "w";
          "permissions", "x";
-         "permissions", "" ])
-    pp
-    (validate user_form ["permissions", "r"; "name", "Bob"])
+         "permissions", "" ]);
+  [%expect {| [permissions, error.length] |}]
+
+let%expect_test "Error can't have permissions if not accept TOS" =
+  Format.printf "%a" pp (validate user_form ["name", "Bob"; "permissions", "r"]);
+  [%expect {| [permissions, error.length] |}]

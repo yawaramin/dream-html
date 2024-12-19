@@ -1,4 +1,4 @@
-(lang dune 2.7)
+(lang dune 2.8)
 
 (name dream-html)
 
@@ -26,7 +26,8 @@
   (uri
    (and
     (>= 4.4.0)
-    (< 5.0.0)))))
+    (< 5.0.0)))
+  (ppx_expect :with-test)))
 
 (package
  (name dream-html)
@@ -39,4 +40,6 @@
   (pure-html
    (= :version))
   (dream
-   (>= 1.0.0~alpha3))))
+   (>= 1.0.0~alpha3))
+  (fmt :with-test)
+  (ppx_expect :with-test)))

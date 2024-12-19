@@ -1,0 +1,7 @@
+(library
+ (name dream_html_test)
+ (package dream-html)
+ (inline_tests)
+ (libraries dream_html fmt)
+ (preprocess
+  (pps ppx_expect)))
