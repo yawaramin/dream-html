@@ -1,0 +1,5 @@
+(library
+ (name ppx_dream_html)
+ (public_name dream-html.ppx)
+ (kind ppx_rewriter)
+ (libraries ppxlib))
