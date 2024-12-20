@@ -446,7 +446,9 @@ module Route : sig
       @param attr_fmt format string is used to print out the filled value of the
         route with its parameters as a dream-html typed attribute. The two are
         different because they must be specified as literals and have different
-        types for parsing and printing.
+        types for parsing and printing. ℹ️ For convenience, a PPX is provided
+        that allows typing the format literal just once and duplicates it for you:
+        see the [dream-html.ppx] library.
 
       @param handler takes the Dream request and any parameters that are parsed
         from the path as arguments and returns a Dream response.
