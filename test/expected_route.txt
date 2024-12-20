@@ -1,0 +1,73 @@
+🔎 Path params of different types
+200 OK
+Content-Type: text/html; charset=utf-8
+
+Account: yxzefac, version: 2
+
+🔎 Route search with fallthrough
+200 OK
+Content-Type: text/html; charset=utf-8
+
+Account: yxzefac, version: 2
+
+🔎 Route not found
+404 Not Found
+
+/v2/orders/yzlkjh
+
+🔎 Empty target
+404 Not Found
+
+
+
+🔎 Rest param entire non-empty path
+200 OK
+Content-Type: text/html; charset=utf-8
+
+/foo
+
+🔎 Rest param entire empty path
+200 OK
+Content-Type: text/html; charset=utf-8
+
+
+
+🔎 Rest param after /
+200 OK
+Content-Type: text/html; charset=utf-8
+
+abc
+
+🔎 Optional slash at end
+200 OK
+
+
+
+🔎 Optional slash missing at end
+200 OK
+
+
+
+🔎 Recover from method not allowed
+201 Created
+Content-Type: text/html; charset=utf-8
+
+foo
+
+🔎 Fail with method not allowed
+405 Method Not Allowed
+
+
+
+🔎 Scoped middleware
+200 OK
+Content-Type: text/html; charset=utf-8
+X-Api-Version: 2
+
+yzlkjh
+
+🔎 Scoped middleware no match
+404 Not Found
+
+/v1/orders/yzlkjh
+

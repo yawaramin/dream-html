@@ -1,0 +1,11 @@
+(test
+ (name route_test)
+ (package dream-html)
+ (libraries dream_html)
+ (action
+  (diff expected_route.txt got_route.txt)))
+
+(rule
+ (with-stdout-to
+  got_route.txt
+  (run ./route_test.exe)))

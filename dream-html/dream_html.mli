@@ -392,3 +392,179 @@ module Livereload : sig
       means that the [route] will respond with [404] status and the script will
       be omitted from the rendered HTML. *)
 end
+
+(** {2 Type-safe routing} *)
+
+(** Bidirectional routes with type-safe path segment parsing and printing using
+    OCaml's built-in format strings, and support for scoped middleware.
+
+    @since v3.9.0 *)
+module Route : sig
+  type (_, _) t
+  (** A route that can handle a templated request path and also print the filled
+      value of the templated path using its parameters.
+
+      The first type parameter represents the type of the request handler. Eg, if
+      the format string is ["/foo"], the handler will have type
+      [Dream.request -> Dream.response Dream.promise]. If the format string is
+      ["/foo/%s"], the handler will have type
+      [Dream.request -> string -> Dream.response Dream.promise], and so on
+      depending on the type specifiers in the format string.
+
+      The second type parameter represents the type of the [link] attribute
+      printer. Eg, if the format string is ["/foo"], the printer will have type
+      [Dream_html.attr]. If the format string is ["/foo/%s"], the printer will
+      have type [string -> Dream_html.attr], and so on. *)
+
+  val make :
+    ?meth:Dream.method_ ->
+    ('r, unit, Dream.response Dream.promise) format ->
+    ('p, unit, string, attr) format4 ->
+    (Dream.request -> 'r) ->
+    ('r, 'p) t
+  (** [make ?meth request_fmt attr_fmt handler] is a route which handles requests
+      with [meth] if specified, or any method otherwise.
+
+      @param request_fmt format string is used to match against requests. It
+        accepts the following format specifiers:
+
+        [%s] matches against any sequence of characters upto (excluding) a [/].
+
+        [%*s] matches against the rest of the path, and then passes as handler
+        params the number of characters captured as well as the captured
+        substring. This can be used as a catch-all, eg to respond with a
+        customized 'not found' message.
+
+        [%d] matches against any integer.
+
+        [%c] matches against any single character.
+
+        [%%] at the {i end} of the route format string matches against an
+        optional trailing [/] character, allowing you to flexibly handle requests
+        either way.
+
+      @param attr_fmt format string is used to print out the filled value of the
+        route with its parameters as a dream-html typed attribute. The two are
+        different because they must be specified as literals and have different
+        types for parsing and printing.
+
+      @param handler takes the Dream request and any parameters that are parsed
+        from the path as arguments and returns a Dream response.
+
+      Examples:
+
+      {[
+      let get_account_version =
+        make
+          ~meth:`GET
+          "/accounts/%s/versions/%d"
+          "/accounts/%s/versions/%d"
+          (fun _req acc ver ->
+            Dream.html (Printf.sprintf "Account: %s, version: %d" acc ver))
+
+      let get_order =
+        make ~meth:`GET "/orders/%s" "/orders/%s" (fun _ id -> Dream.html id)
+      ]} *)
+
+  val format : (_, _) t -> string
+  (** [format route] is the template string used to match request paths against
+      the [route]. *)
+
+  val link : (_, 'p) t -> ('p, unit, string, attr) format4
+  (** [link route] is a dream-html attribute value that prints out the filled
+      path of the [route] given its parameters. Use this instead of hard-coding
+      your route URLs throughout your app, to make it easy to refactor routes
+      with minimal effort.
+
+      Eg:
+
+      {[
+      open Dream_html
+      open HTML
+
+      a [href (Route.link get_order) "yzxyzc"] [txt "My Order"]
+      ]}
+
+      Renders: [<a href="/orders/yzxyzc">My Order</a>] *)
+
+  val handler : (_, _) t -> Dream.handler
+  (** [handler route] converts the [route] into a Dream handler. *)
+
+  val ( || ) : (_, _) t -> (_, _) t -> (Dream.response Dream.promise, attr) t
+  (** [route1 || route2] joins together [route1] and [route2] into a new route so
+      that requests targeting either of them will match. Use this to build your
+      app's routes. Eg, in Dream your routes might look like:
+
+      {[
+      Dream.router [
+        Dream.get "/echo/:word" Echo.get;
+        Dream.post "/echo/:word" Echo.post;
+      ]
+      ]}
+
+      With [( || )] it would look like:
+
+      {[
+      (* echo.ml *)
+      open Route
+
+      let get = make ~meth:`GET "/echo/%s" "/echo/%s" (fun _ word ->
+        Dream.html word)
+
+      let post = make ~meth:`POST "/echo/%s" "/echo/%s" (fun _ word ->
+        Dream.html ~status:`Created word)
+
+      (* main.ml *)
+      handler (
+        Echo.get ||
+        Echo.post
+      )
+      ]} *)
+
+  val ( && ) : Dream.middleware -> Dream.middleware -> Dream.middleware
+  (** [middleware1 && middleware2] joins together two Dream middlewares so that
+      [middleware1] is applied first, then [middleware2]. *)
+
+  val scope :
+    ( int -> string -> 'r,
+      unit,
+      Dream.response Dream.promise,
+      int -> string -> Dream.response Dream.promise )
+    format4 ->
+    ('d, unit, string, 'e) format4 ->
+    ((Dream.request -> Dream.response Dream.promise) -> Dream.request -> 'r) ->
+    (_, 'e) t ->
+    (int -> string -> 'r, 'd) t
+  (** [scope request_prefix attr_prefix middleware route] is a route that matches
+      against paths which have a [request_prefix], and handles those requests by
+      applying the [middleware] and the [route] handler. Eg:
+
+      {[
+      let add_header prev req =
+        let open Lwt.Syntax in
+        let+ resp = prev req in
+        Dream.add_header resp "X-Api-Server" "Dream";
+        resp
+
+      let get_order =
+        make ~meth:`GET "/orders/%s" "/orders/%s" (fun _ id -> Dream.html id)
+
+      let get_order_v2 = scope "/v2" "/v2" add_header get_order
+      ]}
+
+      In the example above, [get_order_v2] will match against requests with paths
+      like "/v2/orders/%s", then strip out the [/v2] prefix, apply the
+      [add_header] middleware, and handle the request with the [get_order] route.
+
+      ⚠️ However, be aware that adding a scope on top of an existing route does
+      not change that route's path, so eg if you use the [get_order] route to
+      print links, but route against the [get_order_v2] route, the links will not
+      work.
+
+      @param attr_prefix is used to prefix the route link correctly as well when
+        it is printed as an attribute. *)
+
+  val pp : (_, _) t Fmt.t
+  (** [pp] is a formatter that prints out a simple summary of the route, eg
+      [GET /foo/%s] or just [/foo/%s] if the route matches any method. *)
+end
