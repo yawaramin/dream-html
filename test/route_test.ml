@@ -1,4 +1,3 @@
-module R = Dream_html.Route
 open Lwt.Syntax
 
 let spf = Printf.sprintf
@@ -16,12 +15,6 @@ let debug resp =
     (Dream.status_to_string st)
     headers b
 
-let test ?method_ msg route target =
-  Lwt_main.run
-    (let* () = Lwt_io.printlf "🔎 %s" msg in
-     let* resp = R.handler route (Dream.request ?method_ ~target "") in
-     debug resp)
-
 let v2_header prev req =
   let open Lwt.Syntax in
   let+ resp = prev req in
@@ -29,20 +22,25 @@ let v2_header prev req =
   resp
 
 let get_account_version =
-  R.make ~meth:`GET "/accounts/%s/versions/%d" "/accounts/%s/versions/%d"
-    (fun _req acc ver -> Dream.html (spf "Account: %s, version: %d" acc ver))
+  Dream_html.Route.get "/accounts/%s/versions/%d" (fun _req acc ver ->
+      Dream.html (spf "Account: %s, version: %d" acc ver))
 
-let get_order =
-  R.make ~meth:`GET "/orders/%s" "/orders/%s" (fun _ id -> Dream.html id)
+let get_order = Dream_html.Route.get "/orders/%s" (fun _ id -> Dream.html id)
 
 let post_order =
-  R.make ~meth:`POST "/orders/%s" "/orders/%s" (fun _ id ->
+  Dream_html.Route.post "/orders/%s" (fun _ id ->
       Dream.html ~status:`Created id)
 
-let put_order =
-  R.make ~meth:`PUT "/orders/%s" "/orders/%s" (fun _ id -> Dream.html id)
+let put_order = Dream_html.Route.put "/orders/%s" (fun _ id -> Dream.html id)
+let opt_slash = Dream_html.Route.make "/foo%%" "/foo" (fun _ -> Dream.empty `OK)
 
-let opt_slash = R.make "/foo%%" "/foo" (fun _ -> Dream.empty `OK)
+module R = Dream_html.Route
+
+let test ?method_ msg route target =
+  Lwt_main.run
+    (let* () = Lwt_io.printlf "🔎 %s" msg in
+     let* resp = R.handler route (Dream.request ?method_ ~target "") in
+     debug resp)
 
 let () =
   test "Path params of different types" get_account_version

@@ -2,6 +2,8 @@
  (name route_test)
  (package dream-html)
  (libraries dream_html)
+ (preprocess
+  (pps ppx_dream_html))
  (action
   (diff expected_route.txt got_route.txt)))
 
