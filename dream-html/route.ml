@@ -11,7 +11,7 @@ let make ?meth rfmt afmt hdlr =
 
 let format route = route.fmtstr
 let link route = route.afmt
-let nf () = Dream.empty `Not_Found
+let nf path = Dream.respond ~status:`Not_Found path
 let sub = StringLabels.sub
 
 let pos_field =
@@ -67,15 +67,21 @@ let rec handler' :
     if pos < len then
       handler' ~pos:(succ pos) ~len path fmt (hdlr path.[pos])
     else
-      nf ()
+      nf path
+  | String (Arg_padding Right, End_of_format) ->
+    let remaining_len = len - pos in
+    let rest =
+      if remaining_len > 0 then sub path ~pos ~len:remaining_len else ""
+    in
+    handler' ~pos:len ~len path End_of_format (hdlr len rest)
   | String (No_padding, fmt) -> (
     match parse_string ~pos ~len path with
     | Some (s, pos) -> handler' ~pos ~len path fmt (hdlr s)
-    | None -> nf ())
+    | None -> nf path)
   | Int (Int_d, No_padding, No_precision, fmt) -> (
     match parse_int ~pos ~len path with
     | Some (i, pos) -> handler' ~pos ~len path fmt (hdlr i)
-    | None -> nf ())
+    | None -> nf path)
   | String_literal
       (lit, Char_literal ('/', String (Arg_padding Right, End_of_format))) ->
     let lit_len = String.length lit + 1
@@ -92,15 +98,15 @@ let rec handler' :
              (* Eg from /v2/orders/1, extract /orders/1 *)
              (sub path ~pos:(pos + lit_len - 1) ~len:(rest_len + 1)))
       else
-        nf ()
+        nf path
     else
-      nf ()
+      nf path
   | String_literal (lit, fmt) ->
     let lit_len = String.length lit in
     if len - pos >= lit_len && sub path ~pos ~len:lit_len = lit then
       handler' ~pos:(pos + lit_len) ~len path fmt hdlr
     else
-      nf ()
+      nf path
   | Char_literal ('%', End_of_format)
     when pos = len || (len - pos = 1 && path.[pos] = '/') -> hdlr
   | Char_literal ('/', String (Arg_padding Right, End_of_format)) ->
@@ -110,14 +116,14 @@ let rec handler' :
       handler' ~pos:len ~len path End_of_format
         (hdlr len (sub path ~pos:(pos + 1) ~len))
     else
-      nf ()
+      nf path
   | Char_literal (lit, fmt) ->
     if len - pos >= 1 && path.[pos] = lit then
       handler' ~pos:(succ pos) ~len path fmt hdlr
     else
-      nf ()
+      nf path
   | End_of_format -> hdlr
-  | _ -> nf ()
+  | _ -> nf path
 
 let handler { rfmt; hdlr; meth; _ } req =
   match meth with

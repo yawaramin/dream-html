@@ -54,7 +54,9 @@ let () =
     R.(get_order || get_account_version)
     "/v2/orders/yzlkjh";
   test "Empty target" get_order "";
-  test "Rest param alone" (R.make "%*s" "" (fun _ _ s -> Dream.html s)) "/abc";
+  let rest_hdlr _ _ s = Dream.html s in
+  test "Rest param entire non-empty path" (R.make "%*s" "" rest_hdlr) "/foo";
+  test "Rest param entire empty path" (R.make "%*s" "" rest_hdlr) "";
   test "Rest param after /"
     (R.make "/%*s" "" (fun _ _ s -> Dream.html s))
     "/abc";

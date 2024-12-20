@@ -13,15 +13,22 @@ Account: yxzefac, version: 2
 🔎 Route not found
 404 Not Found
 
-
+/v2/orders/yzlkjh
 
 🔎 Empty target
 404 Not Found
 
 
 
-🔎 Rest param alone
-404 Not Found
+🔎 Rest param entire non-empty path
+200 OK
+Content-Type: text/html; charset=utf-8
+
+/foo
+
+🔎 Rest param entire empty path
+200 OK
+Content-Type: text/html; charset=utf-8
 
 
 
@@ -62,5 +69,5 @@ yzlkjh
 🔎 Scoped middleware no match
 404 Not Found
 
-
+/v1/orders/yzlkjh
 
