@@ -395,7 +395,8 @@ end
 
 (** {2 Type-safe routing} *)
 
-(** Routes with type-safe path segments using OCaml's built-in format strings.
+(** Bidirectional routes with type-safe path segment parsing and printing using
+    OCaml's built-in format strings, and support for scoped middleware.
 
     @since v3.9.0 *)
 module Route : sig
@@ -429,9 +430,10 @@ module Route : sig
 
         [%s] matches against any sequence of characters upto (excluding) a [/].
 
-        [/%*s] matches against paths which end with a [/] character followed by
-        any number of other characters, and then passes as handler params the
-        number of characters captured as well as the captured substring.
+        [%*s] matches against the rest of the path, and then passes as handler
+        params the number of characters captured as well as the captured
+        substring. This can be used as a catch-all, eg to respond with a
+        customized 'not found' message.
 
         [%d] matches against any integer.
 
@@ -553,6 +555,11 @@ module Route : sig
       In the example above, [get_order_v2] will match against requests with paths
       like "/v2/orders/%s", then strip out the [/v2] prefix, apply the
       [add_header] middleware, and handle the request with the [get_order] route.
+
+      ⚠️ However, be aware that adding a scope on top of an existing route does
+      not change that route's path, so eg if you use the [get_order] route to
+      print links, but route against the [get_order_v2] route, the links will not
+      work.
 
       @param attr_prefix is used to prefix the route link correctly as well when
         it is printed as an attribute. *)
