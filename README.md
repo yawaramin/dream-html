@@ -106,13 +106,13 @@ Alternatively, to install the latest commit that may not have been released yet,
 you have two options. If you need _only_ the HTML generation:
 
 ```
-opam pin add pure-html git+https://github.com/yawaramin/pure-html
+opam pin add pure-html git+https://github.com/yawaramin/dream-html
 ```
 
 If you _also_ need the Dream integration:
 
 ```
-opam pin add pure-html git+https://github.com/yawaramin/pure-html
+opam pin add pure-html git+https://github.com/yawaramin/dream-html
 opam pin add dream-html git+https://github.com/yawaramin/dream-html
 ```
 
