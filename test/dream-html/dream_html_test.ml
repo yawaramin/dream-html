@@ -39,9 +39,9 @@ let test_handler handler target =
      let* resp = handler (Dream.request ~target "") in
      let+ b = Dream.body resp in
      let st = Dream.status resp in
-     Format.printf "%d %s\n" (Dream.status_to_int st)
-       (Dream.status_to_string st);
-     Format.printf "%s\n" b)
+     Format.printf "%d %s\n\n%s\n" (Dream.status_to_int st)
+       (Dream.status_to_string st)
+       b)
 
 let pp fmt = function
   | Ok user -> pp_user fmt user
@@ -123,8 +123,10 @@ let%expect_test "Indent CSRF tag correctly" =
                button [type_ "submit"] [txt "Add"] ]))
   in
   test_handler handler "/";
-  [%expect {|
+  [%expect
+    {|
     200 OK
+
     <form method="post" action="/">
       <input value="token-value" name="dream.csrf" type="hidden">
       <input name="id">
