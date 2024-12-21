@@ -102,9 +102,10 @@ opam update
 opam install dream-html
 ```
 
-Alternatively, to install the latest commit that may not have been released yet:
+Alternatively, to install the latest commit that may not have been released yet, run _one_ of the following depending on which package you need:
 
 ```
+opam pin add pure-html git+https://github.com/yawaramin/dream-html
 opam pin add dream-html git+https://github.com/yawaramin/dream-html
 ```
 
