@@ -33,6 +33,16 @@ let pp_user =
            (fun u -> u.permissions)
            (brackets (list ~sep:semi string)) ])
 
+let test_handler handler target =
+  Lwt_main.run
+    (let open Lwt.Syntax in
+     let* resp = handler (Dream.request ~target "") in
+     let+ b = Dream.body resp in
+     let st = Dream.status resp in
+     Format.printf "%d %s\n" (Dream.status_to_int st)
+       (Dream.status_to_string st);
+     Format.printf "%s\n" b)
+
 let pp fmt = function
   | Ok user -> pp_user fmt user
   | Error e -> Dream_html.Form.pp_error fmt e
@@ -99,3 +109,24 @@ let%expect_test "Error too many permissions" =
 let%expect_test "Error can't have permissions if not accept TOS" =
   Format.printf "%a" pp (validate user_form ["name", "Bob"; "permissions", "r"]);
   [%expect {| [permissions, error.length] |}]
+
+let%expect_test "Indent CSRF tag correctly" =
+  let handler =
+    Dream.memory_sessions (fun req ->
+        let open Dream_html in
+        let open HTML in
+        respond
+          (form
+             [method_ `POST; action "/"]
+             [ csrf_tag req -@ "value" +@ value "token-value";
+               input [name "id"];
+               button [type_ "submit"] [txt "Add"] ]))
+  in
+  test_handler handler "/";
+  [%expect {|
+    200 OK
+    <form method="post" action="/">
+      <input value="token-value" name="dream.csrf" type="hidden">
+      <input name="id">
+      <button type="submit">Add</button>
+    </form> |}]

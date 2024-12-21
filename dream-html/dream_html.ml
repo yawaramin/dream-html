@@ -65,7 +65,10 @@ let set_body resp node =
   Dream.set_header resp "Content-Type" "text/html"
 
 let write stream node = Dream.write stream (to_string node)
-let csrf_tag req = req |> Dream.csrf_tag |> txt ~raw:true "%s"
+
+let csrf_tag req =
+  let open HTML in
+  input [name "dream.csrf"; type_ "hidden"; value "%s" (Dream.csrf_token req)]
 
 module Livereload = struct
   let enabled =
