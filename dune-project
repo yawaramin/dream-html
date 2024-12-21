@@ -2,7 +2,10 @@
 
 (name dream-html)
 
-(version v3.9.0)
+; This is the version for pure-html ONLY, dream-html version is maintained
+; separately in the dream-html.opam.template file.
+
+(version v3.8.1)
 
 (generate_opam_files true)
 
