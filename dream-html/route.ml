@@ -1,16 +1,31 @@
+type ('r, 'p) path =
+  { rfmt : ('r, unit, Dream.response Dream.promise) format;
+    afmt : ('p, unit, string, Pure_html.attr) format4
+  }
+
 type ('r, 'p) t =
   { meth : Dream.method_ option;
-    rfmt : ('r, unit, Dream.response Dream.promise) format;
-    afmt : ('p, unit, string, Pure_html.attr) format4;
+    path : ('r, 'p) path;
     fmtstr : string;
     hdlr : Dream.request -> 'r
   }
 
-let make ?meth rfmt afmt hdlr =
-  { meth; rfmt; afmt; fmtstr = string_of_format rfmt; hdlr }
+let path rfmt afmt = { rfmt; afmt }
 
+let make ?meth path hdlr =
+  { meth; path; fmtstr = string_of_format path.rfmt; hdlr }
+
+let get path = make ~meth:`GET path
+let post path = make ~meth:`POST path
+let put path = make ~meth:`PUT path
+let delete path = make ~meth:`DELETE path
+let head path = make ~meth:`HEAD path
+let connect path = make ~meth:`CONNECT path
+let options path = make ~meth:`OPTIONS path
+let trace path = make ~meth:`TRACE path
+let patch path = make ~meth:`PATCH path
 let format route = route.fmtstr
-let link route = route.afmt
+let link { afmt; _ } = afmt
 let nf path = Dream.respond ~status:`Not_Found path
 let sub = StringLabels.sub
 
@@ -125,7 +140,7 @@ let rec handler' :
   | End_of_format -> hdlr
   | _ -> nf path
 
-let handler { rfmt; hdlr; meth; _ } req =
+let handler { path = { rfmt; _ }; hdlr; meth; _ } req =
   match meth with
   | Some m when not (Dream.methods_equal (Dream.method_ req) m) ->
     Dream.empty `Method_Not_Allowed
@@ -137,7 +152,7 @@ let handler { rfmt; hdlr; meth; _ } req =
       and pos = Dream.field req pos_field in
       handler' ?pos ~len path fmt (hdlr req))
 
-let ( || ) route1 route2 =
+let ( >> ) route1 route2 =
   let same_fmt = format route1 = format route2 in
   let open Lwt.Syntax in
   let hdlr req =
@@ -148,15 +163,16 @@ let ( || ) route1 route2 =
     | `Not_Found -> handler route2 req
     | _ -> Lwt.return resp
   in
-  let rt = make "" "" hdlr in
+  let rt = make (path "" "") hdlr in
   { rt with fmtstr = (if same_fmt then route1.fmtstr else rt.fmtstr) }
 
 let ( && ) mware1 mware2 handler = handler |> mware1 |> mware2
 
-let scope rprefix aprefix mware route =
-  make (rprefix ^^ "/%*s") (aprefix ^^ route.afmt) (fun req _ _ ->
-      Dream.set_field req pos_field
-        (rprefix |> string_of_format |> String.length);
+let scope rfmt afmt mware route =
+  make
+    { rfmt = rfmt ^^ "/%*s"; afmt = afmt ^^ route.path.afmt }
+    (fun req _ _ ->
+      Dream.set_field req pos_field (rfmt |> string_of_format |> String.length);
       (route |> handler |> mware) req)
 
 let pp f route =

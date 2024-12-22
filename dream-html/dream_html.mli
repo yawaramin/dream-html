@@ -400,6 +400,33 @@ end
 
     @since v3.9.0 *)
 module Route : sig
+  type (_, _) path
+  (** This contains the path formats that are used to parse and print the routes. *)
+
+  val path :
+    ('r, unit, Dream.response Dream.promise) format ->
+    ('p, unit, string, attr) format4 ->
+    ('r, 'p) path
+  (** [path request_fmt attr_fmt] is a route path. The [ppx_dream_html] PPX
+      provides a more convenient way: [[%route_path "..."]]. *)
+
+  val link : (_, 'p) path -> ('p, unit, string, attr) format4
+  (** [link path] is a dream-html attribute value that prints out the filled
+      [path] given its parameters. Use this instead of hard-coding your route
+      URLs throughout your app, to make it easy to refactor routes with minimal
+      effort.
+
+      Eg:
+
+      {[
+      open Dream_html
+      open HTML
+
+      a [href (Route.link get_order) "yzxyzc"] [txt "My Order"]
+      ]}
+
+      Renders: [<a href="/orders/yzxyzc">My Order</a>] *)
+
   type (_, _) t
   (** A route that can handle a templated request path and also print the filled
       value of the templated path using its parameters.
@@ -417,16 +444,12 @@ module Route : sig
       have type [string -> Dream_html.attr], and so on. *)
 
   val make :
-    ?meth:Dream.method_ ->
-    ('r, unit, Dream.response Dream.promise) format ->
-    ('p, unit, string, attr) format4 ->
-    (Dream.request -> 'r) ->
-    ('r, 'p) t
-  (** [make ?meth request_fmt attr_fmt handler] is a route which handles requests
-      with [meth] if specified, or any method otherwise.
+    ?meth:Dream.method_ -> ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
+  (** [make ?meth path handler] is a route which handles requests with [meth] if
+      specified, or any method otherwise.
 
-      @param request_fmt format string is used to match against requests. It
-        accepts the following format specifiers:
+      @param path format string is used to match against requests and print out
+        filled paths as links. It accepts the following format specifiers:
 
         [%s] matches against any sequence of characters upto (excluding) a [/].
 
@@ -443,13 +466,6 @@ module Route : sig
         optional trailing [/] character, allowing you to flexibly handle requests
         either way.
 
-      @param attr_fmt format string is used to print out the filled value of the
-        route with its parameters as a dream-html typed attribute. The two are
-        different because they must be specified as literals and have different
-        types for parsing and printing. ℹ️ For convenience, a PPX is provided
-        that allows typing the format literal just once and duplicates it for you:
-        see the [dream-html.ppx] library.
-
       @param handler takes the Dream request and any parameters that are parsed
         from the path as arguments and returns a Dream response.
 
@@ -459,41 +475,37 @@ module Route : sig
       let get_account_version =
         make
           ~meth:`GET
-          "/accounts/%s/versions/%d"
-          "/accounts/%s/versions/%d"
+          (path "/accounts/%s/versions/%d" "/accounts/%s/versions/%d")
           (fun _req acc ver ->
             Dream.html (Printf.sprintf "Account: %s, version: %d" acc ver))
 
       let get_order =
-        make ~meth:`GET "/orders/%s" "/orders/%s" (fun _ id -> Dream.html id)
+        make ~meth:`GET (path "/orders/%s" "/orders/%s") (fun _ id -> Dream.html id)
       ]} *)
+
+  (** The following are convenience functions for creating routes. *)
+
+  val get : ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
+  (***)
+
+  val post : ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
+  val put : ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
+  val delete : ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
+  val head : ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
+  val connect : ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
+  val options : ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
+  val trace : ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
+  val patch : ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
 
   val format : (_, _) t -> string
   (** [format route] is the template string used to match request paths against
       the [route]. *)
 
-  val link : (_, 'p) t -> ('p, unit, string, attr) format4
-  (** [link route] is a dream-html attribute value that prints out the filled
-      path of the [route] given its parameters. Use this instead of hard-coding
-      your route URLs throughout your app, to make it easy to refactor routes
-      with minimal effort.
-
-      Eg:
-
-      {[
-      open Dream_html
-      open HTML
-
-      a [href (Route.link get_order) "yzxyzc"] [txt "My Order"]
-      ]}
-
-      Renders: [<a href="/orders/yzxyzc">My Order</a>] *)
-
   val handler : (_, _) t -> Dream.handler
   (** [handler route] converts the [route] into a Dream handler. *)
 
-  val ( || ) : (_, _) t -> (_, _) t -> (Dream.response Dream.promise, attr) t
-  (** [route1 || route2] joins together [route1] and [route2] into a new route so
+  val ( >> ) : (_, _) t -> (_, _) t -> (Dream.response Dream.promise, attr) t
+  (** [route1 >> route2] joins together [route1] and [route2] into a new route so
       that requests targeting either of them will match. Use this to build your
       app's routes. Eg, in Dream your routes might look like:
 
@@ -504,21 +516,21 @@ module Route : sig
       ]
       ]}
 
-      With [( || )] it would look like:
+      With [( >> )] it would look like:
 
       {[
       (* echo.ml *)
       open Route
 
-      let get = make ~meth:`GET "/echo/%s" "/echo/%s" (fun _ word ->
+      let get = make ~meth:`GET (path "/echo/%s" "/echo/%s") (fun _ word ->
         Dream.html word)
 
-      let post = make ~meth:`POST "/echo/%s" "/echo/%s" (fun _ word ->
+      let post = make ~meth:`POST (path "/echo/%s" "/echo/%s") (fun _ word ->
         Dream.html ~status:`Created word)
 
       (* main.ml *)
       handler (
-        Echo.get ||
+        Echo.get >>
         Echo.post
       )
       ]} *)
