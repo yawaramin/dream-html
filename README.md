@@ -22,7 +22,7 @@ dream-html. If not, see <https://www.gnu.org/licenses/>.
 
 ## What
 
-This library started as a simple HTML library; it has evolved into something more
+This project started as a simple HTML library; it has evolved into something more
 over time. Here are the highlights:
 
 - Closely integrated with the [Dream](https://aantron.github.io/dream/) web

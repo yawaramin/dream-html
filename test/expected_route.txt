@@ -4,6 +4,17 @@ Content-Type: text/html; charset=utf-8
 
 ok
 
+🔎 Parse a character
+200 OK
+Content-Type: text/html; charset=utf-8
+
+z
+
+🔎 Parse number fail
+400 Bad Request
+
+/accounts/a1/versions/two
+
 🔎 Path params of different types
 200 OK
 Content-Type: text/html; charset=utf-8

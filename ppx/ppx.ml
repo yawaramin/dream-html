@@ -10,5 +10,5 @@ let path_extender =
         (evar ~loc "Dream_html.Path.make")
         [Nolabel, estring ~loc s; Nolabel, estring ~loc s])
 
-let route_path = Context_free.Rule.extension path_extender
-let () = Driver.register_transformation ~rules:[route_path] "ppx_dream_html"
+let path = Context_free.Rule.extension path_extender
+let () = Driver.register_transformation ~rules:[path] "dream-html.ppx"

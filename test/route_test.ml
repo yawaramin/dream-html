@@ -43,6 +43,11 @@ let test ?method_ msg routes target =
 
 let () =
   test "Root path" [Dream_html.get [%path "/"] (fun _ -> Dream.html "ok")] "/";
+  test "Parse a character"
+    [ Dream_html.get [%path "/foo/%c/bar"] (fun _ ch ->
+          Dream.html (String.make 1 ch)) ]
+    "/foo/z/bar";
+  test "Parse number fail" [get_account_version] "/accounts/a1/versions/two";
   test "Path params of different types" [get_account_version]
     "/accounts/yxzefac/versions/2";
   test "Route search with fallthrough"
