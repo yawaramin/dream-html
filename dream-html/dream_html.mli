@@ -393,7 +393,13 @@ module Path : sig
       Renders: [<a href="/orders/yzxyzc">My Order</a>] *)
 end
 
-val get : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+type ('r, 'p) route = ('r, 'p) Path.t -> (Dream.request -> 'r) -> Dream.route
+(** Wrapper for a Dream route that represents the ability to parse path
+    parameters and pass them to the handler function with the correct types.
+
+    @since v3.9.0 *)
+
+val get : (_, _) route
 (** Using the PPX, eg:
 
     {[
@@ -407,31 +413,31 @@ val get : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
 
     @since v3.9.0 *)
 
-val post : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+val post : (_, _) route
 (** @since v3.9.0 *)
 
-val put : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+val put : (_, _) route
 (** @since v3.9.0 *)
 
-val delete : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+val delete : (_, _) route
 (** @since v3.9.0 *)
 
-val head : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+val head : (_, _) route
 (** @since v3.9.0 *)
 
-val connect : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+val connect : (_, _) route
 (** @since v3.9.0 *)
 
-val options : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+val options : (_, _) route
 (** @since v3.9.0 *)
 
-val trace : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+val trace : (_, _) route
 (** @since v3.9.0 *)
 
-val patch : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+val patch : (_, _) route
 (** @since v3.9.0 *)
 
-val any : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+val any : (_, _) route
 (** @since v3.9.0 *)
 
 (** {2 Live reload support} *)

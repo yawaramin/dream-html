@@ -71,6 +71,8 @@ let csrf_tag req =
 
 module Path = Path
 
+type ('r, 'p) route = ('r, 'p) Path.t -> (Dream.request -> 'r) -> Dream.route
+
 let get path func =
   Dream.get (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
 
