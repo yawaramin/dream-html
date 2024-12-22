@@ -2,7 +2,7 @@
   <a href="https://yawaramin.github.io/dream-html/dream-html/Dream_html/">API Reference</a>
 </p>
 
-## dream-html - generate HTML markup from your Dream backend server
+## dream-html - build robust and maintainable OCaml Dream webapps
 
 Copyright 2023 Yawar Amin
 
@@ -22,29 +22,22 @@ dream-html. If not, see <https://www.gnu.org/licenses/>.
 
 ## What
 
-An HTML, SVG, and MathML rendering library that is closely integrated with
-[Dream](https://aantron.github.io/dream). Most HTML elements and attributes from
-the [Mozilla Developer Network
-references](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference) are
-included. Almost all non-standard or deprecated tags/attributes deliberately
-omitted. CSS support is out of scope. [htmx](https://htmx.org/) attributes
-supported out of the box.
+This library started as a simple HTML library; it has evolved into something more
+over time. Here are the highlights:
+
+- Closely integrated with the [Dream](https://aantron.github.io/dream/) web
+  framework for OCaml
+- Generate HTML using type-safe functions and values
+- MathML and SVG support
+- Support for htmx attributes
+- Type-safe HTML form and query decoding
+- Type-safe path parameter parsing and printing
 
 > [!NOTE]
-> Don't want to use Dream? You can use the eDSL without it! Just use the
-> `pure-html` package instead of `dream-html`.
+> If you're not using Dream, you can still use the HTML/SVG/MathML/htmx
+> generation features using the `pure-html` package.
 
-## Why
-
-- TyXML is a bit too complex.
-- Dream's built-in eml (Embedded ML) has some drawbacks like no editor support,
-  quirky syntax that can be hard to debug and refactor, and manual dune rule
-  setup for each view file
-- In general string-based HTML templating is
-  [suboptimal](https://www.devever.net/~hl/stringtemplates) and mostly driven by
-  [familiarity](https://github.com/tavisrudd/throw_out_your_templates).
-
-## First look
+## HTML generation first look
 
 ```ocaml
 let page req =
@@ -178,6 +171,12 @@ There is also a module with helpers for request form and query validation; see
 for details. See also the convenience helpers `Dream_html.form` and
 `Dream_html.query`.
 
+## Type-safe path parameter parsing and printing
+
+Type-safe wrappers for Dream routing functionality are provided; details are
+shown in the
+[`Dream_html`](https://yawaramin.github.io/dream-html/dream-html/Dream_html/#type-safe-routing) page.
+
 ## Import HTML
 
 One issue that you may come across is that the syntax of HTML is different from
@@ -195,7 +194,7 @@ markup, so you will likely need to fix those issues for your build to work.
 
 Run the test and print out diff if it fails:
 
-    dune runtest # Will also exit 1 on failure
+    dune test # Will also exit 1 on failure
 
 Set the new version of the output as correct:
 

@@ -3,7 +3,7 @@
  (package dream-html)
  (libraries dream_html)
  (preprocess
-  (pps ppx_dream_html))
+  (pps dream-html.ppx))
  (action
   (diff expected_route.txt got_route.txt)))
 

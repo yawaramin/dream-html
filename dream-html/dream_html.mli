@@ -353,46 +353,6 @@ val csrf_tag : Dream.request -> node
     ]
     ]} *)
 
-(** {2 Live reload support} *)
-
-(** Live reload script injection and handling. Adapted from [Dream.livereload]
-    middleware. This version is not a middleware so it's not as plug-and-play as
-    that, but on the other hand it's much simpler to implement because it uses
-    type-safe dream-html nodes rather than parsing and printing raw HTML. See
-    below for the 3-step process to use it.
-
-    This module is adapted from Dream, released under the MIT license. For
-    details, visit {:https://github.com/aantron/dream}.
-
-    Copyright 2021-2023 Thibaut Mattio, Anton Bachin.
-
-    @since 3.4.0. *)
-module Livereload : sig
-  val route : Dream.route
-  (** (1) Put this in your top-level router:
-
-      {[
-      let () =
-        Dream.run
-        @@ Dream.logger
-        @@ Dream.router [
-          Dream_html.Livereload.route;
-          (* ...other routes... *)
-        ]
-      ]} *)
-
-  val script : node
-  (** (2) Put this inside your [head]:
-
-      {[head [] [Livereload.script (* ... *)]]} *)
-
-  (** (3) And run the server with environment variable [LIVERELOAD=1].
-
-      {b ⚠️ If this env var is not set, then livereload is turned off.} This
-      means that the [route] will respond with [404] status and the script will
-      be omitted from the rendered HTML. *)
-end
-
 (** {2 Type-safe routing} *)
 
 (** Bidirectional paths with type-safe path segment parsing and printing using
@@ -408,12 +368,12 @@ module Path : sig
     ('r, unit, Dream.response Dream.promise) format ->
     ('p, unit, string, attr) format4 ->
     ('r, 'p) t
-  (** [make request_fmt attr_fmt] is a route path. The [ppx_dream_html] PPX
-      provides a more convenient way.
+  (** [make request_fmt attr_fmt] is a route path. The [dream-html.ppx] provides
+      a more convenient way.
 
-      Without PPX: [let order = path "/orders/%s" "/orders/%s"]
+      Without PPX: [let order = Path.make "/orders/%s" "/orders/%s"]
 
-      With PPX: [let order = [%route_path "/orders/%s"]] *)
+      With PPX: [let order = [%path "/orders/%s"]] *)
 
   val link : (_, 'p) t -> ('p, unit, string, attr) format4
   (** [link path] is a dream-html attribute value that prints out the filled
@@ -473,3 +433,43 @@ val patch : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
 
 val any : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
 (** @since v3.9.0 *)
+
+(** {2 Live reload support} *)
+
+(** Live reload script injection and handling. Adapted from [Dream.livereload]
+    middleware. This version is not a middleware so it's not as plug-and-play as
+    that, but on the other hand it's much simpler to implement because it uses
+    type-safe dream-html nodes rather than parsing and printing raw HTML. See
+    below for the 3-step process to use it.
+
+    This module is adapted from Dream, released under the MIT license. For
+    details, visit {:https://github.com/aantron/dream}.
+
+    Copyright 2021-2023 Thibaut Mattio, Anton Bachin.
+
+    @since 3.4.0. *)
+module Livereload : sig
+  val route : Dream.route
+  (** (1) Put this in your top-level router:
+
+      {[
+      let () =
+        Dream.run
+        @@ Dream.logger
+        @@ Dream.router [
+          Dream_html.Livereload.route;
+          (* ...other routes... *)
+        ]
+      ]} *)
+
+  val script : node
+  (** (2) Put this inside your [head]:
+
+      {[head [] [Livereload.script (* ... *)]]} *)
+
+  (** (3) And run the server with environment variable [LIVERELOAD=1].
+
+      {b ⚠️ If this env var is not set, then livereload is turned off.} This
+      means that the [route] will respond with [404] status and the script will
+      be omitted from the rendered HTML. *)
+end
