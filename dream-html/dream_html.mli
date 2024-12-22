@@ -441,6 +441,10 @@ val any : (_, _) route
 (** @since v3.9.0 *)
 
 val use : Dream.middleware list -> Dream.route list -> Dream.route
+(** [use middlewares routes] is a route that is composed of all the given [routes]
+    with the [middlewares] attached to them.
+
+    @since v3.9.0 *)
 
 (** {2 Live reload support} *)
 
