@@ -440,6 +440,8 @@ val patch : (_, _) route
 val any : (_, _) route
 (** @since v3.9.0 *)
 
+val use : Dream.middleware list -> Dream.route list -> Dream.route
+
 (** {2 Live reload support} *)
 
 (** Live reload script injection and handling. Adapted from [Dream.livereload]

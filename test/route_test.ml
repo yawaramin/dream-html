@@ -74,4 +74,8 @@ let () =
   test "Empty target" [get_order] "";
   test "Rest param after /"
     [Dream_html.any [%path "/%*s"] (fun _ _ s -> Dream.html s)]
-    "/abc/def"
+    "/abc/def";
+  test "Use middleware list"
+    [ Dream_html.use [v2_header]
+        [Dream_html.get [%path "/v2/orders/%s"] (fun _ id -> Dream.html id)] ]
+    "/v2/orders/o1"

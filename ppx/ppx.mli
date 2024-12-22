@@ -29,4 +29,6 @@
     string literal argument. However, this naturally means that both the route
     parser and attribute printer format strings are identical. If you need
     different formatting for the two, you can use the underlying
-    [Dream_html.Path.make] function. *)
+    [Dream_html.Path.make] function.
+
+    @since v3.9.0 *)

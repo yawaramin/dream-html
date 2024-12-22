@@ -43,3 +43,10 @@ Content-Type: text/html; charset=utf-8
 
 abc/def
 
+🔎 Use middleware list
+200 OK
+Content-Type: text/html; charset=utf-8
+X-Api-Version: 2
+
+o1
+
