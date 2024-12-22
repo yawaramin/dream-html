@@ -59,15 +59,10 @@ foo
 
 
 
-🔎 Scoped middleware
+🔎 Middleware
 200 OK
 Content-Type: text/html; charset=utf-8
 X-Api-Version: 2
 
 yzlkjh
-
-🔎 Scoped middleware no match
-404 Not Found
-
-/v1/orders/yzlkjh
 

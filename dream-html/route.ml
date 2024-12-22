@@ -3,28 +3,13 @@ type ('r, 'p) path =
     afmt : ('p, unit, string, Pure_html.attr) format4
   }
 
-type ('r, 'p) t =
+type t =
   { meth : Dream.method_ option;
-    path : ('r, 'p) path;
-    fmtstr : string;
-    hdlr : Dream.request -> 'r
+    hdlr : Dream.handler;
+    fmtstr : string
   }
 
 let path rfmt afmt = { rfmt; afmt }
-
-let make ?meth path hdlr =
-  { meth; path; fmtstr = string_of_format path.rfmt; hdlr }
-
-let get path = make ~meth:`GET path
-let post path = make ~meth:`POST path
-let put path = make ~meth:`PUT path
-let delete path = make ~meth:`DELETE path
-let head path = make ~meth:`HEAD path
-let connect path = make ~meth:`CONNECT path
-let options path = make ~meth:`OPTIONS path
-let trace path = make ~meth:`TRACE path
-let patch path = make ~meth:`PATCH path
-let format route = route.fmtstr
 let link { afmt; _ } = afmt
 let nf path = Dream.respond ~status:`Not_Found path
 let sub = StringLabels.sub
@@ -140,7 +125,7 @@ let rec handler' :
   | End_of_format -> hdlr
   | _ -> nf path
 
-let handler { path = { rfmt; _ }; hdlr; meth; _ } req =
+let handler meth rfmt hdlr req =
   match meth with
   | Some m when not (Dream.methods_equal (Dream.method_ req) m) ->
     Dream.empty `Method_Not_Allowed
@@ -152,28 +137,36 @@ let handler { path = { rfmt; _ }; hdlr; meth; _ } req =
       and pos = Dream.field req pos_field in
       handler' ?pos ~len path fmt (hdlr req))
 
+let make ?meth path hdlr =
+  { meth;
+    fmtstr = string_of_format path.rfmt;
+    hdlr = handler meth path.rfmt hdlr
+  }
+
+let format { fmtstr; _ } = fmtstr
+let get path = make ~meth:`GET path
+let post path = make ~meth:`POST path
+let put path = make ~meth:`PUT path
+let delete path = make ~meth:`DELETE path
+let head path = make ~meth:`HEAD path
+let connect path = make ~meth:`CONNECT path
+let options path = make ~meth:`OPTIONS path
+let trace path = make ~meth:`TRACE path
+let patch path = make ~meth:`PATCH path
+let handler { hdlr; _ } = hdlr
+
 let ( >> ) route1 route2 =
-  let same_fmt = format route1 = format route2 in
   let open Lwt.Syntax in
   let hdlr req =
     let* resp = handler route1 req in
     match Dream.status resp with
-    | `Method_Not_Allowed ->
-      if same_fmt then handler route2 req else Lwt.return resp
-    | `Not_Found -> handler route2 req
+    | `Method_Not_Allowed | `Not_Found -> handler route2 req
     | _ -> Lwt.return resp
   in
-  let rt = make (path "" "") hdlr in
-  { rt with fmtstr = (if same_fmt then route1.fmtstr else rt.fmtstr) }
+  make (path "" "") hdlr
 
 let ( && ) mware1 mware2 handler = handler |> mware1 |> mware2
-
-let scope rfmt afmt mware route =
-  make
-    { rfmt = rfmt ^^ "/%*s"; afmt = afmt ^^ route.path.afmt }
-    (fun req _ _ ->
-      Dream.set_field req pos_field (rfmt |> string_of_format |> String.length);
-      (route |> handler |> mware) req)
+let with_ mware route = { meth = None; fmtstr = ""; hdlr = mware route.hdlr }
 
 let pp f route =
   let m =

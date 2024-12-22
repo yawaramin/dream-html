@@ -408,7 +408,11 @@ module Route : sig
     ('p, unit, string, attr) format4 ->
     ('r, 'p) path
   (** [path request_fmt attr_fmt] is a route path. The [ppx_dream_html] PPX
-      provides a more convenient way: [[%route_path "..."]]. *)
+      provides a more convenient way.
+
+      Without PPX: [let order = path "/orders/%s" "/orders/%s"]
+
+      With PPX: [let order = [%route_path "/orders/%s"]] *)
 
   val link : (_, 'p) path -> ('p, unit, string, attr) format4
   (** [link path] is a dream-html attribute value that prints out the filled
@@ -422,29 +426,15 @@ module Route : sig
       open Dream_html
       open HTML
 
-      a [href (Route.link get_order) "yzxyzc"] [txt "My Order"]
+      a [href (Route.link order) "yzxyzc"] [txt "My Order"]
       ]}
 
       Renders: [<a href="/orders/yzxyzc">My Order</a>] *)
 
-  type (_, _) t
-  (** A route that can handle a templated request path and also print the filled
-      value of the templated path using its parameters.
+  type t
+  (** A route that can handle a templated request path. *)
 
-      The first type parameter represents the type of the request handler. Eg, if
-      the format string is ["/foo"], the handler will have type
-      [Dream.request -> Dream.response Dream.promise]. If the format string is
-      ["/foo/%s"], the handler will have type
-      [Dream.request -> string -> Dream.response Dream.promise], and so on
-      depending on the type specifiers in the format string.
-
-      The second type parameter represents the type of the [link] attribute
-      printer. Eg, if the format string is ["/foo"], the printer will have type
-      [Dream_html.attr]. If the format string is ["/foo/%s"], the printer will
-      have type [string -> Dream_html.attr], and so on. *)
-
-  val make :
-    ?meth:Dream.method_ -> ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
+  val make : ?meth:Dream.method_ -> ('r, _) path -> (Dream.request -> 'r) -> t
   (** [make ?meth path handler] is a route which handles requests with [meth] if
       specified, or any method otherwise.
 
@@ -473,38 +463,34 @@ module Route : sig
 
       {[
       let get_account_version =
-        make
-          ~meth:`GET
-          (path "/accounts/%s/versions/%d" "/accounts/%s/versions/%d")
-          (fun _req acc ver ->
-            Dream.html (Printf.sprintf "Account: %s, version: %d" acc ver))
+        make ~meth:`GET [%route_path "/accounts/%s/versions/%d"] (fun _req acc ver ->
+          Dream.html (Printf.sprintf "Account: %s, version: %d" acc ver))
 
-      let get_order =
-        make ~meth:`GET (path "/orders/%s" "/orders/%s") (fun _ id -> Dream.html id)
+      let get_order = make ~meth:`GET [%route_path "/orders/%s"] (fun _ id -> Dream.html id)
       ]} *)
 
   (** The following are convenience functions for creating routes. *)
 
-  val get : ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
+  val get : ('r, _) path -> (Dream.request -> 'r) -> t
   (***)
 
-  val post : ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
-  val put : ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
-  val delete : ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
-  val head : ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
-  val connect : ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
-  val options : ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
-  val trace : ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
-  val patch : ('r, 'p) path -> (Dream.request -> 'r) -> ('r, 'p) t
+  val post : ('r, _) path -> (Dream.request -> 'r) -> t
+  val put : ('r, _) path -> (Dream.request -> 'r) -> t
+  val delete : ('r, _) path -> (Dream.request -> 'r) -> t
+  val head : ('r, _) path -> (Dream.request -> 'r) -> t
+  val connect : ('r, _) path -> (Dream.request -> 'r) -> t
+  val options : ('r, _) path -> (Dream.request -> 'r) -> t
+  val trace : ('r, _) path -> (Dream.request -> 'r) -> t
+  val patch : ('r, _) path -> (Dream.request -> 'r) -> t
 
-  val format : (_, _) t -> string
+  val format : t -> string
   (** [format route] is the template string used to match request paths against
       the [route]. *)
 
-  val handler : (_, _) t -> Dream.handler
+  val handler : t -> Dream.handler
   (** [handler route] converts the [route] into a Dream handler. *)
 
-  val ( >> ) : (_, _) t -> (_, _) t -> (Dream.response Dream.promise, attr) t
+  val ( >> ) : t -> t -> t
   (** [route1 >> route2] joins together [route1] and [route2] into a new route so
       that requests targeting either of them will match. Use this to build your
       app's routes. Eg, in Dream your routes might look like:
@@ -519,19 +505,11 @@ module Route : sig
       With [( >> )] it would look like:
 
       {[
-      (* echo.ml *)
-      open Route
-
-      let get = make ~meth:`GET (path "/echo/%s" "/echo/%s") (fun _ word ->
-        Dream.html word)
-
-      let post = make ~meth:`POST (path "/echo/%s" "/echo/%s") (fun _ word ->
-        Dream.html ~status:`Created word)
-
-      (* main.ml *)
-      handler (
-        Echo.get >>
-        Echo.post
+      let echo = [%route_path "/echo/%s"]
+      ...
+      Route.handler (
+        Route.get echo Echo.get >>
+        Route.post echo Echo.post
       )
       ]} *)
 
@@ -539,19 +517,10 @@ module Route : sig
   (** [middleware1 && middleware2] joins together two Dream middlewares so that
       [middleware1] is applied first, then [middleware2]. *)
 
-  val scope :
-    ( int -> string -> 'r,
-      unit,
-      Dream.response Dream.promise,
-      int -> string -> Dream.response Dream.promise )
-    format4 ->
-    ('d, unit, string, 'e) format4 ->
-    ((Dream.request -> Dream.response Dream.promise) -> Dream.request -> 'r) ->
-    (_, 'e) t ->
-    (int -> string -> 'r, 'd) t
-  (** [scope request_prefix attr_prefix middleware route] is a route that matches
-      against paths which have a [request_prefix], and handles those requests by
-      applying the [middleware] and the [route] handler. Eg:
+  val with_ : Dream.middleware -> t -> t
+  (** [with_ middleware route] is a route that matches any of the paths handled
+      in [route], and handles those requests by applying the [middleware] and the
+      [route] handler. Eg:
 
       {[
       let add_header prev req =
@@ -560,25 +529,15 @@ module Route : sig
         Dream.add_header resp "X-Api-Server" "Dream";
         resp
 
-      let get_order =
-        make ~meth:`GET "/orders/%s" "/orders/%s" (fun _ id -> Dream.html id)
-
-      let get_order_v2 = scope "/v2" "/v2" add_header get_order
+      let get_order_v2 =
+        with_ add_header (get [%route_path "/v2/orders/%s"] (fun _ id -> Dream.html id))
       ]}
 
       In the example above, [get_order_v2] will match against requests with paths
-      like "/v2/orders/%s", then strip out the [/v2] prefix, apply the
-      [add_header] middleware, and handle the request with the [get_order] route.
+      like "/v2/orders/%s", apply the [add_header] middleware, and handle the
+      request. *)
 
-      ⚠️ However, be aware that adding a scope on top of an existing route does
-      not change that route's path, so eg if you use the [get_order] route to
-      print links, but route against the [get_order_v2] route, the links will not
-      work.
-
-      @param attr_prefix is used to prefix the route link correctly as well when
-        it is printed as an attribute. *)
-
-  val pp : (_, _) t Fmt.t
+  val pp : t Fmt.t
   (** [pp] is a formatter that prints out a simple summary of the route, eg
       [GET /foo/%s] or just [/foo/%s] if the route matches any method. *)
 end
