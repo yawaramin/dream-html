@@ -395,26 +395,27 @@ end
 
 (** {2 Type-safe routing} *)
 
-(** Bidirectional routes with type-safe path segment parsing and printing using
-    OCaml's built-in format strings, and support for scoped middleware.
+(** Bidirectional paths with type-safe path segment parsing and printing using
+    OCaml's built-in format strings, and fully plug-and-play compatible with
+    Dream routes.
 
     @since v3.9.0 *)
-module Route : sig
-  type (_, _) path
+module Path : sig
+  type (_, _) t
   (** This contains the path formats that are used to parse and print the routes. *)
 
-  val path :
+  val make :
     ('r, unit, Dream.response Dream.promise) format ->
     ('p, unit, string, attr) format4 ->
-    ('r, 'p) path
-  (** [path request_fmt attr_fmt] is a route path. The [ppx_dream_html] PPX
+    ('r, 'p) t
+  (** [make request_fmt attr_fmt] is a route path. The [ppx_dream_html] PPX
       provides a more convenient way.
 
       Without PPX: [let order = path "/orders/%s" "/orders/%s"]
 
       With PPX: [let order = [%route_path "/orders/%s"]] *)
 
-  val link : (_, 'p) path -> ('p, unit, string, attr) format4
+  val link : (_, 'p) t -> ('p, unit, string, attr) format4
   (** [link path] is a dream-html attribute value that prints out the filled
       [path] given its parameters. Use this instead of hard-coding your route
       URLs throughout your app, to make it easy to refactor routes with minimal
@@ -430,114 +431,45 @@ module Route : sig
       ]}
 
       Renders: [<a href="/orders/yzxyzc">My Order</a>] *)
-
-  type t
-  (** A route that can handle a templated request path. *)
-
-  val make : ?meth:Dream.method_ -> ('r, _) path -> (Dream.request -> 'r) -> t
-  (** [make ?meth path handler] is a route which handles requests with [meth] if
-      specified, or any method otherwise.
-
-      @param path format string is used to match against requests and print out
-        filled paths as links. It accepts the following format specifiers:
-
-        [%s] matches against any sequence of characters upto (excluding) a [/].
-
-        [%*s] matches against the rest of the path, and then passes as handler
-        params the number of characters captured as well as the captured
-        substring. This can be used as a catch-all, eg to respond with a
-        customized 'not found' message.
-
-        [%d] matches against any integer.
-
-        [%c] matches against any single character.
-
-        [%%] at the {i end} of the route format string matches against an
-        optional trailing [/] character, allowing you to flexibly handle requests
-        either way.
-
-      @param handler takes the Dream request and any parameters that are parsed
-        from the path as arguments and returns a Dream response.
-
-      Examples:
-
-      {[
-      let get_account_version =
-        make ~meth:`GET [%route_path "/accounts/%s/versions/%d"] (fun _req acc ver ->
-          Dream.html (Printf.sprintf "Account: %s, version: %d" acc ver))
-
-      let get_order = make ~meth:`GET [%route_path "/orders/%s"] (fun _ id -> Dream.html id)
-      ]} *)
-
-  (** The following are convenience functions for creating routes. *)
-
-  val get : ('r, _) path -> (Dream.request -> 'r) -> t
-  (***)
-
-  val post : ('r, _) path -> (Dream.request -> 'r) -> t
-  val put : ('r, _) path -> (Dream.request -> 'r) -> t
-  val delete : ('r, _) path -> (Dream.request -> 'r) -> t
-  val head : ('r, _) path -> (Dream.request -> 'r) -> t
-  val connect : ('r, _) path -> (Dream.request -> 'r) -> t
-  val options : ('r, _) path -> (Dream.request -> 'r) -> t
-  val trace : ('r, _) path -> (Dream.request -> 'r) -> t
-  val patch : ('r, _) path -> (Dream.request -> 'r) -> t
-
-  val format : t -> string
-  (** [format route] is the template string used to match request paths against
-      the [route]. *)
-
-  val handler : t -> Dream.handler
-  (** [handler route] converts the [route] into a Dream handler. *)
-
-  val ( >> ) : t -> t -> t
-  (** [route1 >> route2] joins together [route1] and [route2] into a new route so
-      that requests targeting either of them will match. Use this to build your
-      app's routes. Eg, in Dream your routes might look like:
-
-      {[
-      Dream.router [
-        Dream.get "/echo/:word" Echo.get;
-        Dream.post "/echo/:word" Echo.post;
-      ]
-      ]}
-
-      With [( >> )] it would look like:
-
-      {[
-      let echo = [%route_path "/echo/%s"]
-      ...
-      Route.handler (
-        Route.get echo Echo.get >>
-        Route.post echo Echo.post
-      )
-      ]} *)
-
-  val ( && ) : Dream.middleware -> Dream.middleware -> Dream.middleware
-  (** [middleware1 && middleware2] joins together two Dream middlewares so that
-      [middleware1] is applied first, then [middleware2]. *)
-
-  val with_ : Dream.middleware -> t -> t
-  (** [with_ middleware route] is a route that matches any of the paths handled
-      in [route], and handles those requests by applying the [middleware] and the
-      [route] handler. Eg:
-
-      {[
-      let add_header prev req =
-        let open Lwt.Syntax in
-        let+ resp = prev req in
-        Dream.add_header resp "X-Api-Server" "Dream";
-        resp
-
-      let get_order_v2 =
-        with_ add_header (get [%route_path "/v2/orders/%s"] (fun _ id -> Dream.html id))
-      ]}
-
-      In the example above, [get_order_v2] will match against requests with paths
-      like "/v2/orders/%s", apply the [add_header] middleware, and handle the
-      request. *)
-
-  val pp : t Fmt.t
-  (** [pp] is a formatter that prints out a simple summary of the route, eg
-      [GET /foo/%s] or just [/foo/%s] if the route matches any method. *)
 end
+
+val get : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+(** Using the PPX, eg:
+
+    {[
+    let order = [%path "/orders/%s"]
+
+    let get_order = get order (fun request order_id ->
+      ...
+      a [href (Path.link order) order_id] [txt "Your order"]
+      ...
+    ]}
+
+    @since v3.9.0 *)
+
+val post : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+(** @since v3.9.0 *)
+
+val put : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+(** @since v3.9.0 *)
+
+val delete : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+(** @since v3.9.0 *)
+
+val head : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+(** @since v3.9.0 *)
+
+val connect : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+(** @since v3.9.0 *)
+
+val options : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+(** @since v3.9.0 *)
+
+val trace : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+(** @since v3.9.0 *)
+
+val patch : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+(** @since v3.9.0 *)
+
+val any : ('r, _) Path.t -> (Dream.request -> 'r) -> Dream.route
+(** @since v3.9.0 *)

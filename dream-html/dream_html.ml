@@ -17,7 +17,6 @@
 
 include Pure_html
 module Form = Form
-module Route = Route
 
 let form f ?csrf req =
   req
@@ -70,6 +69,38 @@ let csrf_tag req =
   let open HTML in
   input [name "dream.csrf"; type_ "hidden"; value "%s" (Dream.csrf_token req)]
 
+module Path = Path
+
+let get path func =
+  Dream.get (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
+
+let post path func =
+  Dream.post (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
+
+let put path func =
+  Dream.put (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
+
+let delete path func =
+  Dream.delete (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
+
+let head path func =
+  Dream.head (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
+
+let connect path func =
+  Dream.connect (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
+
+let options path func =
+  Dream.options (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
+
+let trace path func =
+  Dream.trace (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
+
+let patch path func =
+  Dream.patch (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
+
+let any path func =
+  Dream.any (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
+
 module Livereload = struct
   let enabled =
     match Sys.getenv "LIVERELOAD" with
@@ -119,11 +150,11 @@ module Livereload = struct
       HTML.null []
 
   let route =
-    Dream.get endpoint (fun _ ->
-        if enabled then
+    if enabled then
+      Dream.get endpoint (fun _ ->
           Dream.websocket (fun sock ->
               Lwt.bind (Dream.receive sock) (fun _ ->
-                  Dream.close_websocket sock))
-        else
-          Dream.empty `Not_Found)
+                  Dream.close_websocket sock)))
+    else
+      Dream.no_route
 end
