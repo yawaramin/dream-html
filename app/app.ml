@@ -12,7 +12,7 @@ let is_htmx req =
   Dream.has_header req hx_request
   && not (Dream.has_header req hx_history_request_request)
 
-let vary_response ~if_fragment ~if_full req =
+let vary ~if_fragment ~if_full req =
   let open Lwt.Syntax in
   let+ resp = if is_htmx req then if_fragment () else if_full () in
   Dream.set_header resp "Vary" (hx_request ^ ", " ^ hx_history_request_request);
@@ -178,7 +178,7 @@ module Todos = struct
         | `Ok [("desc", desc)] ->
           let todo = Repo.add desc in
           let trgt = Dream.target req in
-          vary_response req
+          vary req
             ~if_fragment:(fun () ->
               respond ~status:`Created
                 (null [render_one todo; oob (Page.toast "added todo")]))
@@ -241,7 +241,7 @@ module Todo = struct
     get Resource.todo (fun req id ->
         let todo = Repo.find id in
         let rendered = render todo in
-        vary_response req
+        vary req
           ~if_fragment:(fun () ->
             respond (null [rendered; Page.titl todo.desc]))
           ~if_full:(fun () ->
@@ -256,7 +256,7 @@ module Todo = struct
         match frm with
         | `Ok [("desc", desc); ("id", idval)] ->
           let todo = Repo.edit idval desc in
-          vary_response req
+          vary req
             ~if_fragment:(fun () ->
               respond
                 (null
@@ -266,7 +266,7 @@ module Todo = struct
             ~if_full:(fun () -> Dream.redirect req trgt)
         | `Ok [("id", idval)] ->
           let todo = Repo.toggle idval in
-          vary_response req
+          vary req
             ~if_fragment:(fun () -> respond (render_toggled todo))
             ~if_full:(fun () -> Dream.redirect req trgt)
         | _ -> invalid_arg "There was an error")
