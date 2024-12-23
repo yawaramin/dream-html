@@ -138,18 +138,16 @@ modules defined later, it's simple for them to render a full page by calling the
 render functions of progressively higher (outer) views:
 
 ```ocaml
-let get = Dream_html.get Resource.todo (fun req id ->
+let get = get Resource.todo (fun req id ->
   let todo = Repo.find id in
   let rendered = render todo in
-  if is_htmx req then
-    respond (null [rendered; Page.titl todo.desc])
-  else
-    respond (Page.render todo.desc (Todos.render (Repo.list ()) rendered)))
+  vary req
+    ~if_fragment:(fun () ->
+      respond (null [rendered; Page.titl todo.desc]))
+    ~if_full:(fun () ->
+      respond (Page.render todo.desc (Todos.render (Repo.list ()) rendered))))
 ```
 
-Note that for htmx requests, we return an updated title as part of the response
-fragment, but we don't explicitly mark it as an out-of-band swap. htmx has
-special support for the `<title>` tag and will automatically swap it if found.
-Of course, you can still do an OOB swap for the title if you want, but it's
-redundant.
-
+The `vary` function selects the correct HTML to respond with depending on whether
+a partial or a full page is required. It also sets the correct `Vary` response
+header so that browsers that locally cache responses will do so correctly.
