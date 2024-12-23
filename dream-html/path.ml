@@ -61,7 +61,8 @@ let rec handler' :
   | String (No_padding, fmt) ->
     let s, pos = parse_string ~pos ~len path in
     handler' ~pos ~len path fmt (hdlr s)
-  | Int (Int_d, No_padding, No_precision, fmt) -> (
+  | Int ((Int_d | Int_i | Int_x | Int_X | Int_o), No_padding, No_precision, fmt)
+    -> (
     let s, pos = parse_string ~pos ~len path in
     match int_of_string_opt s with
     | Some i -> handler' ~pos ~len path fmt (hdlr i)

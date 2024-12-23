@@ -10,6 +10,18 @@ Content-Type: text/html; charset=utf-8
 
 z
 
+🔎 Parse a hex integer
+200 OK
+Content-Type: text/html; charset=utf-8
+
+3735928559
+
+🔎 Parse an octal integer
+200 OK
+Content-Type: text/html; charset=utf-8
+
+420
+
 🔎 Parse number fail
 400 Bad Request
 

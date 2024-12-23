@@ -58,12 +58,20 @@ let test ?method_ msg routes target =
      let* resp = Dream.router routes (Dream.request ?method_ ~target "") in
      debug resp)
 
+let handle_int _ i = Dream.html (string_of_int i)
+
 let () =
   test "Root path" [Dream_html.get [%path "/"] (fun _ -> Dream.html "ok")] "/";
   test "Parse a character"
     [ Dream_html.get [%path "/foo/%c/bar"] (fun _ ch ->
           Dream.html (String.make 1 ch)) ]
     "/foo/z/bar";
+  test "Parse a hex integer"
+    [Dream_html.get [%path "/%x"] handle_int]
+    "/0xdeadbeef";
+  test "Parse an octal integer"
+    [Dream_html.get [%path "/%o"] handle_int]
+    "/0o644";
   test "Parse number fail" [get_account_version] "/accounts/a1/versions/two";
   test "Path params of different types" [get_account_version]
     "/accounts/yxzefac/versions/2";

@@ -389,7 +389,13 @@ module Path : sig
 
       [%c] capture a [char]
 
-      [%d] capture an [int]
+      [%d] or [%i] capture an [int]
+
+      [%x] capture a hexadecimal [int]
+
+      [%X] capture an uppercase hexadecimal [int]
+
+      [%o] capture an octal [int]
 
       [%ld] capture an [int32]
 
@@ -397,7 +403,7 @@ module Path : sig
 
       [%f] capture a [float]
 
-      [%b] capture a [bool] *)
+      [%B] capture a [bool] *)
 
   val link : (_, 'p) t -> ('p, unit, string, attr) format4
   (** [link path] is a dream-html attribute value that prints out the filled
@@ -411,7 +417,7 @@ module Path : sig
       open Dream_html
       open HTML
 
-      a [href (Route.link order) "yzxyzc"] [txt "My Order"]
+      a [href (Path.link order) "yzxyzc"] [txt "My Order"]
       ]}
 
       Renders: [<a href="/orders/yzxyzc">My Order</a>] *)
@@ -433,6 +439,7 @@ val get : (_, _) route
       ...
       a [href (Path.link order) order_id] [txt "Your order"]
       ...
+    )
     ]}
 
     @since v3.9.0 *)
