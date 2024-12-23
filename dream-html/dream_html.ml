@@ -73,36 +73,19 @@ module Path = Path
 
 type ('r, 'p) route = ('r, 'p) Path.t -> (Dream.request -> 'r) -> Dream.route
 
-let get path func =
-  Dream.get (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
+let dream_method meth path func =
+  meth (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
 
-let post path func =
-  Dream.post (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
-
-let put path func =
-  Dream.put (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
-
-let delete path func =
-  Dream.delete (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
-
-let head path func =
-  Dream.head (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
-
-let connect path func =
-  Dream.connect (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
-
-let options path func =
-  Dream.options (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
-
-let trace path func =
-  Dream.trace (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
-
-let patch path func =
-  Dream.patch (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
-
-let any path func =
-  Dream.any (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
-
+let get path = dream_method Dream.get path
+let post path = dream_method Dream.post path
+let put path = dream_method Dream.put path
+let delete path = dream_method Dream.delete path
+let head path = dream_method Dream.head path
+let connect path = dream_method Dream.connect path
+let options path = dream_method Dream.options path
+let trace path = dream_method Dream.trace path
+let patch path = dream_method Dream.patch path
+let any path = dream_method Dream.any path
 let use = Dream.scope ""
 
 module Livereload = struct
