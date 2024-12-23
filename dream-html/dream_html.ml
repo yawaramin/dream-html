@@ -103,7 +103,7 @@ let patch path func =
 let any path func =
   Dream.any (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
 
-let use = Dream.scope "/**"
+let use = Dream.scope ""
 
 module Livereload = struct
   let enabled =

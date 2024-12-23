@@ -357,7 +357,8 @@ val csrf_tag : Dream.request -> node
 
 (** Bidirectional paths with type-safe path segment parsing and printing using
     OCaml's built-in format strings, and fully plug-and-play compatible with
-    Dream routes.
+    Dream routes. Refer to {{!Path.make}Path.make} for the syntax of the route
+    strings.
 
     @since v3.9.0 *)
 module Path : sig
@@ -373,7 +374,30 @@ module Path : sig
 
       Without PPX: [let order = Path.make "/orders/%s" "/orders/%s"]
 
-      With PPX: [let order = [%path "/orders/%s"]] *)
+      With PPX: [let order = [%path "/orders/%s"]]
+
+      Due to the way Dream's router works, all parameter captures happens between
+      [/] characters and the end of the path. Eg, [/foo/%s/bar/%d] is valid, but
+      [/foo/%s.%s] (note the dot character) is not a valid capture.
+
+      The following type conversion specs are supported:
+
+      [%s] capture a [string] and pass it to the handler
+
+      [%*s] capture the rest of the path and pass the captured length and string
+      to the handler
+
+      [%c] capture a [char]
+
+      [%d] capture an [int]
+
+      [%ld] capture an [int32]
+
+      [%Ld] capture an [int64]
+
+      [%f] capture a [float]
+
+      [%b] capture a [bool] *)
 
   val link : (_, 'p) t -> ('p, unit, string, attr) format4
   (** [link path] is a dream-html attribute value that prints out the filled

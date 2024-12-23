@@ -66,6 +66,26 @@ let rec handler' :
     match int_of_string_opt s with
     | Some i -> handler' ~pos ~len path fmt (hdlr i)
     | None -> Dream.respond ~status:`Bad_Request path)
+  | Int32 (Int_d, No_padding, No_precision, fmt) -> (
+    let s, pos = parse_string ~pos ~len path in
+    match Int32.of_string_opt s with
+    | Some i -> handler' ~pos ~len path fmt (hdlr i)
+    | None -> Dream.respond ~status:`Bad_Request path)
+  | Int64 (Int_d, No_padding, No_precision, fmt) -> (
+    let s, pos = parse_string ~pos ~len path in
+    match Int64.of_string_opt s with
+    | Some i -> handler' ~pos ~len path fmt (hdlr i)
+    | None -> Dream.respond ~status:`Bad_Request path)
+  | Float ((Float_flag_, Float_f), No_padding, No_precision, fmt) -> (
+    let s, pos = parse_string ~pos ~len path in
+    match Float.of_string_opt s with
+    | Some f -> handler' ~pos ~len path fmt (hdlr f)
+    | None -> Dream.respond ~status:`Bad_Request path)
+  | Bool (No_padding, fmt) -> (
+    let s, pos = parse_string ~pos ~len path in
+    match bool_of_string_opt s with
+    | Some b -> handler' ~pos ~len path fmt (hdlr b)
+    | None -> Dream.respond ~status:`Bad_Request path)
   | String_literal (lit, fmt) ->
     handler' ~pos:(pos + String.length lit) ~len path fmt hdlr
   | Char_literal ('/', String (Arg_padding Right, End_of_format)) ->
