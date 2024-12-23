@@ -35,7 +35,7 @@ let dreamcatcher next req =
         Dream.respond ~status msg
     end
 
-module Resource = struct
+module Routes = struct
   let page = [%path "/"]
   let todos = [%path "/todos"]
   let todo = [%path "/todos/%d"]
@@ -51,7 +51,7 @@ module Page = struct
   let titl str = title [] "todos · %s" str
   let toast_id = "toast"
   let toast msg = span [id "%s" toast_id; Aria.live `polite] [txt "%s" msg]
-  let get = get Resource.page (fun req -> Dream.redirect req "/todos")
+  let get = get Routes.page (fun req -> Dream.redirect req "/todos")
 
   (* outlet should be a <main> element *)
   let render titl_str outlet =
@@ -112,7 +112,7 @@ body {
         body []
           [ header []
               [ a
-                  [href (Path.link Resource.page); style_ "text-decoration:none"]
+                  [href (Path.link Routes.page); style_ "text-decoration:none"]
                   [hgroup [] [h1 [] [txt "todos"]; p [] [txt "get stuff done"]]]
               ];
             outlet;
@@ -138,8 +138,8 @@ module Todos = struct
     a
       [ id "todos-%d" todo_id;
         style_ "text-decoration:none";
-        href (Path.link Resource.todo) todo_id;
-        Hx.get (Path.link Resource.todo) todo_id;
+        href (Path.link Routes.todo) todo_id;
+        Hx.get (Path.link Routes.todo) todo_id;
         Hx.target "#%s" todo;
         Hx.push_url "true" ]
       [article [] [msg; footer [] [txt "#%d" todo_id]]]
@@ -152,8 +152,8 @@ module Todos = struct
       [ div []
           [ form
               [ method_ `POST;
-                action (Path.link Resource.todos);
-                Hx.post (Path.link Resource.todos);
+                action (Path.link Routes.todos);
+                Hx.post (Path.link Routes.todos);
                 Hx.swap "afterbegin settle:5s";
                 Hx.target "#%s" todolist ]
               [ label []
@@ -166,11 +166,11 @@ module Todos = struct
         div [id "%s" todo] [outlet] ]
 
   let get =
-    get Resource.todos (fun _ ->
+    get Routes.todos (fun _ ->
         [] |> null |> render (Repo.list ()) |> Page.render "all" |> respond)
 
   let post =
-    post Resource.todos (fun req ->
+    post Routes.todos (fun req ->
         let open Lwt.Syntax in
         let* frm = Dream.form ~csrf:false req in
         match frm with
@@ -208,8 +208,8 @@ module Todo = struct
       [style_ "position:sticky;top:0"]
       [ form
           [ method_ `POST;
-            action (Path.link Resource.todo) todo.id;
-            Hx.post (Path.link Resource.todo) todo.id;
+            action (Path.link Routes.todo) todo.id;
+            Hx.post (Path.link Routes.todo) todo.id;
             Hx.swap "outerHTML settle:5s";
             Hx.target "#todos-%d" todo.id;
             style_ "display:inline" ]
@@ -226,8 +226,8 @@ module Todo = struct
                 input [type_ "submit"; value "update"] ] ];
         form
           [ method_ `POST;
-            action (Path.link Resource.todo) todo.id;
-            Hx.post (Path.link Resource.todo) todo.id;
+            action (Path.link Routes.todo) todo.id;
+            Hx.post (Path.link Routes.todo) todo.id;
             Hx.swap "outerHTML settle:5s";
             Hx.target "#todos-%d" todo.id;
             style_ "display:inline" ]
@@ -238,7 +238,7 @@ module Todo = struct
     null [Todos.render_one todo; oob (complete_btn todo); oob (Page.toast msg)]
 
   let get =
-    get Resource.todo (fun req id ->
+    get Routes.todo (fun req id ->
         let todo = Repo.find id in
         let rendered = render todo in
         vary req
@@ -249,7 +249,7 @@ module Todo = struct
               (Page.render todo.desc (Todos.render (Repo.list ()) rendered))))
 
   let post =
-    post Resource.todo (fun req _ ->
+    post Routes.todo (fun req _ ->
         let trgt = Dream.target req in
         let open Lwt.Syntax in
         let* frm = Dream.form ~csrf:false req in
