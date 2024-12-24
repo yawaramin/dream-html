@@ -23,7 +23,7 @@ let path_extender =
     Ast_pattern.(single_expr_payload (estring __))
     (fun ~ctxt s ->
       let loc = Expansion_context.Extension.extension_point_loc ctxt in
-      if String.length s > 0 && s.[0] == '/' then
+      if String.length s > 0 && s.[0] = '/' then
         pexp_apply ~loc
           (evar ~loc "Dream_html.Path.make")
           [Nolabel, estring ~loc s; Nolabel, estring ~loc s]
