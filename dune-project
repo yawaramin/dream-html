@@ -2,11 +2,6 @@
 
 (name dream-html)
 
-; This is the version for pure-html ONLY, dream-html version is maintained
-; separately in the dream-html.opam.template file.
-
-(version v3.8.1)
-
 (generate_opam_files true)
 
 (license GPL-3.0-or-later)
@@ -20,6 +15,7 @@
 
 (package
  (name pure-html)
+ (version v3.8.1)
  (synopsis "HTML generator eDSL")
  (description
   "Write HTML directly in your OCaml source files with editor support.")
@@ -34,6 +30,7 @@
 
 (package
  (name dream-html)
+ (version v3.9.0)
  (synopsis "HTML generator eDSL for Dream")
  (description
   "Write HTML directly in your OCaml source files with editor support.")
