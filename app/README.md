@@ -110,7 +110,7 @@ dream-html 'paths', which are type-safe objects that can parse and print URL
 parameters:
 
 ```ocaml
-module Resource = struct
+module Routes = struct
   let page = [%path "/"]
   let todos = [%path "/todos"]
   let todo = [%path "/todos/%d"]
@@ -123,7 +123,7 @@ paths are used to both parse and extract path parameters, and _also_ to print
 them back as HTML attributes, eg:
 
 ```ocaml
-a [href (Path.link Resource.todo) todo_id] [...]
+a [href (Path.link Routes.todo) todo_id] [...]
 ```
 
 Now, no paths nor assumptions about the paths are hard-coded in the app, making
@@ -138,14 +138,15 @@ modules defined later, it's simple for them to render a full page by calling the
 render functions of progressively higher (outer) views:
 
 ```ocaml
-let get = get Resource.todo (fun req id ->
+let get = Dream_html.get Routes.todo (fun req id ->
   let todo = Repo.find id in
-  let rendered = render todo in
+  let rendered = render ~todo in
   vary req
-    ~if_fragment:(fun () ->
-      respond (null [rendered; Page.titl todo.desc]))
+    ~if_fragment:(fun () -> respond (null [rendered; Page.title_tag todo.desc]))
     ~if_full:(fun () ->
-      respond (Page.render todo.desc (Todos.render (Repo.list ()) rendered))))
+      respond
+        (Page.render ~title_str:todo.desc
+            (Todos.render ~todos:(Repo.list ()) rendered))))
 ```
 
 The `vary` function selects the correct HTML to respond with depending on whether
