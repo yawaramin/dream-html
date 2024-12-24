@@ -103,14 +103,14 @@ flexible since we don't have to rely on file-based routing and we don't need to
 load a separate script and data resource for each view, htmx loads them both in
 a single call).
 
-## Path links
+## Path attributes
 
 As mentioned earlier, we define all meaningful resources in the app as
 dream-html 'paths', which are type-safe objects that can parse and print URL
 parameters:
 
 ```ocaml
-module Routes = struct
+module Path = struct
   let page = [%path "/"]
   let todos = [%path "/todos"]
   let todo = [%path "/todos/%d"]
@@ -123,10 +123,10 @@ paths are used to both parse and extract path parameters, and _also_ to print
 them back as HTML attributes, eg:
 
 ```ocaml
-a [href (Path.link Routes.todo) todo_id] [...]
+a [path_attr href Path.todo todo_id] [...]
 ```
 
-Now, no paths nor assumptions about the paths are hard-coded in the app, making
+Now, no paths nor assumptions about the paths are hard-coded in the views, making
 it a breeze to refactor all the paths in one place.
 
 ## Progressive enhancement with htmx
