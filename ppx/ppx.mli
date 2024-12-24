@@ -26,9 +26,19 @@
 
     This provides a convenient way to create route paths and reuse them
     throughout your app. The way it works is by just duplicating the format
-    string literal argument. However, this naturally means that both the route
-    parser and attribute printer format strings are identical. If you need
-    different formatting for the two, you can use the underlying
+    string literal argument. However, this naturally means that both the
+    generated route parser and attribute printer format strings are identical. If
+    you need different formatting for the two, you can use the underlying
     [Dream_html.Path.make] function.
+
+    The PPX also has the benefit that it checks that the path is well-formed at
+    compile time. If you pass in an invalid path you get a compile error:
+
+    {[
+    File "example.ml", line 1, characters 10-23:
+    1 | let bad = [%path "foo"]
+                  ^^^^^^^^^^^^^
+    Error: Invalid path: 'foo'. Paths must start with a '/' character
+    ]}
 
     @since v3.9.0 *)

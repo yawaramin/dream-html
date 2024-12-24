@@ -23,9 +23,14 @@ let path_extender =
     Ast_pattern.(single_expr_payload (estring __))
     (fun ~ctxt s ->
       let loc = Expansion_context.Extension.extension_point_loc ctxt in
-      pexp_apply ~loc
-        (evar ~loc "Dream_html.Path.make")
-        [Nolabel, estring ~loc s; Nolabel, estring ~loc s])
+      if String.length s > 0 && s.[0] == '/' then
+        pexp_apply ~loc
+          (evar ~loc "Dream_html.Path.make")
+          [Nolabel, estring ~loc s; Nolabel, estring ~loc s]
+      else
+        pexp_extension ~loc
+          (Location.error_extensionf ~loc
+             "Invalid path: '%s'. Paths must start with a '/' character" s))
 
 let path = Context_free.Rule.extension path_extender
 let () = Driver.register_transformation ~rules:[path] "dream-html.ppx"
