@@ -22,7 +22,6 @@ type ('r, 'p) t =
 
 let pp f path = Format.pp_print_string f (string_of_format path.rfmt)
 let make rfmt afmt = { rfmt; afmt }
-let link { afmt; _ } = afmt
 let sub = StringLabels.sub
 
 let rec parse_string' ~pos ~len str buf =

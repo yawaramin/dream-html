@@ -412,24 +412,25 @@ module Path : sig
   [@@ocaml.toplevel_printer]
   (** [pp] is a pretty-printer for path values. For a path like
       [Path.make "/foo", "/foo"], it will print out [/foo]. *)
-
-  val link : (_, 'p) t -> ('p, unit, string, attr) format4
-  (** [link path] is a dream-html attribute value that prints out the filled
-      [path] given its parameters. Use this instead of hard-coding your route
-      URLs throughout your app, to make it easy to refactor routes with minimal
-      effort.
-
-      Eg:
-
-      {[
-      open Dream_html
-      open HTML
-
-      a [href (Path.link order) "yzxyzc"] [txt "My Order"]
-      ]}
-
-      Renders: [<a href="/orders/yzxyzc">My Order</a>] *)
 end
+
+val url_for : 'p string_attr -> (_, 'p) Path.t -> 'p
+(** [url_for attr path] is an HTML attribute with the path parameters filled in
+    from the given values. Eg,
+
+    {[
+    let order = [%path "/orders/%s"]
+
+    open Dream_html
+    open HTML
+
+    a [url_for href order "yzxyzc"] [txt "My Order"]
+    ]}
+
+    Renders: [<a href="/orders/yzxyzc">My Order</a>]
+
+    Use this instead of hard-coding your route URLs throughout your app, to make
+    it easy to refactor routes with minimal effort. *)
 
 type ('r, 'p) route = ('r, 'p) Path.t -> (Dream.request -> 'r) -> Dream.route
 (** Wrapper for a Dream route that represents the ability to parse path
