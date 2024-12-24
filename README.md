@@ -37,34 +37,39 @@ over time. Here are the highlights:
 > If you're not using Dream, you can still use the HTML/SVG/MathML/htmx
 > generation features using the `pure-html` package.
 
-## HTML generation first look
+## First look
 
 ```ocaml
-let page req =
+let greeting = [%path "/%s"]
+
+let hello _request who =
   let open Dream_html in
   let open HTML in
-  (* automatically injects <!doctype html> *)
-  html [lang "en"] [
-    head [] [
-      title [] "Dream-html";
-    ];
-    body [] [
-      h1 [] [txt "Dream-html"];
-      p [] [txt "Is cool!"];
-      form [method_ `POST; action "/feedback"] [
-        (* Integrated with Dream's CSRF token generation *)
-        csrf_tag req;
-
-        label [for_ "what-you-think"] [txt "Tell us what you think!"];
-        input [name "what-you-think"; id "what-you-think"];
-        input [type_ "submit"; value "Send"];
+  respond (
+    html [lang "en"] [
+      head [] [
+        title [] "dream-html first look";
       ];
-    ];
-  ]
+      body [] [
+        h1 [] [txt "Hello, %s!" who];
+        p [] [
+          txt "This page is at: ";
+          a [href (Path.link greeting) who] [txt "this URL"];
+          txt ".";
+        ];
+      ];
+    ]
+  )
 
-(* Integrated with Dream response *)
-let handler req = Dream_html.respond (page req)
+let () =
+  Dream.run
+  @@ Dream.logger
+  @@ Dream.router [
+    Dream_html.get greeting hello;
+  ]
 ```
+
+<img width="343" alt="Screenshot 2024-12-23 at 23 55 33" src="https://github.com/user-attachments/assets/84cd1f1e-46c3-4fe1-aeb2-724542fc987c">
 
 ## Security (HTML escaping)
 
