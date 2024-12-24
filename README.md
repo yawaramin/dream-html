@@ -71,6 +71,21 @@ let () =
 
 <img width="343" alt="Screenshot 2024-12-23 at 23 55 33" src="https://github.com/user-attachments/assets/84cd1f1e-46c3-4fe1-aeb2-724542fc987c">
 
+Rendered HTML:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>dream-html first look</title>
+  </head>
+  <body>
+    <h1>Hello, me!</h1>
+    <p>This page is at: <a href="/me">this URL</a>.</p>
+  </body>
+</html>
+```
+
 ## Security (HTML escaping)
 
 Attribute and text values are escaped using rules very similar to standards-
