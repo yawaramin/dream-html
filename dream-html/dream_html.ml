@@ -86,7 +86,7 @@ let options path = dream_method Dream.options path
 let trace path = dream_method Dream.trace path
 let patch path = dream_method Dream.patch path
 let any path = dream_method Dream.any path
-let use = Dream.scope ""
+let use = Dream.scope "/"
 
 module Livereload = struct
   let enabled =
