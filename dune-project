@@ -2,6 +2,8 @@
 
 (name dream-html)
 
+(version v3.8.1)
+
 (generate_opam_files true)
 
 (license GPL-3.0-or-later)
@@ -15,7 +17,6 @@
 
 (package
  (name pure-html)
- (version v3.8.1)
  (synopsis "HTML generator eDSL")
  (description
   "Write HTML directly in your OCaml source files with editor support.")
