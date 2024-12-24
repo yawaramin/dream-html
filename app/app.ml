@@ -48,18 +48,18 @@ module Page = struct
   open HTML
 
   (* Helper to build a title prefixed with the name of the app. *)
-  let titl str = title [] "todos · %s" str
+  let title_tag str = title [] "todos · %s" str
   let toast_id = "toast"
   let toast msg = span [id "%s" toast_id; Aria.live `polite] [txt "%s" msg]
   let get = get Routes.page (fun req -> Dream.redirect req "/todos")
 
   (* outlet should be a <main> element *)
-  let render titl_str outlet =
+  let render ~title_str child =
     html
       [lang "en"]
       [ head []
           [ Livereload.script;
-            titl titl_str;
+            title_tag title_str;
             link
               [ rel "stylesheet";
                 href
@@ -115,7 +115,7 @@ body {
                   [href (Path.link Routes.page); style_ "text-decoration:none"]
                   [hgroup [] [h1 [] [txt "todos"]; p [] [txt "get stuff done"]]]
               ];
-            outlet;
+            child;
             footer []
               [ toast "";
                 script [src "%s" htmx] "";
@@ -146,7 +146,7 @@ module Todos = struct
 
   let todolist = "todos"
 
-  let render todos outlet =
+  let render ~todos child =
     main
       [class_ "grid"]
       [ div []
@@ -163,11 +163,15 @@ module Todos = struct
                       [ input [name "desc"; autofocus; required];
                         input [type_ "submit"; value "add"] ] ] ];
             div [id "%s" todolist] (List.map render_one todos) ];
-        div [id "%s" todo] [outlet] ]
+        div [id "%s" todo] [child] ]
 
   let get =
     get Routes.todos (fun _ ->
-        [] |> null |> render (Repo.list ()) |> Page.render "all" |> respond)
+        []
+        |> null
+        |> render ~todos:(Repo.list ())
+        |> Page.render ~title_str:"all"
+        |> respond)
 
   let post =
     post Routes.todos (fun req ->
@@ -202,7 +206,7 @@ module Todo = struct
 
   let todo_desc = "todo-desc"
 
-  let render todo =
+  let render ~todo =
     let input_id = input [type_ "hidden"; name "id"; value "%d" todo.Repo.id] in
     div
       [style_ "position:sticky;top:0"]
@@ -240,13 +244,14 @@ module Todo = struct
   let get =
     get Routes.todo (fun req id ->
         let todo = Repo.find id in
-        let rendered = render todo in
+        let rendered = render ~todo in
         vary req
           ~if_fragment:(fun () ->
-            respond (null [rendered; Page.titl todo.desc]))
+            respond (null [rendered; Page.title_tag todo.desc]))
           ~if_full:(fun () ->
             respond
-              (Page.render todo.desc (Todos.render (Repo.list ()) rendered))))
+              (Page.render ~title_str:todo.desc
+                 (Todos.render ~todos:(Repo.list ()) rendered))))
 
   let post =
     post Routes.todo (fun req _ ->
@@ -261,7 +266,7 @@ module Todo = struct
               respond
                 (null
                    [ Todos.render_one todo;
-                     Page.titl desc;
+                     Page.title_tag desc;
                      oob (Page.toast "updated description") ]))
             ~if_full:(fun () -> Dream.redirect req trgt)
         | `Ok [("id", idval)] ->
