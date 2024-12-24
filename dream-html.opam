@@ -13,7 +13,7 @@ doc: "https://yawaramin.github.io/dream-html/"
 bug-reports: "https://github.com/yawaramin/dream-html/issues"
 depends: [
   "dune" {>= "2.8"}
-  "pure-html" {= "3.8.1"}
+  "pure-html" {= version}
   "dream" {>= "1.0.0~alpha3"}
   "fmt" {with-test}
   "ppx_expect" {with-test}

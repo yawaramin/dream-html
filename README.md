@@ -54,7 +54,7 @@ let hello _request who =
         h1 [] [txt "Hello, %s!" who];
         p [] [
           txt "This page is at: ";
-          a [href (Path.link greeting) who] [txt "this URL"];
+          a [path_attr href greeting who] [txt "this URL"];
           txt ".";
         ];
       ];

@@ -25,7 +25,7 @@ let path_extender =
       let loc = Expansion_context.Extension.extension_point_loc ctxt in
       if String.length s > 0 && s.[0] = '/' then
         pexp_apply ~loc
-          (evar ~loc "Dream_html.Path.make")
+          (evar ~loc "Dream_html.path")
           [Nolabel, estring ~loc s; Nolabel, estring ~loc s]
       else
         pexp_extension ~loc

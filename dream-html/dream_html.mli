@@ -354,26 +354,31 @@ val csrf_tag : Dream.request -> node
     ]
     ]} *)
 
-(** {2 Type-safe routing} *)
+(** {2 Type-safe routing}
 
-(** Bidirectional paths with type-safe path segment parsing and printing using
+    Bidirectional paths with type-safe path segment parsing and printing using
     OCaml's built-in format strings, and fully plug-and-play compatible with
-    Dream routes. Refer to {{!Path.make}Path.make} for the syntax of the route
-    strings.
+    Dream routes. *)
 
-    @since v3.9.0 *)
-module Path : sig
-  type (_, _) t
-  (** This contains the path formats that are used to parse and print the routes. *)
+type (_, _) path
+(** A path that can be used for routing and can also be printed as an attribute value.
 
-  val make :
-    ('r, unit, Dream.response Dream.promise) format ->
-    ('p, unit, string, attr) format4 ->
-    ('r, 'p) t
-  (** [make request_fmt attr_fmt] is a route path. The [dream-html.ppx] provides
+    @since 3.9.0 *)
+
+type ('r, 'p) route = ('r, 'p) path -> (Dream.request -> 'r) -> Dream.route
+(** Wrapper for a Dream route that represents the ability to parse path
+    parameters and pass them to the handler function with the correct types.
+
+    @since 3.9.0 *)
+
+val path :
+  ('r, unit, Dream.response Dream.promise) format ->
+  ('p, unit, string, attr) format4 ->
+  ('r, 'p) path
+(** [path request_fmt attr_fmt] is a router path. The [dream-html.ppx] provides
       a more convenient way.
 
-      Without PPX: [let order = Path.make "/orders/%s" "/orders/%s"]
+      Without PPX: [let order = path "/orders/%s" "/orders/%s"]
 
       With PPX: [let order = [%path "/orders/%s"]]
 
@@ -406,16 +411,12 @@ module Path : sig
 
       [%f] capture a [float]
 
-      [%B] capture a [bool] *)
+      [%B] capture a [bool]
 
-  val pp : (_, _) t Fmt.t
-  [@@ocaml.toplevel_printer]
-  (** [pp] is a pretty-printer for path values. For a path like
-      [Path.make "/foo", "/foo"], it will print out [/foo]. *)
-end
+    @since 3.9.0 *)
 
-val url_for : 'p string_attr -> (_, 'p) Path.t -> 'p
-(** [url_for attr path] is an HTML attribute with the path parameters filled in
+val path_attr : 'p string_attr -> (_, 'p) path -> 'p
+(** [path_attr attr path] is an HTML attribute with the path parameters filled in
     from the given values. Eg,
 
     {[
@@ -424,19 +425,22 @@ val url_for : 'p string_attr -> (_, 'p) Path.t -> 'p
     open Dream_html
     open HTML
 
-    a [url_for href order "yzxyzc"] [txt "My Order"]
+    a [path_attr href order "yzxyzc"] [txt "My Order"]
     ]}
 
     Renders: [<a href="/orders/yzxyzc">My Order</a>]
 
     Use this instead of hard-coding your route URLs throughout your app, to make
-    it easy to refactor routes with minimal effort. *)
+    it easy to refactor routes with minimal effort.
 
-type ('r, 'p) route = ('r, 'p) Path.t -> (Dream.request -> 'r) -> Dream.route
-(** Wrapper for a Dream route that represents the ability to parse path
-    parameters and pass them to the handler function with the correct types.
+    @since 3.9.0 *)
 
-    @since v3.9.0 *)
+val pp_path : (_, _) path Fmt.t
+[@@ocaml.toplevel_printer]
+(** [pp_path] is a pretty-printer for path values. For a path like
+    [path "/foo" "/foo"], it will print out [/foo].
+
+    @since 3.9.0 *)
 
 val get : (_, _) route
 (** Type-safe wrappers for [Dream.get] and so on. Using the PPX, eg:
@@ -451,40 +455,40 @@ val get : (_, _) route
     )
     ]}
 
-    @since v3.9.0 *)
+    @since 3.9.0 *)
 
 val post : (_, _) route
-(** @since v3.9.0 *)
+(** @since 3.9.0 *)
 
 val put : (_, _) route
-(** @since v3.9.0 *)
+(** @since 3.9.0 *)
 
 val delete : (_, _) route
-(** @since v3.9.0 *)
+(** @since 3.9.0 *)
 
 val head : (_, _) route
-(** @since v3.9.0 *)
+(** @since 3.9.0 *)
 
 val connect : (_, _) route
-(** @since v3.9.0 *)
+(** @since 3.9.0 *)
 
 val options : (_, _) route
-(** @since v3.9.0 *)
+(** @since 3.9.0 *)
 
 val trace : (_, _) route
-(** @since v3.9.0 *)
+(** @since 3.9.0 *)
 
 val patch : (_, _) route
-(** @since v3.9.0 *)
+(** @since 3.9.0 *)
 
 val any : (_, _) route
-(** @since v3.9.0 *)
+(** @since 3.9.0 *)
 
 val use : Dream.middleware list -> Dream.route list -> Dream.route
 (** [use middlewares routes] is a route that is composed of all the given [routes]
     with the [middlewares] attached to them.
 
-    @since v3.9.0 *)
+    @since 3.9.0 *)
 
 (** {2 Live reload support} *)
 

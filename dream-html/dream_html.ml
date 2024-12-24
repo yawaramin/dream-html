@@ -71,9 +71,12 @@ let csrf_tag req =
 
 module Path = Path
 
-let url_for attr { Path.afmt; _ } = attr afmt
-
+type ('r, 'p) path = ('r, 'p) Path.t
 type ('r, 'p) route = ('r, 'p) Path.t -> (Dream.request -> 'r) -> Dream.route
+
+let path rfmt afmt = { Path.rfmt; afmt }
+let path_attr attr { Path.afmt; _ } = attr afmt
+let pp_path f path = Format.pp_print_string f (string_of_format path.Path.rfmt)
 
 let dream_method meth path func =
   meth (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
