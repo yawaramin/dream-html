@@ -94,7 +94,6 @@ compliant web browsers:
 ```
 utop # open Dream_html;;
 utop # open HTML;;
-utop # #install_printer pp;;
 
 utop # let user_input = "<script>alert('You have been pwned')</script>";;
 val user_input : string = "<script>alert('You have been pwned')</script>"
@@ -196,6 +195,10 @@ for details. See also the convenience helpers `Dream_html.form` and
 Type-safe wrappers for Dream routing functionality are provided; details are
 shown in the
 [`Dream_html`](https://yawaramin.github.io/dream-html/dream-html/Dream_html/#type-safe-routing) page.
+
+See also the
+[PPX](https://yawaramin.github.io/dream-html/dream-html/Ppx/index.html)
+documentation for setup and usage instructions.
 
 ## Import HTML
 

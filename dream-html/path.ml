@@ -20,6 +20,7 @@ type ('r, 'p) t =
     afmt : ('p, unit, string, Pure_html.attr) format4
   }
 
+let pp f path = Format.pp_print_string f (string_of_format path.rfmt)
 let make rfmt afmt = { rfmt; afmt }
 let link { afmt; _ } = afmt
 let sub = StringLabels.sub

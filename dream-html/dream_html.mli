@@ -138,6 +138,7 @@ module Form : sig
       names and the corresponding error message keys. *)
 
   val pp_error : (string * string) list Fmt.t
+  [@@ocaml.toplevel_printer]
   (** [pp_error] is a helper pretty-printer for debugging/troubleshooting form
       validation errors. *)
 
@@ -376,6 +377,8 @@ module Path : sig
 
       With PPX: [let order = [%path "/orders/%s"]]
 
+      Refer to {{!Ppx} the PPX documentation} for instructions on using it.
+
       Due to the way Dream's router works, all parameter captures happens between
       [/] characters and the end of the path. Eg, [/foo/%s/bar/%d] is valid, but
       [/foo/%s.%s] (note the dot character) is not a valid capture.
@@ -404,6 +407,11 @@ module Path : sig
       [%f] capture a [float]
 
       [%B] capture a [bool] *)
+
+  val pp : (_, _) t Fmt.t
+  [@@ocaml.toplevel_printer]
+  (** [pp] is a pretty-printer for path values. For a path like
+      [Path.make "/foo", "/foo"], it will print out [/foo]. *)
 
   val link : (_, 'p) t -> ('p, unit, string, attr) format4
   (** [link path] is a dream-html attribute value that prints out the filled

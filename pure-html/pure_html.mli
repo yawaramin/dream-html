@@ -43,7 +43,7 @@ val to_xml : ?header:bool -> node -> string
 
     @since 3.3.0. *)
 
-val pp : Format.formatter -> node -> unit
+val pp : Format.formatter -> node -> unit [@@ocaml.toplevel_printer]
 
 val pp_xml : Format.formatter -> ?header:bool -> node -> unit
 (** Same as [pp] but render void tags as XML-style self-closing tags.
