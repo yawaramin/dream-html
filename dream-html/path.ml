@@ -15,11 +15,6 @@
    You should have received a copy of the GNU General Public License along with
    dream-html. If not, see <https://www.gnu.org/licenses/>. *)
 
-type ('r, 'p) t =
-  { rfmt : ('r, unit, Dream.response Dream.promise) format;
-    afmt : ('p, unit, string, Pure_html.attr) format4
-  }
-
 let sub = StringLabels.sub
 
 let rec parse_string' ~pos ~len str buf =

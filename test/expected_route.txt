@@ -33,6 +33,13 @@ Content-Type: text/html; charset=utf-8
 
 Account: yxzefac, version: 2
 
+🔎 Print path in attr
+200 OK
+Content-Type: text/html; charset=utf-8
+
+<a href="/orders/yzdksljfh">My Order</a>
+
+
 🔎 Route search with fallthrough
 200 OK
 Content-Type: text/html; charset=utf-8

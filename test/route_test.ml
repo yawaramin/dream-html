@@ -38,19 +38,23 @@ let v2_header prev req =
   Dream.add_header resp "X-Api-Version" "2";
   resp
 
-let account_version = [%path "/accounts/%s/versions/%d"]
-let order = [%path "/orders/%s"]
+module DH = Dream_html
+
+let account_version = DH.path "/accounts/%s/versions/%d"
+let order = DH.path "/orders/%s"
 
 let get_account_version =
-  Dream_html.get account_version (fun _req acc ver ->
+  DH.get account_version (fun _req acc ver ->
       Dream.html (spf "Account: %s, version: %d" acc ver))
 
-let get_order = Dream_html.get order (fun _ id -> Dream.html id)
+let get_order =
+  DH.get order (fun _ order_id ->
+      let open DH in
+      let open HTML in
+      respond (a [path_attr href order order_id] [txt "My Order"]))
 
-let post_order =
-  Dream_html.post order (fun _ id -> Dream.html ~status:`Created id)
-
-let put_order = Dream_html.put order (fun _ id -> Dream.html id)
+let post_order = DH.post order (fun _ id -> Dream.html ~status:`Created id)
+let put_order = DH.put order (fun _ id -> Dream.html id)
 
 let test ?method_ msg routes target =
   Lwt_main.run
@@ -61,29 +65,24 @@ let test ?method_ msg routes target =
 let handle_int _ i = Dream.html (string_of_int i)
 
 let () =
-  test "Root path" [Dream_html.get [%path "/"] (fun _ -> Dream.html "ok")] "/";
+  test "Root path" [DH.get "/" (fun _ -> Dream.html "ok")] "/";
   test "Parse a character"
-    [ Dream_html.get [%path "/foo/%c/bar"] (fun _ ch ->
-          Dream.html (String.make 1 ch)) ]
+    [DH.get "/foo/%c/bar" (fun _ ch -> Dream.html (String.make 1 ch))]
     "/foo/z/bar";
-  test "Parse a hex integer"
-    [Dream_html.get [%path "/%x"] handle_int]
-    "/0xdeadbeef";
-  test "Parse an octal integer"
-    [Dream_html.get [%path "/%o"] handle_int]
-    "/0o644";
+  test "Parse a hex integer" [DH.get "/%x" handle_int] "/0xdeadbeef";
+  test "Parse an octal integer" [DH.get "/%o" handle_int] "/0o644";
   test "Parse number fail" [get_account_version] "/accounts/a1/versions/two";
   test "Path params of different types" [get_account_version]
     "/accounts/yxzefac/versions/2";
+  test "Print path in attr" [get_order] "/orders/yzdksljfh";
   test "Route search with fallthrough"
     [get_order; get_account_version]
     "/accounts/yxzefac/versions/2";
   test "Route not found" [get_order; get_account_version] "/v2/orders/yzlkjh";
   test "Empty target" [get_order] "";
   test "Rest param after /"
-    [Dream_html.any [%path "/%*s"] (fun _ _ s -> Dream.html s)]
+    [DH.any "/%*s" (fun _ _ s -> Dream.html s)]
     "/abc/def";
   test "Use middleware list"
-    [ Dream_html.use [v2_header]
-        [Dream_html.get [%path "/v2/orders/%s"] (fun _ id -> Dream.html id)] ]
+    DH.[use [v2_header] [get "/v2/orders/%s" (fun _ id -> Dream.html id)]]
     "/v2/orders/o1"

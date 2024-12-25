@@ -69,17 +69,14 @@ let csrf_tag req =
   let open HTML in
   input [name "dream.csrf"; type_ "hidden"; value "%s" (Dream.csrf_token req)]
 
-module Path = Path
+type 'r path = ('r, unit, Dream.response Dream.promise) format
+type 'r route = 'r path -> (Dream.request -> 'r) -> Dream.route
 
-type ('r, 'p) path = ('r, 'p) Path.t
-type ('r, 'p) route = ('r, 'p) Path.t -> (Dream.request -> 'r) -> Dream.route
-
-let path rfmt afmt = { Path.rfmt; afmt }
-let path_attr attr { Path.afmt; _ } = attr afmt
-let pp_path f path = Format.pp_print_string f (string_of_format path.Path.rfmt)
+let path = format_of_string
+let path_attr attr fmt = attr (Obj.magic fmt)
 
 let dream_method meth path func =
-  meth (Path.to_dream path.Path.rfmt) (Path.handler path.rfmt func)
+  meth (Path.to_dream path) (Path.handler path func)
 
 let get path = dream_method Dream.get path
 let post path = dream_method Dream.post path

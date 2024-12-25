@@ -40,10 +40,11 @@ over time. Here are the highlights:
 ## First look
 
 ```ocaml
-let greeting = [%path "/%s"]
+open Dream_html
+
+let greeting = path "/%s"
 
 let hello _request who =
-  let open Dream_html in
   let open HTML in
   respond (
     html [lang "en"] [
@@ -69,7 +70,15 @@ let () =
   ]
 ```
 
-<img width="343" alt="Screenshot 2024-12-23 at 23 55 33" src="https://github.com/user-attachments/assets/84cd1f1e-46c3-4fe1-aeb2-724542fc987c">
+<img
+  width="343"
+  alt="
+    Browser showing the URL localhost:8080/me with the page with the header:
+    'Hello, me!' and a paragraph that reads: 'This page is at: this URL', where
+    the cursor is hovering over the link 'this URL' and the browser shows that
+    the URL is '/me'"
+  src="https://github.com/user-attachments/assets/84cd1f1e-46c3-4fe1-aeb2-724542fc987c"
+>
 
 Rendered HTML:
 
@@ -195,10 +204,6 @@ for details. See also the convenience helpers `Dream_html.form` and
 Type-safe wrappers for Dream routing functionality are provided; details are
 shown in the
 [`Dream_html`](https://yawaramin.github.io/dream-html/dream-html/Dream_html/#type-safe-routing) page.
-
-See also the
-[PPX](https://yawaramin.github.io/dream-html/dream-html/Ppx/index.html)
-documentation for setup and usage instructions.
 
 ## Import HTML
 

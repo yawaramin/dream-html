@@ -360,69 +360,64 @@ val csrf_tag : Dream.request -> node
     OCaml's built-in format strings, and fully plug-and-play compatible with
     Dream routes. *)
 
-type (_, _) path
-(** A path that can be used for routing and can also be printed as an attribute value.
+type 'r path = ('r, unit, Dream.response Dream.promise) format
+(** A path that can be used for routing and can also be printed as an attribute
+    value.
 
     @since 3.9.0 *)
 
-type ('r, 'p) route = ('r, 'p) path -> (Dream.request -> 'r) -> Dream.route
+type 'r route = 'r path -> (Dream.request -> 'r) -> Dream.route
 (** Wrapper for a Dream route that represents the ability to parse path
     parameters and pass them to the handler function with the correct types.
 
     @since 3.9.0 *)
 
-val path :
-  ('r, unit, Dream.response Dream.promise) format ->
-  ('p, unit, string, attr) format4 ->
-  ('r, 'p) path
-(** [path request_fmt attr_fmt] is a router path. The [dream-html.ppx] provides
-      a more convenient way.
+val path : 'a path -> 'a path
+(** [path format] is a router path. Note: this is needed for type inference
+    reasons when you put a path in a let-binding. When you pass a path literal
+    directly into another function, you don't need this constructor function, eg
+    [get "/orders/%s" (fun _req order_id -> ...)] works.
 
-      Without PPX: [let order = path "/orders/%s" "/orders/%s"]
+    Due to the way Dream's router works, all parameter captures happen between [/]
+    characters and the end of the path. Eg, [/foo/%s/bar/%d] is valid, but
+    [/foo/%s.%s] (note the dot character) is not a valid capture.
 
-      With PPX: [let order = [%path "/orders/%s"]]
+    The following type conversion specs are supported:
 
-      Refer to {{!Ppx} the PPX documentation} for instructions on using it.
+    [%s] capture a [string] and pass it to the handler
 
-      Due to the way Dream's router works, all parameter captures happens between
-      [/] characters and the end of the path. Eg, [/foo/%s/bar/%d] is valid, but
-      [/foo/%s.%s] (note the dot character) is not a valid capture.
+    [%*s] capture the rest of the path and pass the captured length and string to
+    the handler
 
-      The following type conversion specs are supported:
+    [%c] capture a [char]
 
-      [%s] capture a [string] and pass it to the handler
+    [%d] or [%i] capture an [int]
 
-      [%*s] capture the rest of the path and pass the captured length and string
-      to the handler
+    [%x] capture a hexadecimal [int]
 
-      [%c] capture a [char]
+    [%X] capture an uppercase hexadecimal [int]
 
-      [%d] or [%i] capture an [int]
+    [%o] capture an octal [int]
 
-      [%x] capture a hexadecimal [int]
+    [%ld] capture an [int32]
 
-      [%X] capture an uppercase hexadecimal [int]
+    [%Ld] capture an [int64]
 
-      [%o] capture an octal [int]
+    [%f] capture a [float]
 
-      [%ld] capture an [int32]
-
-      [%Ld] capture an [int64]
-
-      [%f] capture a [float]
-
-      [%B] capture a [bool]
+    [%B] capture a [bool]
 
     @since 3.9.0 *)
 
-val path_attr : 'p string_attr -> (_, 'p) path -> 'p
+val path_attr : 'p string_attr -> _ path -> 'p
 (** [path_attr attr path] is an HTML attribute with the path parameters filled in
     from the given values. Eg,
 
     {[
-    let order = [%path "/orders/%s"]
-
     open Dream_html
+
+    let order = path "/orders/%s"
+
     open HTML
 
     a [path_attr href order "yzxyzc"] [txt "My Order"]
@@ -435,18 +430,11 @@ val path_attr : 'p string_attr -> (_, 'p) path -> 'p
 
     @since 3.9.0 *)
 
-val pp_path : (_, _) path Fmt.t
-[@@ocaml.toplevel_printer]
-(** [pp_path] is a pretty-printer for path values. For a path like
-    [path "/foo" "/foo"], it will print out [/foo].
-
-    @since 3.9.0 *)
-
-val get : (_, _) route
+val get : _ route
 (** Type-safe wrappers for [Dream.get] and so on. Using the PPX, eg:
 
     {[
-    let order = [%path "/orders/%s"]
+    let order = path "/orders/%s"
 
     let get_order = get order (fun request order_id ->
       ...
@@ -457,31 +445,31 @@ val get : (_, _) route
 
     @since 3.9.0 *)
 
-val post : (_, _) route
+val post : _ route
 (** @since 3.9.0 *)
 
-val put : (_, _) route
+val put : _ route
 (** @since 3.9.0 *)
 
-val delete : (_, _) route
+val delete : _ route
 (** @since 3.9.0 *)
 
-val head : (_, _) route
+val head : _ route
 (** @since 3.9.0 *)
 
-val connect : (_, _) route
+val connect : _ route
 (** @since 3.9.0 *)
 
-val options : (_, _) route
+val options : _ route
 (** @since 3.9.0 *)
 
-val trace : (_, _) route
+val trace : _ route
 (** @since 3.9.0 *)
 
-val patch : (_, _) route
+val patch : _ route
 (** @since 3.9.0 *)
 
-val any : (_, _) route
+val any : _ route
 (** @since 3.9.0 *)
 
 val use : Dream.middleware list -> Dream.route list -> Dream.route
