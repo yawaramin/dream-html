@@ -450,7 +450,7 @@ val get : (_, _) route
 
     let get_order = get order (fun request order_id ->
       ...
-      a [href (Path.link order) order_id] [txt "Your order"]
+      a [path_attr href order order_id] [txt "Your order"]
       ...
     )
     ]}

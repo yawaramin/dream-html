@@ -44,4 +44,4 @@
     Error: Invalid path: 'foo'. Paths must start with a '/' character
     ]}
 
-    @since v3.9.0 *)
+    @since 3.9.0 *)
