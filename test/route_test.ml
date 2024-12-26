@@ -38,8 +38,8 @@ let v2_header prev req =
   Dream.add_header resp "X-Api-Version" "2";
   resp
 
-let account_version = [%path "/accounts/%s/versions/%d"]
-let order = [%path "/orders/%s"]
+let%path account_version = "/accounts/%s/versions/%d"
+let%path order = "/orders/%s"
 
 let get_account_version =
   Dream_html.get account_version (fun _req acc ver ->

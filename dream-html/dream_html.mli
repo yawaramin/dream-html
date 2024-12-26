@@ -380,7 +380,7 @@ val path :
 
       Without PPX: [let order = path "/orders/%s" "/orders/%s"]
 
-      With PPX: [let order = [%path "/orders/%s"]]
+      With PPX: [let%path order = "/orders/%s"]
 
       Refer to {{!Ppx} the PPX documentation} for instructions on using it.
 
@@ -420,7 +420,7 @@ val path_attr : 'p string_attr -> (_, 'p) path -> 'p
     from the given values. Eg,
 
     {[
-    let order = [%path "/orders/%s"]
+    let%path order = "/orders/%s"
 
     open Dream_html
     open HTML
@@ -446,7 +446,7 @@ val get : (_, _) route
 (** Type-safe wrappers for [Dream.get] and so on. Using the PPX, eg:
 
     {[
-    let order = [%path "/orders/%s"]
+    let%path order = "/orders/%s"
 
     let get_order = get order (fun request order_id ->
       ...

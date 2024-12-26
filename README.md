@@ -40,7 +40,7 @@ over time. Here are the highlights:
 ## First look
 
 ```ocaml
-let greeting = [%path "/%s"]
+let%path greeting = "/%s"
 
 let hello _request who =
   let open Dream_html in

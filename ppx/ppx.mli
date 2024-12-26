@@ -20,7 +20,7 @@
     You can add it to your [dune] file in the usual way:
     [(preprocess (pps dream-html.ppx))].
 
-    Then create a path: [let orders = [%path "/orders"]].
+    Then create a path: [let%path orders = "/orders"].
 
     And use it in a route: [Dream_html.get orders (fun req -> ...)].
 
@@ -38,9 +38,9 @@
     compile time. If you pass in an invalid path you get a compile error:
 
     {[
-    File "example.ml", line 1, characters 10-23:
-    1 | let bad = [%path "foo"]
-                  ^^^^^^^^^^^^^
+    File "test/route_test.ml", line 1, characters 0-20:
+    1 | let%path bad = "foo"
+        ^^^^^^^^^^^^^^^^^^^^
     Error: Invalid path: 'foo'. Paths must start with a '/' character
     ]}
 

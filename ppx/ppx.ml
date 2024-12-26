@@ -18,19 +18,44 @@
 open Ppxlib
 open Ast_builder.Default
 
-let path_extender =
+let is_valid path = String.length path > 0 && path.[0] = '/'
+
+let expansion ~loc s =
+  pexp_apply ~loc
+    (evar ~loc "Dream_html.path")
+    [Nolabel, estring ~loc s; Nolabel, estring ~loc s]
+
+let err ~loc path =
+  Location.error_extensionf ~loc
+    "Invalid path: '%s'. Paths must start with a '/' character" path
+
+let binding_extender =
+  Extension.V3.declare "path" Extension.Context.structure_item
+    Ast_pattern.(
+      pstr
+        (pstr_value drop (value_binding ~pat:__ ~expr:(estring __) ^:: nil)
+        ^:: nil))
+    (fun ~ctxt pat s ->
+      let loc = Expansion_context.Extension.extension_point_loc ctxt in
+      if is_valid s then
+        pstr_value ~loc Nonrecursive
+          [value_binding ~loc ~pat ~expr:(expansion ~loc s)]
+      else
+        pstr_extension ~loc (err ~loc s) [])
+
+let expr_extender =
   Extension.V3.declare "path" Extension.Context.expression
     Ast_pattern.(single_expr_payload (estring __))
     (fun ~ctxt s ->
       let loc = Expansion_context.Extension.extension_point_loc ctxt in
-      if String.length s > 0 && s.[0] = '/' then
-        pexp_apply ~loc
-          (evar ~loc "Dream_html.path")
-          [Nolabel, estring ~loc s; Nolabel, estring ~loc s]
+      if is_valid s then
+        expansion ~loc s
       else
-        pexp_extension ~loc
-          (Location.error_extensionf ~loc
-             "Invalid path: '%s'. Paths must start with a '/' character" s))
+        pexp_extension ~loc (err ~loc s))
 
-let path = Context_free.Rule.extension path_extender
-let () = Driver.register_transformation ~rules:[path] "dream-html.ppx"
+let path_binding = Context_free.Rule.extension binding_extender
+let path_expr = Context_free.Rule.extension expr_extender
+
+let () =
+  Driver.register_transformation ~rules:[path_binding; path_expr]
+    "dream-html.ppx"
