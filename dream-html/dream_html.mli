@@ -376,42 +376,49 @@ val path :
   ('p, unit, string, attr) format4 ->
   ('r, 'p) path
 (** [path request_fmt attr_fmt] is a router path. The [dream-html.ppx] provides
-      a more convenient way.
+    a more convenient way.
 
-      Without PPX: [let order = path "/orders/%s" "/orders/%s"]
+    Without PPX: [let order = path "/orders/%s" "/orders/%s"]
 
-      With PPX: [let%path order = "/orders/%s"]
+    With PPX: [let%path order = "/orders/%s"]
 
-      Refer to {{!Ppx} the PPX documentation} for instructions on using it.
+    Refer to {{!Ppx} the PPX documentation} for instructions on using it.
 
-      Due to the way Dream's router works, all parameter captures happens between
-      [/] characters and the end of the path. Eg, [/foo/%s/bar/%d] is valid, but
-      [/foo/%s.%s] (note the dot character) is not a valid capture.
+    ⚠️ Due to the way Dream's router works, all parameter captures happens
+    between [/] characters and the end of the path. Eg, [/foo/%s/bar/%d] is valid,
+    but [/foo/%s.%s] (note the dot character) is not a valid capture.
 
-      The following type conversion specs are supported:
+    ⚠️ If a route is matched but the data type does not match, a [400 Bad Request]
+    response will be returned. The following type conversion specs are supported:
 
-      [%s] capture a [string] and pass it to the handler
+    [%s] capture a [string] and pass it to the handler
 
-      [%*s] capture the rest of the path and pass the captured length and string
-      to the handler
+    [%*s] capture the rest of the path and pass the captured length and string to
+    the handler
 
-      [%c] capture a [char]
+    [%c] capture a [char]
 
-      [%d] or [%i] capture an [int]
+    [%d] or [%i] capture an [int]
 
-      [%x] capture a hexadecimal [int]
+    [%x] capture a hexadecimal [int]
 
-      [%X] capture an uppercase hexadecimal [int]
+    [%X] capture an uppercase hexadecimal [int]
 
-      [%o] capture an octal [int]
+    [%o] capture an octal [int]
 
-      [%ld] capture an [int32]
+    [%ld] capture an [int32]
 
-      [%Ld] capture an [int64]
+    [%Ld] capture an [int64]
 
-      [%f] capture a [float]
+    [%f] capture a [float]
 
-      [%B] capture a [bool]
+    [%B] capture a [bool]
+
+    ⚠️ We are actually using Dream's built-in router, not our own, and Dream's
+    router doesn't distinguish between parameter types. So, to Dream both [/%s]
+    and [/%d] are the same path. It will route the request to whichever happens
+    to be first in the route list, and that one will succeed or fail depending on
+    its type and the request target.
 
     @since 3.9.0 *)
 
