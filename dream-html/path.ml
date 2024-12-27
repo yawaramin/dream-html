@@ -25,7 +25,7 @@ let sub = StringLabels.sub
 let rec parse_string' ~pos ~len str buf =
   if pos < len then (
     match str.[pos] with
-    | '/' -> pos
+    | '/' | '?' -> pos
     | ch ->
       Buffer.add_char buf ch;
       parse_string' ~pos:(succ pos) ~len str buf)

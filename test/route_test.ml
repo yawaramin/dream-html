@@ -86,4 +86,4 @@ let () =
   test "Use middleware list"
     [ Dream_html.use [v2_header]
         [Dream_html.get [%path "/v2/orders/%s"] (fun _ id -> Dream.html id)] ]
-    "/v2/orders/o1"
+    "/v2/orders/o1?v=2"

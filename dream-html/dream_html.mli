@@ -385,8 +385,9 @@ val path :
     Refer to {{!Ppx} the PPX documentation} for instructions on using it.
 
     ⚠️ Due to the way Dream's router works, all parameter captures happens
-    between [/] characters and the end of the path. Eg, [/foo/%s/bar/%d] is valid,
-    but [/foo/%s.%s] (note the dot character) is not a valid capture.
+    between [/] characters and the end of the path (or the [?] character,
+    whichever comes first). Eg, [/foo/%s/bar/%d] is valid, but [/foo/%s.%s] (note
+    the dot character) is not a valid capture.
 
     ⚠️ If a route is matched but the data type does not match, a [400 Bad Request]
     response will be returned. The following type conversion specs are supported:
