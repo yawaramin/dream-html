@@ -1,0 +1,53 @@
+/* Copyright 2024 Yawar Amin
+
+   This file is part of dream-html.
+
+   dream-html is free software: you can redistribute it and/or modify it
+   under the terms of the GNU General Public License as published by the Free
+   Software Foundation, either version 3 of the License, or (at your option) any
+   later version.
+
+   dream-html is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+   FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+   details.
+
+   You should have received a copy of the GNU General Public License along with
+   dream-html. If not, see <https://www.gnu.org/licenses/>. */
+
+#toast {
+  display:none;
+  position:fixed;
+  bottom:1rem;
+  right:1rem;
+  transition:display 5s ease-in-out;
+  padding:1rem;
+  border-radius:var(--pico-border-radius);
+}
+
+#toast.htmx-added {
+  display:block;
+  background-color:#E9F2FC;
+}
+
+.htmx-added * {
+  animation:yellowfade 5s !important;
+}
+
+@keyframes yellowfade {
+  from {
+    background:#FDF1B4;
+  }
+  to {
+    background:transparent;
+  }
+}
+
+#toast.error {
+  display:block;
+  background-color:#FFBF00;
+}
+
+body {
+  padding:1rem;
+}
