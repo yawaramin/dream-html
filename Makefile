@@ -26,3 +26,7 @@ odoc :
 	cp index.html $(DOCPATH)/ &&\
 	cp -R odoc.support $(ODOC_SUPPORT)
 
+.PHONY : app
+app :
+	open http://localhost:8080 &&\
+	LIVERELOAD=1 dune exec -w ./app/app.exe
