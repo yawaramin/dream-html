@@ -511,6 +511,15 @@ val static_asset : (Dream.response Dream.promise, _) path -> Dream.route
 
 (** {2 Dreamwork}
 
+    TL;DR:
+
+    + Run [dreamwork setup]
+    + Populate the [static/assets/] subdirectory with files
+    + Run [dune build]
+    + Add [Static.routes] to the app's main Dream router
+    + Use eg [img [path_attr src Static.Assets.icon_png]] which will render with
+      a revision hash based on the file contents, calculated at build time
+
     [dreamwork] is a CLI tool that helps set up and manage static file paths and
     routes with proper content-based version hashes. The static files will live
     inside a dune component called [static] and in the [static/assets]
@@ -536,11 +545,11 @@ val static_asset : (Dream.response Dream.promise, _) path -> Dream.route
 
       module Assets : sig
         module Css : sig
-          val app_css : (Dream.response Dream.promise, attr) Dream_html.path
+          val app_css : (Dream.response Dream.promise, attr) path
         end
 
         module Js : sig
-          val app_js : (Dream.response Dream.promise, attr) Dream_html.path
+          val app_js : (Dream.response Dream.promise, attr) path
         end
       end
     end
