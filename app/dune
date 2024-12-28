@@ -2,4 +2,4 @@
  (name app)
  (preprocess
   (pps dream-html.ppx))
- (libraries dream-html))
+ (libraries dream-html static))
