@@ -10,6 +10,12 @@ Content-Type: text/html; charset=utf-8
 
 z
 
+🔎 Parse character at end of path
+200 OK
+Content-Type: text/html; charset=utf-8
+
+a
+
 🔎 Parse a hex integer
 200 OK
 Content-Type: text/html; charset=utf-8

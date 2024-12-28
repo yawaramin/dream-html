@@ -61,6 +61,10 @@ let () =
     [ Dream_html.get [%path "/foo/%c/bar"] (fun _ ch ->
           Dream.html (String.make 1 ch)) ]
     "/foo/z/bar";
+  test "Parse character at end of path"
+    [ Dream_html.get [%path "/foo/%c"] (fun _ ch ->
+          Dream.html (String.make 1 ch)) ]
+    "/foo/a?rev=ulfhdasulfhdaslfhau";
   test "Parse a hex integer"
     [Dream_html.get [%path "/%x"] handle_int]
     "/0xdeadbeef";
@@ -69,7 +73,7 @@ let () =
     "/0o644";
   test "Parse number fail" [get_account_version] "/accounts/a1/versions/two";
   test "Path params of different types" [get_account_version]
-    "/accounts/yxzefac/versions/2";
+    "/accounts/yxzefac/versions/2?rev=djklfghdslgkjdfhgljhk";
   test "Route search with fallthrough"
     [get_order; get_account_version]
     "/accounts/yxzefac/versions/2";
