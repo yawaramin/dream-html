@@ -47,11 +47,6 @@ let get_account_version =
 
 let get_order = Dream_html.get order (fun _ id -> Dream.html id)
 
-let post_order =
-  Dream_html.post order (fun _ id -> Dream.html ~status:`Created id)
-
-let put_order = Dream_html.put order (fun _ id -> Dream.html id)
-
 let test ?method_ msg routes target =
   Lwt_main.run
     (let* () = Lwt_io.printlf "🔎 %s" msg in

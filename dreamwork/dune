@@ -1,0 +1,4 @@
+(executable
+ (name dreamwork)
+ (public_name dreamwork)
+ (package dream-html))

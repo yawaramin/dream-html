@@ -498,6 +498,17 @@ val use : Dream.middleware list -> Dream.route list -> Dream.route
 
     @since 3.9.0 *)
 
+val static_asset : (Dream.response Dream.promise, _) path -> Dream.route
+(** [static_asset path] is a route that handles serving the static file at the
+    [path]. Importantly, it sets an immutable cache header which remains valid
+    for a year.
+
+    ⚠️ Be sure that the resource has a unique identifier because it will be
+    cached immutably. The [dreamwork] CLI tool automates this for you. See
+    {!dreamwork}.
+
+    @since 3.9.0 *)
+
 (** {2 Live reload support} *)
 
 (** Live reload script injection and handling. Adapted from [Dream.livereload]
@@ -537,3 +548,61 @@ module Livereload : sig
       means that the [route] will respond with [404] status and the script will
       be omitted from the rendered HTML. *)
 end
+
+(** {2 Dreamwork}
+
+    [dreamwork] is a CLI tool that helps set up and manage static file paths and
+    routes with proper content-based version hashes. The static files will live
+    inside a dune component called [static] and in the [static/assets]
+    subdirectory. Suppose you have the following directory tree:
+
+    {[
+    static/
+      dune
+      assets/
+        css/
+          app.css
+        js/
+          app.js
+    ]}
+
+    The [dune] file defines a [library] component that will make the following
+    module available:
+
+    {[
+    module Static : sig
+      val routes : Dream.route
+      (** This route will serve all of the following paths. *)
+
+      module Assets : sig
+        module Css : sig
+          val app_css : (Dream.response Dream.promise, attr) Dream_html.path
+        end
+
+        module Js : sig
+          val app_js : (Dream.response Dream.promise, attr) Dream_html.path
+        end
+      end
+    end
+    ]}
+
+    So, you can just stick [Static.routes] in your router and it will correctly
+    serve the files from the filesystem with an immutable cache of 1 year; and
+    you can use [Static.Assets.Css.app_css] and so on in your dream-html markup
+    code and it will correctly render with a [?rev=...] query parameter that
+    uniquely identifies this revision of the file with a content-based hash for
+    cache-busting purposes.
+
+    You control the directory subtree under [assets]; the [dreamwork] CLI just
+    helps you define the [dune] component that generates the above module
+    structure. The module structure mirrors the directory tree structure.
+
+    The entry point to [dreamwork] is the [dreamwork setup] command, which
+    creates [static/], [assets/], and [dune]. In the [dune] file it defines a
+    code generation rule which uses the [dreamwork static] command to generate
+    the OCaml code.
+    
+    So, you just need to run [dreamwork setup] to initialize the directory
+    structure and code generation. After that, you can add and remove any files
+    inside [assets/] as you want and on the next dune build the [Static] module
+    structure will be updated accordingly. *)

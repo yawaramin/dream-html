@@ -12,7 +12,7 @@ homepage: "https://github.com/yawaramin/dream-html"
 doc: "https://yawaramin.github.io/dream-html/"
 bug-reports: "https://github.com/yawaramin/dream-html/issues"
 depends: [
-  "dune" {>= "2.8"}
+  "dune" {>= "3.0"}
   "pure-html" {= version}
   "dream" {>= "1.0.0~alpha3"}
   "fmt" {with-test}

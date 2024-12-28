@@ -93,6 +93,23 @@ let patch path = dream_method Dream.patch path
 let any path = dream_method Dream.any path
 let use = Dream.scope "/"
 
+let static_asset path =
+  get path (fun req ->
+      let pathfmt = string_of_format path.rfmt in
+      (* Serve the route [/foo/bar] from the local file [foo/bar]. *)
+      let filepath =
+        StringLabels.sub pathfmt ~pos:1 ~len:(String.length pathfmt - 1)
+      in
+      let open Lwt.Syntax in
+      let+ resp = Dream.from_filesystem "" filepath req in
+
+      (* We don't want to cache an error response *)
+      if Dream.status_codes_equal (Dream.status resp) `OK then
+        (* Cache successful response for a year. *)
+        Dream.set_header resp "Cache-Control"
+          "public, max-age=31536000, immutable";
+      resp)
+
 module Livereload = struct
   let enabled =
     match Sys.getenv "LIVERELOAD" with
