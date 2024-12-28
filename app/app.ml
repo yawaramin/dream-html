@@ -58,11 +58,7 @@ module Page = struct
       [ head []
           [ Livereload.script;
             title_tag title_str;
-            link
-              [ rel "stylesheet";
-                href
-                  "https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
-              ];
+            link [rel "stylesheet"; path_attr href Static.Assets.pico_min_css];
             link [rel "stylesheet"; path_attr href Static.Assets.app_css];
             meta [charset "UTF-8"];
             meta
