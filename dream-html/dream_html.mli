@@ -551,7 +551,11 @@ val static_asset : (Dream.response Dream.promise, _) path -> Dream.route
     you can use [Static.Assets.Css.app_css] and so on in your dream-html markup
     code and it will correctly render with a [?rev=...] query parameter that
     uniquely identifies this revision of the file with a content-based hash for
-    cache-busting purposes.
+    cache-busting purposes:
+
+    {[link [rel "stylesheet"; path_attr href Static.Assets.Css.app_css]]}
+
+    {[script [path_attr src Static.Assets.Js.app_js] ""]}
 
     You control the directory subtree under [assets]; the [dreamwork] CLI just
     helps you define the [dune] component that generates the above module
