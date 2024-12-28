@@ -553,9 +553,23 @@ val static_asset : (Dream.response Dream.promise, _) path -> Dream.route
     uniquely identifies this revision of the file with a content-based hash for
     cache-busting purposes:
 
-    {[link [rel "stylesheet"; path_attr href Static.Assets.Css.app_css]]}
+    {[
+    link [rel "stylesheet"; path_attr href Static.Assets.Css.app_css
+    (*
+    <link
+      rel="stylesheet"
+      href="/static/assets/css/app.css?rev=17fb8161afc85df86156ea1f3744c8a2"
+    >
+    *)
+    ]]}
 
-    {[script [path_attr src Static.Assets.Js.app_js] ""]}
+    {[
+    script [path_attr src Static.Assets.Js.app_js] ""
+    (*
+    <script src="/static/assets/js/app.js?rev=677645e5ac37d683c5039a85c41c339f">
+    </script>
+    *)
+    ]}
 
     You control the directory subtree under [assets]; the [dreamwork] CLI just
     helps you define the [dune] component that generates the above module
