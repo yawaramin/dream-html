@@ -1,0 +1,11 @@
+; Remember to add 'static' as a dependency to your dune component's
+; (libraries ...) field to access the static assets from code.
+
+(library
+ (name static)
+ (libraries dream-html))
+
+(rule
+ (deps (glob_files_rec assets/*))
+ (target static.ml)
+ (action (run dreamwork static)))
