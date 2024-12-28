@@ -65,8 +65,8 @@ module Indent_level = struct
   let next (t : t) = Option.map succ t
 
   (* The following functions return string that should be inserted before or
-    after the open or closing tag with indent level t. Some of them also need to
-    know if the next tag is going to be indented one more level. *)
+     after the open or closing tag with indent level t. Some of them also need to
+     know if the next tag is going to be indented one more level. *)
 
   let open_prefix (t : t) =
     match t with
@@ -95,9 +95,9 @@ let should_indent_next children =
   | children -> not (List.exists is_txt children)
 
 (* Loosely based on https://www.w3.org/TR/DOM-Parsing/. Pretty prints using two
-  spaces for indentation. On high level, the algorithm indents the children of a
-  tag if they do not contain a txt node. No newline is inserted if there are no
-  children nodes. *)
+   spaces for indentation. On high level, the algorithm indents the children of a
+   tag if they do not contain a txt node. No newline is inserted if there are no
+   children nodes. *)
 let rec write_tag ~indent_level ~xml p node =
   if not (is_null node) then p (Indent_level.open_prefix indent_level);
   (match node with
@@ -263,6 +263,7 @@ module HTML = struct
   let align fmt = string_attr "align" fmt
   let allow fmt = string_attr "allow" fmt
   let alt fmt = string_attr "alt" fmt
+  let as_ fmt = string_attr "as" fmt
   let async = attr "async"
 
   let autocapitalize value =

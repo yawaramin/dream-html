@@ -248,6 +248,10 @@ module HTML : sig
 
   val allow : _ string_attr
   val alt : _ string_attr
+
+  val as_ : _ string_attr
+  (** @since 3.9.2 *)
+
   val async : attr
 
   val autocapitalize :

@@ -26,7 +26,9 @@ let%expect_test "HTML" =
     let open HTML in
     html
       [lang "en"]
-      [ head [] [title [] "Dream_html Test"];
+      [ head []
+          [ title [] "Dream_html Test";
+            link [rel "preload"; as_ "style"; href "/app.css"] ];
         body
           [id "test-content"]
           [ main
@@ -65,6 +67,7 @@ let%expect_test "HTML" =
     <html lang="en">
       <head>
         <title>Dream_html Test</title>
+        <link rel="preload" as="style" href="/app.css">
       </head>
       <body id="test-content">
         <main spellcheck="true" colspan="1">
