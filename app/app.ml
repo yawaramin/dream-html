@@ -58,8 +58,12 @@ module Page = struct
       [ head []
           [ Livereload.script;
             title_tag title_str;
-            link [rel "stylesheet"; path_attr href Static.Assets.pico_min_css];
-            link [rel "stylesheet"; path_attr href Static.Assets.app_css];
+            link
+              [ rel "preload";
+                as_ "style";
+                path_attr href Static.Assets.pico_min_css ];
+            link
+              [rel "preload"; as_ "style"; path_attr href Static.Assets.app_css];
             meta [charset "UTF-8"];
             meta
               [name "viewport"; content "width=device-width, initial-scale=1.0"]
@@ -71,10 +75,9 @@ module Page = struct
                   [hgroup [] [h1 [] [txt "todos"]; p [] [txt "get stuff done"]]]
               ];
             child;
-            footer []
-              [ toast "";
-                script [path_attr src Static.Assets.htmx_js] "";
-                script [path_attr src Static.Assets.app_js] "" ] ] ]
+            footer [] [toast ""];
+            script [path_attr src Static.Assets.htmx_js] "";
+            script [path_attr src Static.Assets.app_js] "" ] ]
 end
 
 module Todos = struct
