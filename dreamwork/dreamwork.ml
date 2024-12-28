@@ -21,7 +21,7 @@ let static = "static"
 let assets = "assets"
 
 let fail msg =
-  kspf prerr_endline "⚠️ %s" msg;
+  prerr_endline msg;
   exit 1
 
 let filename_valname name =
@@ -92,9 +92,9 @@ let write_routes p =
     p "]\n")
 
 let usage =
-  "USAGE:
+  "⚠️ USAGE:
 
-dreamwork static TARGET-DIR
+dreamwork static
   Generate the static files' routes and paths hashed by their contents.
 
 dreamwork setup
@@ -110,7 +110,7 @@ let comment =
     static assets
 
 let already_setup =
-  "dreamwork integration is already set up. You can access static assets in code now."
+  "⚠️ dreamwork integration is already set up. You can access static assets in code now."
 
 let setup_msg =
   "✅ dreamwork integration is set up now. After building your project with 'dune

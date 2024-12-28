@@ -507,7 +507,7 @@ val static_asset : (Dream.response Dream.promise, _) path -> Dream.route
     cached immutably. The [dreamwork] CLI tool automates this for you. See
     {!dreamwork}.
 
-    @since 3.9.0 *)
+    @since 3.9.2 *)
 
 (** {2 Dreamwork}
 
@@ -561,7 +561,7 @@ val static_asset : (Dream.response Dream.promise, _) path -> Dream.route
       href="/static/assets/css/app.css?rev=17fb8161afc85df86156ea1f3744c8a2"
     >
     *)
-    ]]}
+    ]}
 
     {[
     script [path_attr src Static.Assets.Js.app_js] ""
@@ -583,7 +583,9 @@ val static_asset : (Dream.response Dream.promise, _) path -> Dream.route
     So, you just need to run [dreamwork setup] to initialize the directory
     structure and code generation. After that, you can add and remove any files
     inside [assets/] as you want and on the next dune build the [Static] module
-    structure will be updated accordingly. *)
+    structure will be updated accordingly.
+
+    @since 3.9.2 *)
 
 (** {2 Live reload support} *)
 
