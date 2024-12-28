@@ -1,4 +1,0 @@
-(executable
- (name static_map)
- (public_name dream-html.static-map)
- (package dream-html))

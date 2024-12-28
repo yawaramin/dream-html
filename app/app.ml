@@ -42,8 +42,6 @@ module Path = struct
 end
 
 module Page = struct
-  let htmx = "https://unpkg.com/htmx.org@2.0.0-alpha2/dist/htmx.min.js"
-
   open Dream_html
   open HTML
 
@@ -65,46 +63,7 @@ module Page = struct
                 href
                   "https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
               ];
-            style []
-              {|
-#%s {
-  display:none;
-  position:fixed;
-  bottom:1rem;
-  right:1rem;
-  transition:display 5s ease-in-out;
-  padding:1rem;
-  border-radius:var(--pico-border-radius);
-}
-
-#%s.htmx-added {
-  display:block;
-  background-color:#E9F2FC;
-}
-
-.htmx-added * {
-  animation:yellowfade 5s !important;
-}
-
-@keyframes yellowfade {
-  from {
-    background:#FDF1B4;
-  }
-  to {
-    background:transparent;
-  }
-}
-
-#%s.error {
-  display:block;
-  background-color:#FFBF00;
-}
-
-body {
-  padding:1rem;
-}
-|}
-              toast_id toast_id toast_id;
+            link [rel "stylesheet"; path_attr href Static.Assets.app_css];
             meta [charset "UTF-8"];
             meta
               [name "viewport"; content "width=device-width, initial-scale=1.0"]
@@ -118,12 +77,8 @@ body {
             child;
             footer []
               [ toast "";
-                script [src "%s" htmx] "";
-                script []
-                  {|document.addEventListener('htmx:responseError', evt => {
-  document.getElementById('%s').outerHTML = `<span id="%s" class="error">${evt.detail.xhr.responseText}</span>`;
-});|}
-                  toast_id toast_id ] ] ]
+                script [path_attr src Static.Assets.htmx_js] "";
+                script [path_attr src Static.Assets.app_js] "" ] ] ]
 end
 
 module Todos = struct
@@ -291,6 +246,7 @@ let () =
   @@ dreamcatcher
   @@ router
        [ Dream_html.Livereload.route;
+         Static.routes;
          Page.get;
          Todos.get;
          Todos.post;
