@@ -59,58 +59,45 @@ let user_form =
   and+ age = optional (int ~min:16) "age" in
   { name; age; accept_tos; permissions }
 
-let%expect_test "OK with age" =
-  Format.printf "%a" pp
-    (validate user_form
-       ["accept-tos", "true"; "age", "42"; "name", "Bob"; "permissions", "r"]);
-  [%expect
-    {|
-    {name: Bob;
-     age: 42;
-     accept_tos: true;
-     permissions: [r]}
-    |}]
+let test msg output =
+  Printf.printf "\n\n🔎 %s\n%!" msg;
+  output ()
 
-let%expect_test "OK without age" =
-  Format.printf "%a" pp
-    (validate user_form
-       ["accept-tos", "true"; "name", "Bob"; "permissions", "r"]);
-  [%expect
-    {|
-    {name: Bob;
-     age: ;
-     accept_tos: true;
-     permissions: [r]}
-    |}]
+let test_form msg data =
+  test msg @@ fun () -> Format.printf "%a%!" pp (validate user_form data)
 
-let%expect_test "Error without name" =
-  Format.printf "%a" pp
-    (validate user_form ["accept-tos", "true"; "age", "42"; "permissions", "r"]);
-  [%expect {| [name, error.required] |}]
+let () =
+  test_form "OK with age"
+    ["accept-tos", "true"; "age", "42"; "name", "Bob"; "permissions", "r"]
 
-let%expect_test "Error with too low age and empty name" =
-  Format.printf "%a" pp
-    (validate user_form
-       ["accept-tos", "true"; "age", "1"; "name", ""; "permissions", "r"]);
-  [%expect {| [age, error.range; name, Must not be empty] |}]
+let () =
+  test_form "OK without age"
+    ["accept-tos", "true"; "name", "Bob"; "permissions", "r"]
 
-let%expect_test "Error too many permissions" =
-  Format.printf "%a" pp
-    (validate user_form
-       [ "accept-tos", "true";
-         "age", "42";
-         "name", "Bob";
-         "permissions", "r";
-         "permissions", "w";
-         "permissions", "x";
-         "permissions", "" ]);
-  [%expect {| [permissions, error.length] |}]
+let () =
+  test_form "Error without name"
+    ["accept-tos", "true"; "age", "42"; "permissions", "r"]
 
-let%expect_test "Error can't have permissions if not accept TOS" =
-  Format.printf "%a" pp (validate user_form ["name", "Bob"; "permissions", "r"]);
-  [%expect {| [permissions, error.length] |}]
+let () =
+  test_form "Error with too low age and empty name"
+    ["accept-tos", "true"; "age", "1"; "name", ""; "permissions", "r"]
 
-let%expect_test "Indent CSRF tag correctly" =
+let () =
+  test_form "Error too many permissions"
+    [ "accept-tos", "true";
+      "age", "42";
+      "name", "Bob";
+      "permissions", "r";
+      "permissions", "w";
+      "permissions", "x";
+      "permissions", "" ]
+
+let () =
+  test_form "Error can't have permissions if not accept TOS"
+    ["name", "Bob"; "permissions", "r"]
+
+let () =
+  test "Indent CSRF tag correctly" @@ fun () ->
   let handler =
     Dream.memory_sessions (fun req ->
         let open Dream_html in
@@ -122,13 +109,4 @@ let%expect_test "Indent CSRF tag correctly" =
                input [name "id"];
                button [type_ "submit"] [txt "Add"] ]))
   in
-  test_handler handler "/";
-  [%expect
-    {|
-    200 OK
-
-    <form method="post" action="/">
-      <input value="token-value" name="dream.csrf" type="hidden">
-      <input name="id">
-      <button type="submit">Add</button>
-    </form> |}]
+  test_handler handler "/"

@@ -17,7 +17,84 @@
 
 open Pure_html
 
-let%expect_test "MathML" =
+let test msg output =
+  Printf.printf "\n\n🔎 %s\n%!" msg;
+  output ()
+
+let () =
+  test "HTML" @@ fun () ->
+  let greet nm =
+    let open HTML in
+    p [id "greet-%s" nm] [txt "Hello, %s!" nm]
+  in
+  let html_node =
+    let open HTML in
+    html
+      [lang "en"]
+      [ head []
+          [ title [] "Dream_html Test";
+            link [rel "preload"; as_ "style"; href "/app.css"] ];
+        body
+          [id "test-content"]
+          [ main
+              [spellcheck true; colspan 1]
+              [ article
+                  [id "article-1"; class_ "story"]
+                  [ p
+                      [Hx.get "/p1?a b"; Hx.target "closest article > p"]
+                      [txt "Test para 1."];
+                    p [] [txt "Test para 2."];
+                    a [href "/a?b=cd:efg/hij"] [txt "cd:efg/hij"];
+                    a [href "/foo?a=1&b=2 3&c=4<5&d=6>5"] [txt "Test"];
+                    a [href "/😉"] [txt "wink"];
+                    MathML.math [style_ ""] [] ];
+                input
+                  [ type_ "text";
+                    autocomplete `name;
+                    onblur "if (1 > 0) alert(this.value)" ];
+                null
+                  [ comment "oops --><script>alert('lol')</script>";
+                    dialog [open_; title_ {|"hello"|}] [div [] []];
+                    template [id "idtmpl"] [p [] [txt "Template"]];
+                    div [translate `no] [p [translate `yes] []];
+                    textarea
+                      [ required;
+                        Hx.trigger "keyup[target.value.trim() != '']";
+                        autocapitalize `words ]
+                      "'super'";
+                    hr [(if true then class_ "super" else null_)];
+                    greet "Bob" ] ] ] ]
+  in
+  html_node |> to_string |> print_endline
+
+let () =
+  test "HTML pretty print corner cases" @@ fun () ->
+  let open HTML in
+  (* test empty tags don't break line *)
+  let empty_tag = div [] [p [translate `yes] []] in
+  empty_tag |> to_string |> print_endline
+
+let () =
+  test "SVG" @@ fun () ->
+  let svg_node =
+    let open SVG in
+    svg
+      [ xmlns;
+        fill "none";
+        viewbox ~min_x:0 ~min_y:0 ~width:24 ~height:24;
+        stroke_width "1.5";
+        stroke "currentColor";
+        HTML.class_ "w-6 h-6" ]
+      [ path
+          [ stroke_linecap `round;
+            stroke_linejoin `round;
+            d "M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" ]
+          [] ]
+  in
+  svg_node |> to_xml ~header:true |> print_endline
+
+let () =
+  test "MathML" @@ fun () ->
   let mathml_node =
     let open HTML in
     let open MathML in
@@ -279,452 +356,4 @@ let%expect_test "MathML" =
                           [mtext [style_ "color: red; font-size: 10pt;"] []] ]
                   ] ] ] ]
   in
-  mathml_node |> to_xml |> print_endline;
-  [%expect
-    {|
-    <p>
-      <math style="">
-        <mtable>
-          <mtr>
-            <mtd>
-              <mrow>
-                <mrow>
-                  <mrow>
-                    <mrow>
-                      <mi>a</mi>
-                      <mo>⁢</mo>
-                      <msup>
-                        <mi>x</mi>
-                        <mn>2</mn>
-                      </msup>
-                    </mrow>
-                    <mo>+</mo>
-                    <mi>b</mi>
-                    <mo>⁢</mo>
-                    <mi>x</mi>
-                  </mrow>
-                  <mo>+</mo>
-                  <mi>c</mi>
-                </mrow>
-              </mrow>
-            </mtd>
-            <mtd>
-              <mo>=</mo>
-            </mtd>
-            <mtd>
-              <mn>0</mn>
-            </mtd>
-          </mtr>
-          <mtr>
-            <mtd>
-              <mrow>
-                <mrow>
-                  <mi>a</mi>
-                  <mo>⁢</mo>
-                  <msup>
-                    <mi>x</mi>
-                    <mn>2</mn>
-                  </msup>
-                </mrow>
-                <mo>+</mo>
-                <mi>b</mi>
-                <mo>⁢</mo>
-                <mi>x</mi>
-              </mrow>
-            </mtd>
-            <mtd>
-              <mo>=</mo>
-            </mtd>
-            <mtd>
-              <mo>−</mo>
-              <mi>c</mi>
-            </mtd>
-          </mtr>
-          <mtr>
-            <mtd>
-              <mrow>
-                <mrow>
-                  <msup>
-                    <mi>x</mi>
-                    <mn>2</mn>
-                  </msup>
-                </mrow>
-                <mo>+</mo>
-                <mfrac>
-                  <mi>b</mi>
-                  <mi>a</mi>
-                </mfrac>
-                <mo>⁤</mo>
-                <mi>x</mi>
-              </mrow>
-            </mtd>
-            <mtd>
-              <mo>=</mo>
-            </mtd>
-            <mtd>
-              <mfrac>
-                <mrow>
-                  <mo>−</mo>
-                  <mi>c</mi>
-                </mrow>
-                <mi>a</mi>
-              </mfrac>
-            </mtd>
-            <mtd>
-              <mrow>
-                <mtext style="color: red; font-size: 10pt;">Divide out leading coefficient.</mtext>
-              </mrow>
-            </mtd>
-          </mtr>
-          <mtr>
-            <mtd>
-              <mrow>
-                <mrow>
-                  <mrow>
-                    <msup>
-                      <mi>x</mi>
-                      <mn>2</mn>
-                    </msup>
-                  </mrow>
-                  <mo>+</mo>
-                  <mfrac>
-                    <mrow>
-                      <mi>b</mi>
-                    </mrow>
-                    <mi>a</mi>
-                  </mfrac>
-                  <mo>⁤</mo>
-                  <mi>x</mi>
-                  <mo>+</mo>
-                  <msup>
-                    <mrow>
-                      <mo>(</mo>
-                      <mfrac>
-                        <mrow>
-                          <mi>b</mi>
-                        </mrow>
-                        <mrow>
-                          <mn>2</mn>
-                          <mi>a</mi>
-                        </mrow>
-                      </mfrac>
-                      <mo>)</mo>
-                    </mrow>
-                    <mn>2</mn>
-                  </msup>
-                </mrow>
-              </mrow>
-            </mtd>
-            <mtd>
-              <mo>=</mo>
-            </mtd>
-            <mtd>
-              <mrow>
-                <mfrac>
-                  <mrow>
-                    <mo>−</mo>
-                    <mi>c</mi>
-                    <mo>(</mo>
-                    <mn>4</mn>
-                    <mi>a</mi>
-                    <mo>)</mo>
-                  </mrow>
-                  <mrow>
-                    <mi>a</mi>
-                    <mo>(</mo>
-                    <mn>4</mn>
-                    <mi>a</mi>
-                    <mo>)</mo>
-                  </mrow>
-                </mfrac>
-                <mo>+</mo>
-                <mfrac>
-                  <mrow>
-                    <msup>
-                      <mi>b</mi>
-                      <mn>2</mn>
-                    </msup>
-                  </mrow>
-                  <mrow>
-                    <mn>4</mn>
-                    <msup>
-                      <mi>a</mi>
-                      <mn>2</mn>
-                    </msup>
-                  </mrow>
-                </mfrac>
-              </mrow>
-            </mtd>
-            <mtd>
-              <mrow>
-                <mtext style="color: red; font-size: 10pt;">Complete the square.</mtext>
-              </mrow>
-            </mtd>
-          </mtr>
-          <mtr>
-            <mtd>
-              <mrow>
-                <mrow>
-                  <mo>(</mo>
-                  <mi>x</mi>
-                  <mo>+</mo>
-                  <mfrac>
-                    <mrow>
-                      <mi>b</mi>
-                    </mrow>
-                    <mrow>
-                      <mn>2</mn>
-                      <mi>a</mi>
-                    </mrow>
-                  </mfrac>
-                  <mo>)</mo>
-                  <mo>(</mo>
-                  <mi>x</mi>
-                  <mo>+</mo>
-                  <mfrac>
-                    <mrow>
-                      <mi>b</mi>
-                    </mrow>
-                    <mrow>
-                      <mn>2</mn>
-                      <mi>a</mi>
-                    </mrow>
-                  </mfrac>
-                  <mo>)</mo>
-                </mrow>
-              </mrow>
-            </mtd>
-            <mtd>
-              <mo>=</mo>
-            </mtd>
-            <mtd>
-              <mfrac>
-                <mrow>
-                  <msup>
-                    <mi>b</mi>
-                    <mn>2</mn>
-                  </msup>
-                  <mo>−</mo>
-                  <mn>4</mn>
-                  <mi>a</mi>
-                  <mi>c</mi>
-                </mrow>
-                <mrow>
-                  <mn>4</mn>
-                  <msup>
-                    <mi>a</mi>
-                    <mn>2</mn>
-                  </msup>
-                </mrow>
-              </mfrac>
-            </mtd>
-            <mtd>
-              <mrow>
-                <mtext style="color: red; font-size: 10pt;">Discriminant revealed.</mtext>
-              </mrow>
-            </mtd>
-          </mtr>
-          <mtr>
-            <mtd>
-              <mrow>
-                <mrow>
-                  <msup>
-                    <mrow>
-                      <mo>(</mo>
-                      <mi>x</mi>
-                      <mo>+</mo>
-                      <mfrac>
-                        <mrow>
-                          <mi>b</mi>
-                        </mrow>
-                        <mrow>
-                          <mn>2</mn>
-                          <mi>a</mi>
-                        </mrow>
-                      </mfrac>
-                      <mo>)</mo>
-                    </mrow>
-                    <mn>2</mn>
-                  </msup>
-                </mrow>
-              </mrow>
-            </mtd>
-            <mtd>
-              <mo>=</mo>
-            </mtd>
-            <mtd>
-              <mfrac>
-                <mrow>
-                  <msup>
-                    <mi>b</mi>
-                    <mn>2</mn>
-                  </msup>
-                  <mo>−</mo>
-                  <mn>4</mn>
-                  <mi>a</mi>
-                  <mi>c</mi>
-                </mrow>
-                <mrow>
-                  <mn>4</mn>
-                  <msup>
-                    <mi>a</mi>
-                    <mn>2</mn>
-                  </msup>
-                </mrow>
-              </mfrac>
-            </mtd>
-            <mtd>
-              <mrow>
-                <mtext style="color: red; font-size: 10pt;" />
-              </mrow>
-            </mtd>
-          </mtr>
-          <mtr>
-            <mtd>
-              <mrow>
-                <mrow>
-                  <mrow>
-                    <mi>x</mi>
-                    <mo>+</mo>
-                    <mfrac>
-                      <mrow>
-                        <mi>b</mi>
-                      </mrow>
-                      <mrow>
-                        <mn>2</mn>
-                        <mi>a</mi>
-                      </mrow>
-                    </mfrac>
-                  </mrow>
-                </mrow>
-              </mrow>
-            </mtd>
-            <mtd>
-              <mo>=</mo>
-            </mtd>
-            <mtd>
-              <msqrt>
-                <mfrac>
-                  <mrow>
-                    <msup>
-                      <mi>b</mi>
-                      <mn>2</mn>
-                    </msup>
-                    <mo>−</mo>
-                    <mn>4</mn>
-                    <mi>a</mi>
-                    <mi>c</mi>
-                  </mrow>
-                  <mrow>
-                    <mn>4</mn>
-                    <msup>
-                      <mi>a</mi>
-                      <mn>2</mn>
-                    </msup>
-                  </mrow>
-                </mfrac>
-              </msqrt>
-            </mtd>
-            <mtd>
-              <mrow>
-                <mtext style="color: red; font-size: 10pt;" />
-              </mrow>
-            </mtd>
-          </mtr>
-          <mtr>
-            <mtd>
-              <mi>x</mi>
-            </mtd>
-            <mtd>
-              <mo>=</mo>
-            </mtd>
-            <mtd>
-              <mfrac>
-                <mrow>
-                  <mo>−</mo>
-                  <mi>b</mi>
-                </mrow>
-                <mrow>
-                  <mn>2</mn>
-                  <mi>a</mi>
-                </mrow>
-              </mfrac>
-              <mo>±</mo>
-              <mrow>
-                <mo>{</mo>
-                <mi>C</mi>
-                <mo>}</mo>
-              </mrow>
-              <msqrt>
-                <mfrac>
-                  <mrow>
-                    <msup>
-                      <mi>b</mi>
-                      <mn>2</mn>
-                    </msup>
-                    <mo>−</mo>
-                    <mn>4</mn>
-                    <mi>a</mi>
-                    <mi>c</mi>
-                  </mrow>
-                  <mrow>
-                    <mn>4</mn>
-                    <msup>
-                      <mi>a</mi>
-                      <mn>2</mn>
-                    </msup>
-                  </mrow>
-                </mfrac>
-              </msqrt>
-            </mtd>
-            <mtd>
-              <mrow>
-                <mtext style="color: red; font-size: 10pt;">There's the vertex formula.</mtext>
-              </mrow>
-            </mtd>
-          </mtr>
-          <mtr>
-            <mtd>
-              <mi>x</mi>
-            </mtd>
-            <mtd>
-              <mo>=</mo>
-            </mtd>
-            <mtd>
-              <mfrac>
-                <mrow>
-                  <mo>−</mo>
-                  <mi>b</mi>
-                  <mo>±</mo>
-                  <mrow>
-                    <mo>{</mo>
-                    <mi>C</mi>
-                    <mo>}</mo>
-                  </mrow>
-                  <msqrt>
-                    <msup>
-                      <mi>b</mi>
-                      <mn>2</mn>
-                    </msup>
-                    <mo>−</mo>
-                    <mn>4</mn>
-                    <mi>a</mi>
-                    <mi>c</mi>
-                  </msqrt>
-                </mrow>
-                <mrow>
-                  <mn>2</mn>
-                  <mi>a</mi>
-                </mrow>
-              </mfrac>
-            </mtd>
-            <mtd>
-              <mrow>
-                <mtext style="color: red; font-size: 10pt;" />
-              </mrow>
-            </mtd>
-          </mtr>
-        </mtable>
-      </math>
-    </p>
-    |}]
+  mathml_node |> to_xml |> print_endline

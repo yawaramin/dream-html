@@ -1,0 +1,35 @@
+
+
+🔎 OK with age
+{name: Bob;
+ age: 42;
+ accept_tos: true;
+ permissions: [r]}
+
+🔎 OK without age
+{name: Bob;
+ age: ;
+ accept_tos: true;
+ permissions: [r]}
+
+🔎 Error without name
+[name, error.required]
+
+🔎 Error with too low age and empty name
+[age, error.range; name, Must not be empty]
+
+🔎 Error too many permissions
+[permissions, error.length]
+
+🔎 Error can't have permissions if not accept TOS
+[permissions, error.length]
+
+🔎 Indent CSRF tag correctly
+200 OK
+
+<form method="post" action="/">
+  <input value="token-value" name="dream.csrf" type="hidden">
+  <input name="id">
+  <button type="submit">Add</button>
+</form>
+

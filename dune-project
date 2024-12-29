@@ -26,8 +26,7 @@
   (uri
    (and
     (>= 4.4.0)
-    (< 5.0.0)))
-  (ppx_expect :with-test)))
+    (< 5.0.0)))))
 
 (package
  (name dream-html)
@@ -40,6 +39,4 @@
   (pure-html
    (= :version))
   (dream
-   (>= 1.0.0~alpha3))
-  (fmt :with-test)
-  (ppx_expect :with-test)))
+   (>= 1.0.0~alpha3))))

@@ -1,13 +1,42 @@
 (test
- (name route_test)
- (package dream-html)
- (libraries dream_html)
- (preprocess
-  (pps dream-html.ppx))
+ (name pure_html_test)
+ (package pure-html)
+ (libraries pure-html)
+ (modules pure_html_test)
  (action
-  (diff expected_route.txt got_route.txt)))
+  (diff pure_html_test.expected.txt pure_html_test.got.txt)))
 
 (rule
  (with-stdout-to
-  got_route.txt
+  pure_html_test.got.txt
+  (run ./pure_html_test.exe)))
+
+(test
+ (name dream_html_test)
+ (package dream-html)
+ (libraries dream-html)
+ (modules dream_html_test)
+ (preprocess
+  (pps dream-html.ppx))
+ (action
+  (diff dream_html_test.expected.txt dream_html_test.got.txt)))
+
+(rule
+ (with-stdout-to
+  dream_html_test.got.txt
+  (run ./dream_html_test.exe)))
+
+(test
+ (name route_test)
+ (package dream-html)
+ (libraries dream_html)
+ (modules route_test)
+ (preprocess
+  (pps dream-html.ppx))
+ (action
+  (diff route_test.expected.txt route_test.got.txt)))
+
+(rule
+ (with-stdout-to
+  route_test.got.txt
   (run ./route_test.exe)))
