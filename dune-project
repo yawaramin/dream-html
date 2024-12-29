@@ -36,7 +36,13 @@
  (documentation "https://yawaramin.github.io/dream-html/")
  (tags (org:yawaramin))
  (depends
+  (ocaml
+   (>= 4.14.0))
+  (ppxlib
+   (and
+    (>= 0.33.0)
+    (< 1.0.0)))
   (pure-html
    (= :version))
   (dream
-   (>= 1.0.0~alpha3))))
+   (>= 1.0.0~alpha7))))
