@@ -65,9 +65,7 @@ let () =
     [ Dream_html.get [%path "/foo/%c"] (fun _ ch ->
           Dream.html (String.make 1 ch)) ]
     "/foo/a?rev=ulfhdasulfhdaslfhau";
-  test "Parse a hex integer"
-    [Dream_html.get [%path "/%x"] handle_int]
-    "/0xdeadbeef";
+  test "Parse a hex integer" [Dream_html.get [%path "/%x"] handle_int] "/0xfab";
   test "Parse an octal integer"
     [Dream_html.get [%path "/%o"] handle_int]
     "/0o644";
