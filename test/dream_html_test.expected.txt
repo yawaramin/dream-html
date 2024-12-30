@@ -24,6 +24,17 @@
 🔎 Error can't have permissions if not accept TOS
 [permissions, error.length]
 
+🔎 OK multiple nested values inside form
+{item_count: 2;
+ items: [{id: def;
+          qty: 10;
+          discount: 25}; {id: abc;
+                          qty: 1;
+                          discount: 0}]}
+
+🔎 Error missing required fields of nested values
+[item[0].id, error.required; item[1].qty, error.required]
+
 🔎 Indent CSRF tag correctly
 200 OK
 

@@ -15,7 +15,7 @@
    You should have received a copy of the GNU General Public License along with
    dream-html. If not, see <https://www.gnu.org/licenses/>. *)
 
-(** {2 Input} *)
+(** {2 Form handling} *)
 
 (** Typed, extensible HTML form decoder with error reporting for form field
     validation failures. Powerful chained decoding functionality–the validation
@@ -86,6 +86,14 @@ module Form : sig
       value from the form. If at least one value corresponding to the given
       [name] does not appear in the form, and if a [default] value is not
       specified, the decoding fails with an error. *)
+
+  val multiple : int -> (int -> 'a t) -> 'a list t
+  (** [multiple n form] is a form which can decode a list of nested form values.
+      It tries to decode exactly [n] values and fails if it can't find all of
+      them. Assumes that the items are 0-indexed. See {!decode_multiple} for a
+      complete example.
+
+      @since 3.10.0 *)
 
   val ensure :
     string ->
@@ -187,7 +195,7 @@ module Form : sig
 
   (** {2 Examples}
 
-      Basic complete example:
+      {3 Basic functionality}
 
       {[
       type user = { name : string; age : int option }
@@ -196,8 +204,7 @@ module Form : sig
 
       let user_form =
         let+ name = required string "name"
-        and+ age = optional (int ~min:16) "age" in
-        (* Thanks, Australia! *)
+        and+ age = optional (int ~min:16) "age" in (* Thanks, Australia! *)
         { name; age }
 
       let dream_form = ["age", "42"; "name", "Bob"]
@@ -213,7 +220,7 @@ module Form : sig
       Result:
       [Error [("age", "error.expected.int"); ("name", "error.required")]]
 
-      Decode list of values from form:
+      {3 Decode repeated values}
 
       {[
       type plan = { id : string; features : string list }
@@ -234,7 +241,7 @@ module Form : sig
 
       Note that the names can be anything, eg ["features[]"] if you prefer.
 
-      Add further requirements to field values:
+      {3 Constrained field values}
 
       {[
       let plan_form =
@@ -247,7 +254,9 @@ module Form : sig
 
       Result: [Error [("id", "error.expected.nonempty")]]
 
-      Complex validation rules with multiple fields:
+      {3 Complex validation rules}
+
+      Using chained validation rules where some fields depend on others:
 
       {[
       type req = {
@@ -276,7 +285,76 @@ module Form : sig
       ]}
 
       Result: [Error [("years", "Please enter a period"); ("id", "error.required")]]
-      *)
+
+      {3:decode_multiple Decode multiple values}
+
+      Suppose you have the following form data submitted:
+
+      {[
+      item-count: 2
+      item[0].id: abc
+      item[0].qty: 1
+      item[1].id: def
+      item[1].qty: 10
+      item[1].discount: 25
+      ]}
+
+      And you want to decode it into the following types:
+
+      {[
+      type item = { id : string; qty : int; discount : int }
+      type invoice = { item_count : int; items : item list }
+      ]}
+
+      First create the indexed invoice item decoder and invoice decoder:
+
+      {[
+      let item n =
+        let nth name = "item[" ^ string_of_int n ^ "]." ^ name in
+        let+ id = required string (nth "id")
+        and+ qty = required int (nth "qty")
+        and+ discount = required ~default:0 int (nth "discount") in
+        { id; qty; discount }
+
+      let invoice =
+        let* item_count = required int "item-count" in
+        let+ items = multiple item_count item in
+        { item_count; items }
+      ]}
+
+      Try it::
+
+      {[
+      validate invoice [
+        "item[0].id", "abc"; "item[0].qty", "1";
+        "item[1].id", "def"; "item[1].qty", "10"; "item[1].discount", "25";
+        "item-count", "2";
+      ]
+      ]}
+
+      Result:
+
+      {[
+      Ok {
+        item_count = 2;
+        items = [
+          {id = "def"; qty = 10; discount = 25};
+          {id = "abc"; qty = 1; discount = 0};
+        ];
+      }
+      ]}
+
+      Validation error:
+
+      {[
+      validate invoice [
+        "item[0].qty", "1";
+        "item[1].id", "def"; "item[1].discount", "25";
+        "item-count", "2";
+      ]
+
+      Error [item[0].id, error.required; item[1].qty, error.required]
+      ]} *)
 end
 
 val form :

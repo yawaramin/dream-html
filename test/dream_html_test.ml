@@ -33,18 +33,36 @@ let pp_user =
            (fun u -> u.permissions)
            (brackets (list ~sep:semi string)) ])
 
-let test_handler handler target =
-  Lwt_main.run
-    (let open Lwt.Syntax in
-     let* resp = handler (Dream.request ~target "") in
-     let+ b = Dream.body resp in
-     let st = Dream.status resp in
-     Format.printf "%d %s\n\n%s\n" (Dream.status_to_int st)
-       (Dream.status_to_string st)
-       b)
+type item =
+  { id : string;
+    qty : int;
+    discount : int
+  }
 
-let pp fmt = function
-  | Ok user -> pp_user fmt user
+let pp_item =
+  let open Fmt in
+  braces
+    (record ~sep:semi
+       [ field "id" (fun item -> item.id) string;
+         field "qty" (fun item -> item.qty) int;
+         field "discount" (fun item -> item.discount) int ])
+
+type invoice =
+  { item_count : int;
+    items : item list
+  }
+
+let pp_invoice =
+  let open Fmt in
+  braces
+    (record ~sep:semi
+       [ field "item_count" (fun invoice -> invoice.item_count) int;
+         field "items"
+           (fun invoice -> invoice.items)
+           (brackets (list ~sep:semi pp_item)) ])
+
+let pp_form pp fmt = function
+  | Ok user -> pp fmt user
   | Error e -> Dream_html.Form.pp_error fmt e
 
 open Dream_html.Form
@@ -59,42 +77,69 @@ let user_form =
   and+ age = optional (int ~min:16) "age" in
   { name; age; accept_tos; permissions }
 
+let item n =
+  let nth name = "item[" ^ string_of_int n ^ "]." ^ name in
+  let+ id = required string (nth "id")
+  and+ qty = required int (nth "qty")
+  and+ discount = required ~default:0 int (nth "discount") in
+  { id; qty; discount }
+
+let invoice =
+  let* item_count = required int "item-count" in
+  let+ items = multiple item_count item in
+  { item_count; items }
+
+let test_handler handler target =
+  Lwt_main.run
+    (let open Lwt.Syntax in
+     let* resp = handler (Dream.request ~target "") in
+     let+ b = Dream.body resp in
+     let st = Dream.status resp in
+     Format.printf "%d %s\n\n%s\n" (Dream.status_to_int st)
+       (Dream.status_to_string st)
+       b)
+
 let test msg output =
   Printf.printf "\n\n🔎 %s\n%!" msg;
   output ()
 
-let test_form msg data =
-  test msg @@ fun () -> Format.printf "%a%!" pp (validate user_form data)
+let test_form msg form pp data =
+  test msg @@ fun () -> Format.printf "%a%!" pp (validate form data)
+
+let pp_user = pp_form pp_user
+let pp_invoice = pp_form pp_invoice
 
 let () =
-  test_form "OK with age"
-    ["accept-tos", "true"; "age", "42"; "name", "Bob"; "permissions", "r"]
-
-let () =
-  test_form "OK without age"
-    ["accept-tos", "true"; "name", "Bob"; "permissions", "r"]
-
-let () =
-  test_form "Error without name"
-    ["accept-tos", "true"; "age", "42"; "permissions", "r"]
-
-let () =
-  test_form "Error with too low age and empty name"
-    ["accept-tos", "true"; "age", "1"; "name", ""; "permissions", "r"]
-
-let () =
-  test_form "Error too many permissions"
+  test_form "OK with age" user_form pp_user
+    ["accept-tos", "true"; "age", "42"; "name", "Bob"; "permissions", "r"];
+  test_form "OK without age" user_form pp_user
+    ["accept-tos", "true"; "name", "Bob"; "permissions", "r"];
+  test_form "Error without name" user_form pp_user
+    ["accept-tos", "true"; "age", "42"; "permissions", "r"];
+  test_form "Error with too low age and empty name" user_form pp_user
+    ["accept-tos", "true"; "age", "1"; "name", ""; "permissions", "r"];
+  test_form "Error too many permissions" user_form pp_user
     [ "accept-tos", "true";
       "age", "42";
       "name", "Bob";
       "permissions", "r";
       "permissions", "w";
       "permissions", "x";
-      "permissions", "" ]
-
-let () =
-  test_form "Error can't have permissions if not accept TOS"
-    ["name", "Bob"; "permissions", "r"]
+      "permissions", "" ];
+  test_form "Error can't have permissions if not accept TOS" user_form pp_user
+    ["name", "Bob"; "permissions", "r"];
+  test_form "OK multiple nested values inside form" invoice pp_invoice
+    [ "item[0].id", "abc";
+      "item[0].qty", "1";
+      "item[1].id", "def";
+      "item[1].qty", "10";
+      "item[1].discount", "25";
+      "item-count", "2" ];
+  test_form "Error missing required fields of nested values" invoice pp_invoice
+    [ "item[0].qty", "1";
+      "item[1].id", "def";
+      "item[1].discount", "25";
+      "item-count", "2" ]
 
 let () =
   test "Indent CSRF tag correctly" @@ fun () ->

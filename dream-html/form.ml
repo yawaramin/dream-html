@@ -81,6 +81,28 @@ let required ?default ty name values =
 let ok value _ = Ok value
 let error name message _ = error name message
 
+let ( let* ) form f values =
+  match form values with
+  | Ok v -> f v values
+  | Error _ as e -> e
+
+let ( let+ ) form f = ( let* ) form (fun v _ -> Ok (f v))
+
+let ( and+ ) form1 form2 values =
+  match form1 values, form2 values with
+  | Ok v1, Ok v2 -> Ok (v1, v2)
+  | Ok _, Error e2 -> Error e2
+  | Error e1, Ok _ -> Error e1
+  | Error e1, Error e2 -> Error (e2 @ e1)
+
+let rec multiple n form =
+  match n with
+  | 0 -> ok []
+  | _ ->
+    let+ v = form (n - 1)
+    and+ vs = multiple (n - 1) form in
+    v :: vs
+
 let string ?(min_length = 0) ?(max_length = Sys.max_string_length) s =
   let len = String.length s in
   if min_length <= len && len <= max_length then Ok s else Error error_length
@@ -161,20 +183,6 @@ let unix_tm ?min ?max s =
         (fun year month day hour minute second ->
           make_tm ?min ?max ~hour ~minute ~second year month day)
     with End_of_file -> Error error_expected_time)
-
-let ( let* ) form f values =
-  match form values with
-  | Ok v -> f v values
-  | Error _ as e -> e
-
-let ( let+ ) form f = ( let* ) form (fun v _ -> Ok (f v))
-
-let ( and+ ) form1 form2 values =
-  match form1 values, form2 values with
-  | Ok v1, Ok v2 -> Ok (v1, v2)
-  | Ok _, Error e2 -> Error e2
-  | Error e1, Ok _ -> Error e1
-  | Error e1, Error e2 -> Error (e2 @ e1)
 
 let ( or ) form1 form2 values =
   match form1 values with
