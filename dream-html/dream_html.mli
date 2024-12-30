@@ -220,7 +220,7 @@ module Form : sig
       Result:
       [Error [("age", "error.expected.int"); ("name", "error.required")]]
 
-      {3 Decode repeated values}
+      {3 Repeated values}
 
       {[
       type plan = { id : string; features : string list }
@@ -286,7 +286,7 @@ module Form : sig
 
       Result: [Error [("years", "Please enter a period"); ("id", "error.required")]]
 
-      {3:decode_multiple Decode multiple structured values}
+      {3:decode_multiple Multiple structured values}
 
       Suppose you have the following form data submitted:
 

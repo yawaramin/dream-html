@@ -1,6 +1,6 @@
 ## Snapshot tests
 
-> [!WARN]
+> [!WARNING]
 > The tests are using purely dune's file diffing and promotion feature as that
 > does not require any library dependencies. We tried using ppx_expect tests but
 > the problem is they are _inline_ tests that must be defined in a `library`
