@@ -286,7 +286,7 @@ module Form : sig
 
       Result: [Error [("years", "Please enter a period"); ("id", "error.required")]]
 
-      {3:decode_multiple Decode multiple values}
+      {3:decode_multiple Decode multiple structured values}
 
       Suppose you have the following form data submitted:
 
@@ -392,7 +392,7 @@ val query :
 
     @since 3.8.0 *)
 
-(** {2 Output} *)
+(** {2 HTML and other markup} *)
 
 include module type of Pure_html
 
