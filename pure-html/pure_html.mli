@@ -857,19 +857,58 @@ end
 
 (** {2 htmx} *)
 
-(** {{: https://htmx.org/}htmx} support
+(** {{: https://htmx.org/reference/}htmx} support
 
     Remember that you will also need the htmx script itself. The recommended way
     to get it is to {{: https://htmx.org/docs/#download-a-copy}download a copy}
     and place it in your static assets directory, managed by
     {{: https://yawaramin.github.io/dream-html/dream-html/Dream_html/#dreamwork}dreamwork}
-    so that it is properly cached and version-hashed by its contents. *)
+    so that it is properly cached and version-hashed by its contents.
+
+    The attributes in this module are arranged in the same order as on the
+    reference page linked above. *)
 module Hx : sig
-  val __ : _ string_attr
-  (** This attribute serves as the _ attribute, which is used by Hyperscript.
+  (** {3 Core attributes } *)
+
+  val get : _ string_attr
+  val post : _ string_attr
+
+  val on_ : event:string -> _ string_attr
+  (** The [hx-on:*] set of attributes, where [*] represents DOM events:
+      {: https://htmx.org/attributes/hx-on/}.
+
       Note that the value of this attribute is not escaped.
 
-      @since 0.1.0. *)
+      @since 2.1.0. *)
+
+  val push_url : _ string_attr
+
+  val select : _ string_attr
+  (** Note that the value of this attribute is not escaped as it may include a
+      CSS selector. *)
+
+  val select_oob : _ string_attr
+  (** Note that the value of this attribute is not escaped as it may include a
+      CSS selector. *)
+
+  val swap : _ string_attr
+  (** Note that the value of this attribute is not escaped as it may include a
+      CSS selector. *)
+
+  val swap_oob : _ string_attr
+  (** Note that the value of this attribute is not escaped as it may include a
+      CSS selector. *)
+
+  val target : _ string_attr
+  (** Note that the value of this attribute is not escaped as it may include a
+      CSS selector. *)
+
+  val trigger : _ string_attr
+  (** Note that the value of this attribute is not escaped. *)
+
+  val vals : _ string_attr
+
+  (** {3 Additional attributes } *)
 
   val boost : bool to_attr
   val confirm : _ string_attr
@@ -885,7 +924,6 @@ module Hx : sig
   (** Hardcoding of the [hx-encoding] attribute to [multipart/form-data]. *)
 
   val ext : _ string_attr
-  val get : _ string_attr
   val headers : _ string_attr
 
   val history_false : attr
@@ -901,65 +939,38 @@ module Hx : sig
   val inherit_ : _ string_attr
   (** @since 3.6.0. *)
 
-  val on : _ string_attr
-  [@@ocaml.deprecated "See https://htmx.org/attributes/hx-on/#hx-on-deprecated"]
-  (** Note that the value of this attribute is not escaped. *)
-
-  val on_ : event:string -> _ string_attr
-  (** The [hx-on:*] set of attributes, where [*] represents DOM events:
-      {: https://htmx.org/attributes/hx-on/}.
-
-      Note that the value of this attribute is not escaped.
-
-      @since 2.1.0. *)
-
   val params : _ string_attr
   val patch : _ string_attr
-  val post : _ string_attr
-
-  val preload : attr
-  (** The preload extension: {: https://htmx.org/extensions/preload/} *)
-
   val preserve : attr
   val prompt : _ string_attr
-  val push_url : _ string_attr
   val put : _ string_attr
   val replace_url : _ string_attr
   val request : _ string_attr
+  val sync : _ string_attr
+  val validate : attr
 
-  val select : _ string_attr
-  (** Note that the value of this attribute is not escaped as it may include a
-      CSS selector. *)
+  (** {3 Extensions} *)
 
-  val select_oob : _ string_attr
-  (** Note that the value of this attribute is not escaped as it may include a
-      CSS selector. *)
+  val preload : attr
+  (** The preload extension: {: https://htmx.org/extensions/preload/} *)
 
   val sse_close : _ string_attr
   (** @since 3.6.0. *)
 
   val sse_connect : _ string_attr
   val sse_swap : _ string_attr
-
-  val swap : _ string_attr
-  (** Note that the value of this attribute is not escaped as it may include a
-      CSS selector. *)
-
-  val swap_oob : _ string_attr
-  (** Note that the value of this attribute is not escaped as it may include a
-      CSS selector. *)
-
-  val sync : _ string_attr
-
-  val target : _ string_attr
-  (** Note that the value of this attribute is not escaped as it may include a
-      CSS selector. *)
-
-  val trigger : _ string_attr
-  (** Note that the value of this attribute is not escaped. *)
-
-  val validate : attr
-  val vals : _ string_attr
   val ws_connect : _ string_attr
   val ws_send : attr
+
+  (** {3 Other} *)
+
+  val __ : _ string_attr
+  (** This attribute serves as the _ attribute, which is used by Hyperscript.
+      Note that the value of this attribute is not escaped.
+
+      @since 0.1.0. *)
+
+  val on : _ string_attr
+  [@@ocaml.deprecated "See https://htmx.org/attributes/hx-on/#hx-on-deprecated"]
+  (** Note that the value of this attribute is not escaped. *)
 end
