@@ -181,7 +181,7 @@ val is_null_ : attr -> bool
 
     @since 1.2.0. *)
 
-(** {2 Standard attributes and tags} *)
+(** {2 HTML} *)
 
 (** All standard HTML attributes and tags. Some attributes and tags have the same
     name, e.g. [style]. To disambiguate them, attributes have a [_] (underscore)
@@ -797,7 +797,7 @@ module MathML : sig
   val semantics : std_tag
 end
 
-(** {2 ARIA support} *)
+(** {2 ARIA} *)
 
 (** {: https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/}
 
@@ -855,9 +855,15 @@ module Aria : sig
   val valuetext : _ string_attr
 end
 
-(** {2 htmx support} *)
+(** {2 htmx} *)
 
-(** htmx support {: https://htmx.org/reference/} *)
+(** {{: https://htmx.org/}htmx} support
+
+    Remember that you will also need the htmx script itself. The recommended way
+    to get it is to {{: https://htmx.org/docs/#download-a-copy}download a copy}
+    and place it in your static assets directory, managed by
+    {{: https://yawaramin.github.io/dream-html/dream-html/Dream_html/#dreamwork}dreamwork}
+    so that it is properly cached and version-hashed by its contents. *)
 module Hx : sig
   val __ : _ string_attr
   (** This attribute serves as the _ attribute, which is used by Hyperscript.
