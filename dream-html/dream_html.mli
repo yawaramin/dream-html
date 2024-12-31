@@ -322,7 +322,7 @@ module Form : sig
         { item_count; items }
       ]}
 
-      Try it::
+      Try it:
 
       {[
       validate invoice [
