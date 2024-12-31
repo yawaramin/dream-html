@@ -12,9 +12,9 @@ let is_htmx req =
   Dream.has_header req hx_request
   && not (Dream.has_header req hx_history_request_request)
 
-let vary ~if_fragment ~if_full req =
+let vary req ~fragment full =
   let open Lwt.Syntax in
-  let+ resp = if is_htmx req then if_fragment () else if_full () in
+  let+ resp = if is_htmx req then fragment () else full () in
   Dream.set_header resp "Vary" (hx_request ^ ", " ^ hx_history_request_request);
   resp
 
@@ -133,10 +133,10 @@ module Todos = struct
           let todo = Repo.add desc in
           let trgt = Dream.target req in
           vary req
-            ~if_fragment:(fun () ->
+            ~fragment:(fun () ->
               respond ~status:`Created
                 (null [render_one todo; oob (Page.toast "added todo")]))
-            ~if_full:(fun () ->
+            (fun () ->
               todo.id
               |> string_of_int
               |> Filename.concat trgt
@@ -196,9 +196,9 @@ module Todo = struct
         let todo = Repo.find id in
         let rendered = render ~todo in
         vary req
-          ~if_fragment:(fun () ->
+          ~fragment:(fun () ->
             respond (null [rendered; Page.title_tag todo.desc]))
-          ~if_full:(fun () ->
+          (fun () ->
             respond
               (Page.render ~title_str:todo.desc
                  (Todos.render ~todos:(Repo.list ()) rendered))))
@@ -212,18 +212,18 @@ module Todo = struct
         | `Ok [("desc", desc); ("id", idval)] ->
           let todo = Repo.edit (int_of_string idval) desc in
           vary req
-            ~if_fragment:(fun () ->
+            ~fragment:(fun () ->
               respond
                 (null
                    [ Todos.render_one todo;
                      Page.title_tag desc;
                      oob (Page.toast "updated description") ]))
-            ~if_full:(fun () -> Dream.redirect req trgt)
+            (fun () -> Dream.redirect req trgt)
         | `Ok [("id", idval)] ->
           let todo = Repo.toggle (int_of_string idval) in
           vary req
-            ~if_fragment:(fun () -> respond (render_toggled todo))
-            ~if_full:(fun () -> Dream.redirect req trgt)
+            ~fragment:(fun () -> respond (render_toggled todo))
+            (fun () -> Dream.redirect req trgt)
         | _ -> invalid_arg "There was an error")
 end
 
