@@ -23,15 +23,12 @@ type user =
   }
 
 let pp_user =
-  let open Fmt in
-  braces
-    (record ~sep:semi
-       [ field "name" (fun u -> u.name) string;
-         field "age" (fun u -> u.age) (option int);
-         field "accept_tos" (fun u -> u.accept_tos) bool;
-         field "permissions"
-           (fun u -> u.permissions)
-           (brackets (list ~sep:semi string)) ])
+  let open Fmt.Dump in
+  record
+    [ field "name" (fun u -> u.name) string;
+      field "age" (fun u -> u.age) (option Fmt.int);
+      field "accept_tos" (fun u -> u.accept_tos) Fmt.bool;
+      field "permissions" (fun u -> u.permissions) (list string) ]
 
 type item =
   { id : string;
@@ -39,27 +36,23 @@ type item =
     discount : int
   }
 
-let pp_item =
-  let open Fmt in
-  braces
-    (record ~sep:semi
-       [ field "id" (fun item -> item.id) string;
-         field "qty" (fun item -> item.qty) int;
-         field "discount" (fun item -> item.discount) int ])
-
 type invoice =
   { item_count : int;
     items : item list
   }
 
+let pp_item =
+  let open Fmt.Dump in
+  record
+    [ field "id" (fun item -> item.id) string;
+      field "qty" (fun item -> item.qty) Fmt.int;
+      field "discount" (fun item -> item.discount) Fmt.int ]
+
 let pp_invoice =
-  let open Fmt in
-  braces
-    (record ~sep:semi
-       [ field "item_count" (fun invoice -> invoice.item_count) int;
-         field "items"
-           (fun invoice -> invoice.items)
-           (brackets (list ~sep:semi pp_item)) ])
+  let open Fmt.Dump in
+  record
+    [ field "item_count" (fun invoice -> invoice.item_count) Fmt.int;
+      field "items" (fun invoice -> invoice.items) (list pp_item) ]
 
 let pp_form pp fmt = function
   | Ok user -> pp fmt user

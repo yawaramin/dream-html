@@ -1,16 +1,16 @@
 
 
 🔎 OK with age
-{name: Bob;
- age: 42;
- accept_tos: true;
- permissions: [r]}
+{ "name" = "Bob";
+  "age" = Some 42;
+  "accept_tos" = true;
+  "permissions" = ["r"] }
 
 🔎 OK without age
-{name: Bob;
- age: ;
- accept_tos: true;
- permissions: [r]}
+{ "name" = "Bob";
+  "age" = None;
+  "accept_tos" = true;
+  "permissions" = ["r"] }
 
 🔎 Error without name
 [name, error.required]
@@ -25,12 +25,14 @@
 [permissions, error.length]
 
 🔎 OK multiple nested values inside form
-{item_count: 2;
- items: [{id: def;
-          qty: 10;
-          discount: 25}; {id: abc;
-                          qty: 1;
-                          discount: 0}]}
+{ "item_count" = 2;
+  "items" =
+   [{ "id" = "def";
+      "qty" = 10;
+      "discount" = 25 };
+    { "id" = "abc";
+      "qty" = 1;
+      "discount" = 0 }] }
 
 🔎 Error missing required fields of nested values
 [item[0].id, error.required; item[1].qty, error.required]
