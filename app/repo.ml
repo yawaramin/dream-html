@@ -4,32 +4,46 @@ type t =
     completed : bool
   }
 
-let hashtbl = Hashtbl.create ~random:true 8
+let dir = "todos"
+let dir_todo id = Filename.concat dir (string_of_int id)
+
+let () =
+  if not (Sys.file_exists dir && Sys.is_directory dir) then Sys.mkdir dir 0o755
+
+let parse filename =
+  In_channel.with_open_bin filename (fun inc ->
+      Scanf.bscanf (Scanf.Scanning.from_channel inc) "%d %B %s"
+        (fun id completed desc -> { id; completed; desc }))
 
 let list () =
-  hashtbl
-  |> Hashtbl.to_seq_values
-  |> List.of_seq
-  |> List.sort (fun { id = id1; _ } { id = id2; _ } -> compare id1 id2)
+  let todos = Sys.readdir dir in
+  Array.sort compare todos;
+  todos
+  |> Array.to_list
+  |> List.map (fun todo -> parse (Filename.concat dir todo))
 
-let curr_id = ref 0
-let find id = Hashtbl.find hashtbl (string_of_int id)
+let find id = parse (dir_todo id)
+
+let write ({ id; completed; desc } as todo) =
+  Out_channel.with_open_bin (dir_todo id) (fun outc ->
+      Printf.fprintf outc "%d %B %s" id completed desc);
+  todo
 
 let add desc =
-  incr curr_id;
-  let id = !curr_id in
-  let todo = { id; desc; completed = false } in
-  Hashtbl.replace hashtbl (string_of_int id) todo;
-  todo
+  let all = Sys.readdir dir in
+  let id =
+    if all = [||] then
+      1
+    else (
+      Array.sort (fun name1 name2 -> compare name2 name1) all;
+      1 + int_of_string all.(0))
+  in
+  write { id; desc; completed = false }
 
 let toggle id =
-  let todo = Hashtbl.find hashtbl id in
-  let todo = { todo with completed = not todo.completed } in
-  Hashtbl.replace hashtbl id todo;
-  todo
+  let todo = find id in
+  write { todo with completed = not todo.completed }
 
 let edit id desc =
-  let todo = Hashtbl.find hashtbl id in
-  let todo = { todo with desc } in
-  Hashtbl.replace hashtbl id todo;
-  todo
+  let todo = find id in
+  write { todo with desc }

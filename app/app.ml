@@ -210,7 +210,7 @@ module Todo = struct
         let* frm = Dream.form ~csrf:false req in
         match frm with
         | `Ok [("desc", desc); ("id", idval)] ->
-          let todo = Repo.edit idval desc in
+          let todo = Repo.edit (int_of_string idval) desc in
           vary req
             ~if_fragment:(fun () ->
               respond
@@ -220,7 +220,7 @@ module Todo = struct
                      oob (Page.toast "updated description") ]))
             ~if_full:(fun () -> Dream.redirect req trgt)
         | `Ok [("id", idval)] ->
-          let todo = Repo.toggle idval in
+          let todo = Repo.toggle (int_of_string idval) in
           vary req
             ~if_fragment:(fun () -> respond (render_toggled todo))
             ~if_full:(fun () -> Dream.redirect req trgt)
