@@ -56,7 +56,7 @@ let write_attr ~xml p = function
 
 let xml_mode xml name =
   match xml, name with
-  | true, _ | _, ("math" | "svg") -> true
+  | true, _ | _, ("math" | "svg" | "rss") -> true
   | _ -> false
 
 module Indent_level = struct
@@ -198,11 +198,8 @@ let attr name = name, ""
 let string_attr name ?(raw = false) fmt =
   Printf.ksprintf (fun s -> name, attr_escape raw s) fmt
 
-let uri_attr name fmt =
-  Printf.ksprintf
-    (fun s -> name, s |> Uri.of_string |> Uri.to_string |> attr_escape false)
-    fmt
-
+let uri_escape s = s |> Uri.of_string |> Uri.to_string |> attr_escape false
+let uri_attr name fmt = Printf.ksprintf (fun s -> name, uri_escape s) fmt
 let bool_attr name value = name, string_of_bool value
 let float_attr name value = name, Printf.sprintf "%f" value
 let int_attr name value = name, string_of_int value
@@ -212,6 +209,11 @@ let void_tag name attrs = Tag { name; attrs; children = None }
 let text_tag name ?(raw = false) attrs fmt =
   Printf.ksprintf
     (fun s -> Tag { name; attrs; children = Some [Txt (txt_escape raw s)] })
+    fmt
+
+let uri_tag name attrs fmt =
+  Printf.ksprintf
+    (fun s -> Tag { name; attrs; children = Some [Txt (uri_escape s)] })
     fmt
 
 let txt ?(raw = false) fmt =
@@ -848,6 +850,7 @@ module Aria = struct
     ( "aria-live",
       match value with
       | `assertive -> "assertive"
+      | `off -> "off"
       | `polite -> "polite" )
 
   let modal = attr "aria-modal"
@@ -901,6 +904,42 @@ module Aria = struct
   let valuemin = float_attr "aria-valuemin"
   let valuenow = float_attr "aria-valuenow"
   let valuetext fmt = string_attr "aria-valuetext" fmt
+end
+
+module Atom = struct
+  let link = std_tag "atom:link"
+end
+
+module RSS = struct
+  let domain fmt = uri_attr "domain" fmt
+
+  let version_2 =
+    let a fmt = string_attr "version" fmt in
+    a "2.0"
+
+  let xmlns_atom =
+    let a fmt = uri_attr "xmlns:atom" fmt in
+    a "http://www.w3.org/2005/Atom"
+
+  let author attrs fmt = text_tag "author" attrs fmt
+  let channel = std_tag "channel"
+  let category attrs fmt = text_tag "category" attrs fmt
+  let comments attrs fmt = uri_tag "comments" attrs fmt
+  let copyright attrs fmt = text_tag "copyright" attrs fmt
+  let description attrs fmt = text_tag "description" attrs fmt
+  let docs attrs fmt = text_tag "docs" attrs fmt
+  let generator attrs fmt = text_tag "generator" attrs fmt
+  let guid attrs fmt = text_tag "guid" attrs fmt
+  let item = std_tag "item"
+  let language attrs fmt = text_tag "language" attrs fmt
+  let last_build_date attrs fmt = text_tag "lastBuildDate" attrs fmt
+  let link attrs fmt = uri_tag "link" attrs fmt
+  let managing_editor attrs fmt = text_tag "managingEditor" attrs fmt
+  let pub_date attrs fmt = text_tag "pubDate" attrs fmt
+  let rss = std_tag "rss"
+  let title attrs fmt = text_tag "title" attrs fmt
+  let ttl attrs fmt = text_tag "ttl" attrs fmt
+  let web_master attrs fmt = text_tag "webMaster" attrs fmt
 end
 
 module Hx = struct

@@ -121,6 +121,12 @@ val text_tag : string -> ?raw:bool -> _ text_tag
       neither does dream-html:
       {: https://github.com/aantron/dream/tree/master/example/7-template#security}. *)
 
+val uri_tag : string -> _ text_tag
+(** Build a tag which can contain only a URI. The URI is scaped with the same
+    rules as a [uri_attr].
+
+    @since 3.10.0 *)
+
 val txt : ?raw:bool -> ('a, unit, string, node) format4 -> 'a
 (** A text node inside the DOM e.g. the 'hi' in [<b>hi</b>]. Allows string
     interpolation using the same formatting features as [Printf.sprintf]:
@@ -720,6 +726,8 @@ module HTML : sig
   val wbr : void_tag
 end
 
+(** {2 SVG} *)
+
 (** @since 1.1.0. *)
 module SVG : sig
   val d : _ string_attr
@@ -736,6 +744,8 @@ module SVG : sig
   val path : std_tag
   val svg : std_tag
 end
+
+(** {2 MathML} *)
 
 (** @since 3.1.0. *)
 module MathML : sig
@@ -829,7 +839,13 @@ module Aria : sig
   val label : _ string_attr
   val labelledby : _ string_attr
   val level : int to_attr
-  val live : [`assertive | `polite] to_attr
+
+  val live : [`assertive | `off | `polite] to_attr
+  (** ⚠️ Screen readers want a live region to be defined statically from page
+      load on a visible element, eg [p [id "toast"; Aria.live `polite] []].  The
+      element must {i not} be hidden initially, otherwise the screen reader will
+      continue to ignore it even when its content is changed. *)
+
   val modal : attr
   val multiline : attr
   val multiselectable : attr
@@ -855,18 +871,58 @@ module Aria : sig
   val valuetext : _ string_attr
 end
 
+(** {2 RSS and Atom} *)
+
+(** @since 3.10.0 *)
+module Atom : sig
+  val link : std_tag
+end
+
+(** {{: https://www.rssboard.org/rss-specification}RSS} support
+
+    @since 3.10.0 *)
+module RSS : sig
+  (** {3 Attributes} *)
+
+  val domain : _ string_attr
+  val version_2 : attr
+  val xmlns_atom : attr
+
+  (** {3 Tags} *)
+
+  val author : _ text_tag
+  val channel : std_tag
+  val category : _ text_tag
+  val comments : _ text_tag
+  val copyright : _ text_tag
+  val description : _ text_tag
+  val docs : _ text_tag
+  val generator : _ text_tag
+  val guid : _ text_tag
+  val item : std_tag
+  val language : _ text_tag
+  val last_build_date : _ text_tag
+  val link : _ text_tag
+  val managing_editor : _ text_tag
+  val pub_date : _ text_tag
+  val rss : std_tag
+  val title : _ text_tag
+  val ttl : _ text_tag
+  val web_master : _ text_tag
+end
+
 (** {2 htmx} *)
 
 (** {{: https://htmx.org/reference/}htmx} support
+
+    The attributes in this module are arranged in the same order as on the
+    reference page linked above.
 
     Remember that you will also need the htmx script itself. The recommended way
     to get it is to {{: https://htmx.org/docs/#download-a-copy}download a copy}
     and place it in your static assets directory, managed by
     {{: https://yawaramin.github.io/dream-html/dream-html/Dream_html/#dreamwork}dreamwork}
-    so that it is properly cached and version-hashed by its contents.
-
-    The attributes in this module are arranged in the same order as on the
-    reference page linked above. *)
+    so that it is properly cached and version-hashed by its contents. *)
 module Hx : sig
   (** {3 Core attributes } *)
 

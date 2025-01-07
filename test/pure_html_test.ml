@@ -357,3 +357,41 @@ let () =
                   ] ] ] ]
   in
   mathml_node |> to_xml |> print_endline
+
+let () =
+  test "RSS" @@ fun () ->
+  let open Pure_html in
+  let open RSS in
+  let feed =
+    rss [xmlns_atom; version_2]
+      [ channel []
+          [ title [] "NASA Space Station News";
+            link [] "http://www.nasa.gov/";
+            description []
+              "A RSS news feed containing the latest NASA press releases on the International Space Station.";
+            language [] "en-us";
+            pub_date [] "Tue, 10 Jun 2003 04:00:00 GMT";
+            last_build_date [] "Fri, 21 Jul 2023 09:04 EDT";
+            docs [] "https://www.rssboard.org/rss-specification";
+            generator [] "pure-html";
+            managing_editor [] "neil.armstrong@example.com (Neil Armstrong)";
+            web_master [] "sally.ride@example.com (Sally Ride)";
+            Atom.link
+              HTML.
+                [ href "https://www.rssboard.org/files/sample-rss-2.xml";
+                  rel "self";
+                  type_ "application/rss+xml" ]
+              [];
+            item []
+              [ title []
+                  "Louisiana Students to Hear from NASA Astronauts Aboard Space Station";
+                link []
+                  "http://www.nasa.gov/press-release/louisiana-students-to-hear-from-nasa-astronauts-aboard-space-station";
+                description []
+                  "As part of the state's first Earth-to-space call, students from Louisiana will have an opportunity soon to hear from NASA astronauts aboard the International Space Station.";
+                pub_date [] "Fri, 21 Jul 2023 09:04 EDT";
+                guid []
+                  "http://www.nasa.gov/press-release/louisiana-students-to-hear-from-nasa-astronauts-aboard-space-station"
+              ] ] ]
+  in
+  feed |> to_xml |> print_endline
