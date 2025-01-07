@@ -908,6 +908,10 @@ end
 
 module Atom = struct
   let link = std_tag "atom:link"
+
+  let xmlns =
+    let a fmt = uri_attr "xmlns:atom" fmt in
+    a "http://www.w3.org/2005/Atom"
 end
 
 module RSS = struct
@@ -916,10 +920,6 @@ module RSS = struct
   let version_2 =
     let a fmt = string_attr "version" fmt in
     a "2.0"
-
-  let xmlns_atom =
-    let a fmt = uri_attr "xmlns:atom" fmt in
-    a "http://www.w3.org/2005/Atom"
 
   let author attrs fmt = text_tag "author" attrs fmt
   let channel = std_tag "channel"

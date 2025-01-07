@@ -363,7 +363,7 @@ let () =
   let open Pure_html in
   let open RSS in
   let feed =
-    rss [xmlns_atom; version_2]
+    rss [Atom.xmlns; version_2]
       [ channel []
           [ title [] "NASA Space Station News";
             link [] "http://www.nasa.gov/";

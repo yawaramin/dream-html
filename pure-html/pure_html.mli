@@ -875,6 +875,7 @@ end
 
 (** @since 3.10.0 *)
 module Atom : sig
+  val xmlns : attr
   val link : std_tag
 end
 
@@ -886,7 +887,6 @@ module RSS : sig
 
   val domain : _ string_attr
   val version_2 : attr
-  val xmlns_atom : attr
 
   (** {3 Tags} *)
 
