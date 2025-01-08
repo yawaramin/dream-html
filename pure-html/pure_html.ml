@@ -770,7 +770,7 @@ module SVG = struct
   let viewbox ~min_x ~min_y ~width ~height =
     "viewbox", Printf.sprintf "%d %d %d %d" min_x min_y width height
 
-  let xmlns = string_attr "xmlns" "http://www.w3.org/2000/svg"
+  let xmlns = "xmlns", "http://www.w3.org/2000/svg"
 
   (* Tags *)
   let path = std_tag "path"
@@ -908,19 +908,12 @@ end
 
 module Atom = struct
   let link = std_tag "atom:link"
-
-  let xmlns =
-    let a fmt = uri_attr "xmlns:atom" fmt in
-    a "http://www.w3.org/2005/Atom"
+  let xmlns = "xmlns:atom", "http://www.w3.org/2005/Atom"
 end
 
 module RSS = struct
   let domain fmt = uri_attr "domain" fmt
-
-  let version_2 =
-    let a fmt = string_attr "version" fmt in
-    a "2.0"
-
+  let version_2 = "version", "2.0"
   let author attrs fmt = text_tag "author" attrs fmt
   let channel = std_tag "channel"
   let category attrs fmt = text_tag "category" attrs fmt
@@ -957,7 +950,7 @@ module Hx = struct
   let ext fmt = string_attr "data-hx-ext" fmt
   let get fmt = uri_attr "data-hx-get" fmt
   let headers fmt = string_attr "data-hx-headers" fmt
-  let history_false = bool_attr "data-hx-history" false
+  let history_false = "data-hx-history", "false"
   let history_elt = attr "data-hx-history-elt"
   let include_ fmt = string_attr "data-hx-include" fmt
   let indicator fmt = string_attr ~raw:true "data-hx-indicator" fmt
