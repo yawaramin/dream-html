@@ -37,8 +37,7 @@ let parse_string ~pos ~len str =
   let new_pos = parse_string' ~pos ~len str buf in
   Buffer.contents buf, new_pos
 
-let rec handler' :
-    type r.
+let rec handler' : type r.
     ?pos:int ->
     len:int ->
     string ->

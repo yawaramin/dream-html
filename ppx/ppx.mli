@@ -26,22 +26,25 @@
 
     The PPX expands the above path to:
 
-    {[let orders = Dream_html.path "/orders" "/orders"]}
+    {[
+      let orders = Dream_html.path "/orders" "/orders"
+    ]}
 
     Ie, it just duplicates the path string to use as two separate format strings
-    with different types for parsing and printing. If you need to actually have a
-    different format string for printing (eg if you need to print the path with
-    query parameters), you can use the underlying {!Dream_html.path} function
-    directly: [path "/orders/%s" "/orders/%s?utm_src=%s&utm_campaign=%s"].
+    with different types for parsing and printing. If you need to actually have
+    a different format string for printing (eg if you need to print the path
+    with query parameters), you can use the underlying {!Dream_html.path}
+    function directly:
+    [path "/orders/%s" "/orders/%s?utm_src=%s&utm_campaign=%s"].
 
     The PPX also has the benefit that it checks that the path is well-formed at
     compile time. If you pass in an invalid path you get a compile error:
 
     {[
-    File "test/route_test.ml", line 1, characters 0-20:
-    1 | let%path bad = "foo"
-        ^^^^^^^^^^^^^^^^^^^^
-    Error: Invalid path: 'foo'. Paths must start with a '/' character
+      File "test/route_test.ml", line 1, characters 0-20:
+      1 | let%path bad = "foo"
+          ^^^^^^^^^^^^^^^^^^^^
+      Error: Invalid path: 'foo'. Paths must start with a '/' character
     ]}
 
     @since 3.9.0 *)

@@ -69,7 +69,14 @@ let () =
   ]
 ```
 
-<img width="343" alt="Screenshot 2024-12-23 at 23 55 33" src="https://github.com/user-attachments/assets/84cd1f1e-46c3-4fe1-aeb2-724542fc987c">
+<img
+  width="343"
+  alt="Browser window at the location localhost:8080/me with the page header
+    'Hello, me!' and the paragraph below with text 'This page is at: this URL.',
+    where the words 'this URL' are underlined and the browser status bar shows
+    the address 'localhost:8080/me'."
+  src="https://github.com/user-attachments/assets/84cd1f1e-46c3-4fe1-aeb2-724542fc987c"
+>
 
 Rendered HTML:
 

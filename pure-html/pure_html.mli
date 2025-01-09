@@ -37,9 +37,10 @@ val to_string : node -> string
 val to_xml : ?header:bool -> node -> string
 (** Same as [to_string] but render void tags as XML-style self-closing tags.
 
-    @param header print the XML header string if [true]. This is to allow both
-      use cases where the XML code is embedded inside HTML, and standalone XML
-      documents. Default is [false]. Since 3.6.0.
+    @param header
+      print the XML header string if [true]. This is to allow both use cases
+      where the XML code is embedded inside HTML, and standalone XML documents.
+      Default is [false]. Since 3.6.0.
 
     @since 3.3.0. *)
 
@@ -48,9 +49,10 @@ val pp : Format.formatter -> node -> unit [@@ocaml.toplevel_printer]
 val pp_xml : Format.formatter -> ?header:bool -> node -> unit
 (** Same as [pp] but render void tags as XML-style self-closing tags.
 
-    @param header print the XML header string if [true]. This is to allow both
-      use cases where the XML code is embedded inside HTML, and standalone XML
-      documents. Default is [false]. Since 3.6.0.
+    @param header
+      print the XML header string if [true]. This is to allow both use cases
+      where the XML code is embedded inside HTML, and standalone XML documents.
+      Default is [false]. Since 3.6.0.
 
     @since 3.3.0. *)
 
@@ -68,7 +70,7 @@ type std_tag = attr list -> node list -> node
 
 type void_tag = attr list -> node
 (** A 'void element':
-    {: https://developer.mozilla.org/en-US/docs/Glossary/Void_element} with no
+    {:https://developer.mozilla.org/en-US/docs/Glossary/Void_element} with no
     children. *)
 
 type 'a text_tag = attr list -> ('a, unit, string, node) format4 -> 'a
@@ -78,7 +80,9 @@ type 'a text_tag = attr list -> ('a, unit, string, node) format4 -> 'a
 val attr : string -> attr
 (** [attr name] is a new attribute which does not carry any payload. E.g.
 
-    {[let required = attr "required"]}
+    {[
+      let required = attr "required"
+    ]}
 
     @since 0.1.0. *)
 
@@ -87,25 +91,29 @@ val string_attr : string -> ?raw:bool -> _ string_attr
     formatting i.e. string interpolation of the value. Note, the [fmt] argument
     is required due to the value restriction.
 
-    @param raw (default [false]) whether to inject the raw text or to escape it.
-      Note that Dream does not support escaping inline JavaScript nor CSS, so
-      neither does dream-html:
-      {: https://github.com/aantron/dream/tree/master/example/7-template#security}. *)
+    @param raw
+      (default [false]) whether to inject the raw text or to escape it. Note
+      that Dream does not support escaping inline JavaScript nor CSS, so neither
+      does dream-html:
+      {:https://github.com/aantron/dream/tree/master/example/7-template#security}.
+*)
 
 val uri_attr : string -> _ string_attr
 (** Convenience for attributes whose values should be URIs. Takes care of both
     URI-encoding and attribute escaping, as recommended in
-    {: https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#common-mistake}.
+    {:https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#common-mistake}.
 
     Examples
 
-    {[a [href "/blog?tags=iamsafe\"></a><script>alert('Pwned')</script>"] [txt "Tags: tag1 | tag2"]
+    {[
+      a [href "/blog?tags=iamsafe\"></a><script>alert('Pwned')</script>"] [txt "Tags: tag1 | tag2"]
       ==>
       <a href="/blog?tags=iamsafe%22%3E%3C/a%3E%3Cscript%3Ealert('Pwned')%3C/script%3E">Tags: tag1 | tag2</a>
 
       a [href "/foo?a=1&b=2 3&c=4<5&d=6>5"] [txt "Test"]
       ==>
-      <a href="/foo?a=1&amp;b=2%203&amp;c=4%3C5&amp;d=6%3E5">Test</a>]} *)
+      <a href="/foo?a=1&amp;b=2%203&amp;c=4%3C5&amp;d=6%3E5">Test</a>
+    ]} *)
 
 val bool_attr : string -> bool to_attr
 val float_attr : string -> float to_attr
@@ -116,13 +124,15 @@ val void_tag : string -> void_tag
 val text_tag : string -> ?raw:bool -> _ text_tag
 (** Build a tag which can contain only text.
 
-    @param raw (default [false]) whether to inject the raw text or to escape it.
-      Note that Dream does not support escaping inline JavaScript nor CSS, so
-      neither does dream-html:
-      {: https://github.com/aantron/dream/tree/master/example/7-template#security}. *)
+    @param raw
+      (default [false]) whether to inject the raw text or to escape it. Note
+      that Dream does not support escaping inline JavaScript nor CSS, so neither
+      does dream-html:
+      {:https://github.com/aantron/dream/tree/master/example/7-template#security}.
+*)
 
 val uri_tag : string -> _ text_tag
-(** Build a tag which can contain only a URI. The URI is scaped with the same
+(** Build a tag which can contain only a URI. The URI is escaped with the same
     rules as a [uri_attr].
 
     @since 3.10.0 *)
@@ -131,54 +141,66 @@ val txt : ?raw:bool -> ('a, unit, string, node) format4 -> 'a
 (** A text node inside the DOM e.g. the 'hi' in [<b>hi</b>]. Allows string
     interpolation using the same formatting features as [Printf.sprintf]:
 
-    {[b [] [txt "Hello, %s!" name]]}
+    {[
+      b [] [txt "Hello, %s!" name]
+    ]}
 
     Or without interpolation:
 
-    {[b [] [txt "Bold of you."]]}
+    {[
+      b [] [txt "Bold of you."]
+    ]}
 
-    HTML-escapes the text value. You can use the [~raw] param to bypass escaping:
+    HTML-escapes the text value. You can use the [~raw] param to bypass
+    escaping:
 
-    {[let user_input = "<script>alert('I like HTML injection')</script>" in
-      txt ~raw:true "%s" user_input]} *)
+    {[
+      let user_input = "<script>alert('I like HTML injection')</script>" in
+      txt ~raw:true "%s" user_input
+    ]} *)
 
 val comment : string -> node
-(** A comment that will be embedded in the rendered HTML, i.e. [<!-- comment -->].
-    The text is HTML-escaped. *)
+(** A comment that will be embedded in the rendered HTML, i.e.
+    [<!-- comment -->]. The text is HTML-escaped. *)
 
 (** {2 Accessors for tags} *)
 
 val ( +@ ) : node -> attr -> node
 (** Add an attribute to a tag.
 
-    {[let toast msg = p [id "toast"] [txt "%s" msg]
-      let toast_oob = toast "ok." +@ Hx.swap_oob "true"]}
+    {[
+      let toast msg = p [id "toast"] [txt "%s" msg]
+      let toast_oob = toast "ok." +@ Hx.swap_oob "true"
+    ]}
 
-    @raise Invalid_argument if the node is not a tag (i.e. if it is a text or
-      comment node).
+    @raise Invalid_argument
+      if the node is not a tag (i.e. if it is a text or comment node).
     @since 0.0.3. *)
 
 val ( -@ ) : node -> string -> node
 (** Remove an attribute from a tag.
 
-    @raise Invalid_argument if the node is not a tag (i.e. if it is a text or
-      comment node).
+    @raise Invalid_argument
+      if the node is not a tag (i.e. if it is a text or comment node).
     @since 0.0.3. *)
 
 val ( .@[] ) : node -> string -> string
 (** Get the value of an existing attribute.
 
-    {[let toast = p [id "toast"] [txt "OK."]
-      let toast_id = toast.@["id"]]}
+    {[
+      let toast = p [id "toast"] [txt "OK."]
+      let toast_id = toast.@["id"]
+    ]}
 
-    @raise Invalid_argument if the node is not a tag (i.e. if it is a text or
-      comment node).
+    @raise Invalid_argument
+      if the node is not a tag (i.e. if it is a text or comment node).
     @raise Not_found if the tag does not have the given attribute.
     @since 0.0.3. *)
 
 val is_null : node -> bool
 (** Get whether a node is null (empty) or not. Useful for conditional rendering
-    of UIs when you are passed in a node and you don't know if it's empty or not.
+    of UIs when you are passed in a node and you don't know if it's empty or
+    not.
 
     @since 1.2.0. *)
 
@@ -189,43 +211,53 @@ val is_null_ : attr -> bool
 
 (** {2 HTML} *)
 
-(** All standard HTML attributes and tags. Some attributes and tags have the same
-    name, e.g. [style]. To disambiguate them, attributes have a [_] (underscore)
-    suffix. *)
+(** All standard HTML attributes and tags. Some attributes and tags have the
+    same name, e.g. [style]. To disambiguate them, attributes have a [_]
+    (underscore) suffix. *)
 module HTML : sig
   (** {3 Attributes}
 
-    Standard, most non-deprecated attributes from
-    {: https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}. Where an
-    attribute name conflicts with an OCaml keyword, the name is suffixed with [_].
-    Most attributes are constructed by passing in a value of some type.
+      Standard, most non-deprecated attributes from
+      {:https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes}. Where an
+      attribute name conflicts with an OCaml keyword, the name is suffixed with
+      [_]. Most attributes are constructed by passing in a value of some type.
 
-    All string-valued attributes allow formatting (interpolation):
+      All string-valued attributes allow formatting (interpolation):
 
-    {[div [id "section-%d" section_id] []]}
+      {[
+        div [id "section-%d" section_id] []
+      ]}
 
-    Or plain strings:
+      Or plain strings:
 
-    {[p [id "toast"] []]}
+      {[
+        p [id "toast"] []
+      ]}
 
-    Most boolean attributes are plain values and don't need to be constructed
-    with function calls:
+      Most boolean attributes are plain values and don't need to be constructed
+      with function calls:
 
-    {[input [required]]}
+      {[
+        input [required]
+      ]}
 
-    However, boolean attributes which may be inherited and toggled on/off in
-    children, are constructed by passing in a value:
+      However, boolean attributes which may be inherited and toggled on/off in
+      children, are constructed by passing in a value:
 
-    {[div [contenteditable true] [
-        p [] [txt "Edit me!"];
-        p [contenteditable false] [txt "Can't edit me!"];
-      ]]}
+      {[
+        div
+          [contenteditable true]
+          [ p [] [txt "Edit me!"];
+            p [contenteditable false] [txt "Can't edit me!"] ]
+      ]}
 
-    Enumerated attributes accept specific values:
+      Enumerated attributes accept specific values:
 
-    {[input [inputmode `tel]]}
+      {[
+        input [inputmode `tel]
+      ]}
 
-    @since 1.0.0. *)
+      @since 1.0.0. *)
 
   type enctype =
     [ `urlencoded
@@ -238,10 +270,15 @@ module HTML : sig
     | `dialog  (** @since 2.1.0 *) ]
 
   val null_ : attr
-  (** An attribute that will not be rendered in the markup. Useful for conditional
-      logic where you sometimes want to render an attribute and sometimes not.
+  (** An attribute that will not be rendered in the markup. Useful for
+      conditional logic where you sometimes want to render an attribute and
+      sometimes not.
 
-      {[p [if should_show then null_ else style_ "display:none"] [txt "Show and tell"]]} *)
+      {[
+        p
+          [(if should_show then null_ else style_ "display:none")]
+          [txt "Show and tell"]
+      ]} *)
 
   val accept : _ string_attr
   val accept_charset : _ string_attr
@@ -396,7 +433,8 @@ module HTML : sig
   val list : _ string_attr
 
   val loading_lazy : attr
-  (** See {: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#loading}.
+  (** See
+      {:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#loading}.
       [loading=eager] is the default so no need for specifically that value.
 
       @since 3.1.0. *)
@@ -538,7 +576,9 @@ module HTML : sig
   val shape : _ string_attr
 
   val size : _ string_attr
-  (** Required for {: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select#size}. *)
+  (** Required for
+      {:https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select#size}.
+  *)
 
   val sizes : _ string_attr
   val slot_ : _ string_attr
@@ -560,8 +600,8 @@ module HTML : sig
   val translate : [< `yes | `no] to_attr
 
   val type_ : _ string_attr
-  (** Note: this can't be restricted to just the allowed values for [<input type>],
-      because it's used in other elements e.g. [<link type>]. *)
+  (** Note: this can't be restricted to just the allowed values for
+      [<input type>], because it's used in other elements e.g. [<link type>]. *)
 
   val usemap : _ string_attr
   val value : _ string_attr
@@ -573,20 +613,22 @@ module HTML : sig
       HTML tags. Most (standard tags) are constructed by passing a list of
       attributes and a list of children:
 
-      {[div [id "my-div"] [p [] [txt "Hello"]]]}
+      {[
+        div [id "my-div"] [p [] [txt "Hello"]]
+      ]}
 
       Some (void elements) are constructed only with a list of attributes:
 
-      {[input [required; type_ "email"; name "email-addr"]]}
+      {[
+        input [required; type_ "email"; name "email-addr"]
+      ]}
 
       Finally, a few (text elements) are constructed with a list of attributes
       and a single format string child:
 
-      {[title [] "Document title"
-
-        title [] "My App ・ %s" page_name
-
-        script [] {|alert('Careful, this is not escaped :-)');|}
+      {[
+        title [] "Document title" title [] "My App ・ %s" page_name script []
+          {|alert('Careful, this is not escaped :-)');|}
       ]} *)
 
   val null : node list -> node
@@ -756,7 +798,8 @@ module MathML : sig
   val dir : [`ltr | `rtl] to_attr
 
   val display_block : attr
-  (** See {: https://developer.mozilla.org/en-US/docs/Web/MathML/Element/math#display}.
+  (** See
+      {:https://developer.mozilla.org/en-US/docs/Web/MathML/Element/math#display}.
       [display=inline] is the default, so there is no need to bind its value. *)
 
   val displaystyle : bool to_attr
@@ -809,7 +852,7 @@ end
 
 (** {2 ARIA} *)
 
-(** {: https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/}
+(** {:https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/}
 
     @since 3.0.0. *)
 module Aria : sig
@@ -842,9 +885,11 @@ module Aria : sig
 
   val live : [`assertive | `off | `polite] to_attr
   (** ⚠️ Screen readers want a live region to be defined statically from page
-      load on a visible element, eg [p [id "toast"; Aria.live `polite] []].  The
+      load on a visible element, eg [p [id "toast"; Aria.live `polite] []]. The
       element must {i not} be hidden initially, otherwise the screen reader will
-      continue to ignore it even when its content is changed. *)
+      continue to ignore it even when its content is changed.
+
+      [`off] since 3.10.0 *)
 
   val modal : attr
   val multiline : attr
@@ -879,7 +924,7 @@ module Atom : sig
   val link : std_tag
 end
 
-(** {{: https://www.rssboard.org/rss-specification}RSS} support
+(** {{:https://www.rssboard.org/rss-specification}RSS} support
 
     @since 3.10.0 *)
 module RSS : sig
@@ -913,25 +958,25 @@ end
 
 (** {2 htmx} *)
 
-(** {{: https://htmx.org/reference/}htmx} support
+(** {{:https://htmx.org/reference/}htmx} support
 
     The attributes in this module are arranged in the same order as on the
     reference page linked above.
 
     Remember that you will also need the htmx script itself. The recommended way
-    to get it is to {{: https://htmx.org/docs/#download-a-copy}download a copy}
+    to get it is to {{:https://htmx.org/docs/#download-a-copy}download a copy}
     and place it in your static assets directory, managed by
-    {{: https://yawaramin.github.io/dream-html/dream-html/Dream_html/#dreamwork}dreamwork}
+    {{:https://yawaramin.github.io/dream-html/dream-html/Dream_html/#dreamwork}dreamwork}
     so that it is properly cached and version-hashed by its contents. *)
 module Hx : sig
-  (** {3 Core attributes } *)
+  (** {3 Core attributes} *)
 
   val get : _ string_attr
   val post : _ string_attr
 
   val on_ : event:string -> _ string_attr
   (** The [hx-on:*] set of attributes, where [*] represents DOM events:
-      {: https://htmx.org/attributes/hx-on/}.
+      {:https://htmx.org/attributes/hx-on/}.
 
       Note that the value of this attribute is not escaped.
 
@@ -964,7 +1009,7 @@ module Hx : sig
 
   val vals : _ string_attr
 
-  (** {3 Additional attributes } *)
+  (** {3 Additional attributes} *)
 
   val boost : bool to_attr
   val confirm : _ string_attr
@@ -1008,7 +1053,7 @@ module Hx : sig
   (** {3 Extensions} *)
 
   val preload : attr
-  (** The preload extension: {: https://htmx.org/extensions/preload/} *)
+  (** The preload extension: {:https://htmx.org/extensions/preload/} *)
 
   val sse_close : _ string_attr
   (** @since 3.6.0. *)

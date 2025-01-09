@@ -104,9 +104,9 @@ module Form : sig
     'b t
   (** [ensure message condition field ty name] is a form field which imposes an
       additional [condition] on top of the existing [field]. If the condition
-      fails, the result is an error [message]. It is suggested that the [message]
-      be a translation key so that the application can be localized to different
-      languages. *)
+      fails, the result is an error [message]. It is suggested that the
+      [message] be a translation key so that the application can be localized to
+      different languages. *)
 
   (** {2 Form decoders} *)
 
@@ -115,16 +115,16 @@ module Form : sig
       allows accessing it in the subsequent decoders. Eg:
 
       {[
-      let* start_date = required unix_tm "start-date" in
-      let+ end_date = required (unix_tm ~min:start_date) "end-date" in
-      ...
+        let* start_date = required unix_tm "start-date" in
+        let+ end_date = required (unix_tm ~min:start_date) "end-date" in
+        ...
       ]}
 
-      However, note that [let*] uses a 'fail-fast' decoding strategy. If there is
-      a decoding error, it immediately returns the error without decoding the
-      subsequent fields. (Which makes sense if you think about the example above.)
-      So, in order to ensure complete error reporting for all fields, you would
-      need to use [let+] and [and+].
+      However, note that [let*] uses a 'fail-fast' decoding strategy. If there
+      is a decoding error, it immediately returns the error without decoding the
+      subsequent fields. (Which makes sense if you think about the example
+      above.) So, in order to ensure complete error reporting for all fields,
+      you would need to use [let+] and [and+].
 
       @since 3.8.0 *)
 
@@ -134,7 +134,8 @@ module Form : sig
 
   val ( and+ ) : 'a t -> 'b t -> ('a * 'b) t
   (** [and+ password = required string "password"] continues decoding in an
-      existing form declaration and decodes a form field [password] as a [string]. *)
+      existing form declaration and decodes a form field [password] as a
+      [string]. *)
 
   val ( or ) : 'a t -> 'a t -> 'a t
   (** [form1 or form2] is [form1] if it succeeds, else [form2]. *)
@@ -198,24 +199,30 @@ module Form : sig
       {3 Basic functionality}
 
       {[
-      type user = { name : string; age : int option }
+        type user =
+          { name : string;
+            age : int option
+          }
 
-      open Dream_html.Form
+        open Dream_html.Form
 
-      let user_form =
-        let+ name = required string "name"
-        and+ age = optional (int ~min:16) "age" in (* Thanks, Australia! *)
-        { name; age }
+        let user_form =
+          let+ name = required string "name"
+          and+ age = optional (int ~min:16) "age" in
+          (* Thanks, Australia! *)
+          { name; age }
 
-      let dream_form = ["age", "42"; "name", "Bob"]
-      let user_result = validate user_form dream_form
+        let dream_form = ["age", "42"; "name", "Bob"]
+        let user_result = validate user_form dream_form
       ]}
 
       Result: [Ok { name = "Bob"; age = Some 42 }]
 
       Sad path:
 
-      {[validate user_form ["age", "none"]]}
+      {[
+        validate user_form ["age", "none"]
+      ]}
 
       Result:
       [Error [("age", "error.expected.int"); ("name", "error.required")]]
@@ -223,19 +230,22 @@ module Form : sig
       {3 Repeated values}
 
       {[
-      type plan = { id : string; features : string list }
+        type plan =
+          { id : string;
+            features : string list
+          }
 
-      let plan_form =
-        let+ id = required string "id"
-        and+ features = list string "features" in
-        { id; features }
-
-      validate plan_form ["id", "foo"]
+        let plan_form =
+          let+ id = required string "id"
+          and+ features = list string "features" in
+          { id; features } validate plan_form ["id", "foo"]
       ]}
 
       Result: [Ok {id = "foo"; features = []}]
 
-      {[validate plan_form ["id", "foo"; "features", "f1"; "features", "f2"]]}
+      {[
+        validate plan_form ["id", "foo"; "features", "f1"; "features", "f2"]
+      ]}
 
       Result: [Ok {id = "foo"; features = ["f1"; "f2"]}]
 
@@ -244,12 +254,11 @@ module Form : sig
       {3 Constrained field values}
 
       {[
-      let plan_form =
-        let+ id = ensure "error.expected.nonempty" (( <> ) "") required string "id"
-        and+ features = list string "features" in
-        { id; features }
-
-      validate plan_form ["id", ""]
+        let plan_form =
+          let+ id =
+            ensure "error.expected.nonempty" (( <> ) "") required string "id"
+          and+ features = list string "features" in
+          { id; features } validate plan_form ["id", ""]
       ]}
 
       Result: [Error [("id", "error.expected.nonempty")]]
@@ -259,101 +268,110 @@ module Form : sig
       Using chained validation rules where some fields depend on others:
 
       {[
-      type req = {
-        id : string;
-        years : int option;
-        months : int option;
-        weeks : int option;
-        days : int option;
-      }
+        type req =
+          { id : string;
+            years : int option;
+            months : int option;
+            weeks : int option;
+            days : int option
+          }
 
-      let req_form =
-        let+ id = required string "id" (* Both id... *)
-        and+ days, weeks, months, years = (* ...and period are required *)
-          let* days = optional int "days" in
-          let* weeks = optional int "weeks" in
-          let* months = optional int "months" in
-          let* years = optional int "years" in
-          match days, weeks, months, years with
-          | None, None, None, None -> error "years" "Please enter a period"
-          (* Only one period component is required *)
-          | _ -> ok (days, weeks, months, years)
-        in
-        { id; days; weeks; months; years }
-
-      validate req []
+        let req_form =
+          let+ id = required string "id" (* Both id... *)
+          and+ days, weeks, months, years =
+            (* ...and period are required *)
+            let* days = optional int "days" in
+            let* weeks = optional int "weeks" in
+            let* months = optional int "months" in
+            let* years = optional int "years" in
+            match days, weeks, months, years with
+            | None, None, None, None -> error "years" "Please enter a period"
+            (* Only one period component is required *)
+            | _ -> ok (days, weeks, months, years)
+          in
+          { id; days; weeks; months; years } validate req []
       ]}
 
-      Result: [Error [("years", "Please enter a period"); ("id", "error.required")]]
+      Result:
+      [Error [("years", "Please enter a period"); ("id", "error.required")]]
 
       {3:decode_multiple Multiple structured values}
 
       Suppose you have the following form data submitted:
 
       {[
-      item-count: 2
-      item[0].id: abc
-      item[0].qty: 1
-      item[1].id: def
-      item[1].qty: 10
-      item[1].discount: 25
+        item-count: 2
+        item[0].id: abc
+        item[0].qty: 1
+        item[1].id: def
+        item[1].qty: 10
+        item[1].discount: 25
       ]}
 
       And you want to decode it into the following types:
 
       {[
-      type item = { id : string; qty : int; discount : int }
-      type invoice = { item_count : int; items : item list }
+        type item =
+          { id : string;
+            qty : int;
+            discount : int
+          }
+
+        type invoice =
+          { item_count : int;
+            items : item list
+          }
       ]}
 
       First create the indexed invoice item decoder and invoice decoder:
 
       {[
-      let item n =
-        let nth name = "item[" ^ string_of_int n ^ "]." ^ name in
-        let+ id = required string (nth "id")
-        and+ qty = required int (nth "qty")
-        and+ discount = required ~default:0 int (nth "discount") in
-        { id; qty; discount }
+        let item n =
+          let nth name = "item[" ^ string_of_int n ^ "]." ^ name in
+          let+ id = required string (nth "id")
+          and+ qty = required int (nth "qty")
+          and+ discount = required ~default:0 int (nth "discount") in
+          { id; qty; discount }
 
-      let invoice =
-        let* item_count = required int "item-count" in
-        let+ items = multiple item_count item in
-        { item_count; items }
+        let invoice =
+          let* item_count = required int "item-count" in
+          let+ items = multiple item_count item in
+          { item_count; items }
       ]}
 
       Try it:
 
       {[
-      validate invoice [
-        "item[0].id", "abc"; "item[0].qty", "1";
-        "item[1].id", "def"; "item[1].qty", "10"; "item[1].discount", "25";
-        "item-count", "2";
-      ]
+        validate invoice
+          [ "item[0].id", "abc";
+            "item[0].qty", "1";
+            "item[1].id", "def";
+            "item[1].qty", "10";
+            "item[1].discount", "25";
+            "item-count", "2" ]
       ]}
 
       Result:
 
       {[
-      Ok {
-        item_count = 2;
-        items = [
-          {id = "def"; qty = 10; discount = 25};
-          {id = "abc"; qty = 1; discount = 0};
-        ];
-      }
+        Ok
+          { item_count = 2;
+            items =
+              [ { id = "def"; qty = 10; discount = 25 };
+                { id = "abc"; qty = 1; discount = 0 } ]
+          }
       ]}
 
       Validation error:
 
       {[
-      validate invoice [
-        "item[0].qty", "1";
-        "item[1].id", "def"; "item[1].discount", "25";
-        "item-count", "2";
-      ]
-
-      Error [item[0].id, error.required; item[1].qty, error.required]
+        validate invoice
+          [ "item[0].qty", "1";
+            "item[1].id", "def";
+            "item[1].discount", "25";
+            "item-count", "2" ]
+          Error
+          [item [0].id, error.required; item [1].qty, error.required]
       ]} *)
 end
 
@@ -366,19 +384,19 @@ val form :
     result:
 
     {[
-    type new_user = { name : string; email : string }
-    let new_user =
-      let open Dream_html.Form in
-      let+ name = required string "name"
-      and+ email = required string "email" in
-      { name; email }
+      type new_user = { name : string; email : string }
+      let new_user =
+        let open Dream_html.Form in
+        let+ name = required string "name"
+        and+ email = required string "email" in
+        { name; email }
 
-    (* POST /users *)
-    let post_users req =
-      match%lwt Dream_html.form new_user req with
-      | `Ok { name; email } -> (* ... *)
-      | `Invalid errors -> Dream.json ~code:422 ( (* ...render errors... *) )
-      | _ -> Dream.empty `Bad_Request
+      (* POST /users *)
+      let post_users req =
+        match%lwt Dream_html.form new_user req with
+        | `Ok { name; email } -> (* ... *)
+        | `Invalid errors -> Dream.json ~code:422 ( (* ...render errors... *) )
+        | _ -> Dream.empty `Bad_Request
     ]}
 
     @since 3.8.0 *)
@@ -414,8 +432,8 @@ val send :
     @since 3.2.0. *)
 
 val set_body : Dream.response -> node -> unit
-(** Type-safe wrapper for [Dream.set_body]. Sets the body to the given [node] and
-    sets the [Content-Type] header to [text/html]. *)
+(** Type-safe wrapper for [Dream.set_body]. Sets the body to the given [node]
+    and sets the [Content-Type] header to [text/html]. *)
 
 val write : Dream.stream -> node -> unit Dream.promise
 (** Type-safe wrapper for [Dream.write]. *)
@@ -425,11 +443,9 @@ val csrf_tag : Dream.request -> node
     equivalent of [Dream.csrf_tag].
 
     {[
-    form [action "/foo"] [
-      csrf_tag req;
-      input [name "bar"];
-      input [type_ "submit"];
-    ]
+      form
+        [action "/foo"]
+        [csrf_tag req; input [name "bar"]; input [type_ "submit"]]
     ]} *)
 
 (** {2 Type-safe routing}
@@ -439,7 +455,8 @@ val csrf_tag : Dream.request -> node
     Dream routes. *)
 
 type (_, _) path
-(** A path that can be used for routing and can also be printed as an attribute value.
+(** A path that can be used for routing and can also be printed as an attribute
+    value.
 
     @since 3.9.0 *)
 
@@ -462,18 +479,19 @@ val path :
 
     Refer to {{!Ppx} the PPX documentation} for instructions on using it.
 
-    ⚠️ Due to the way Dream's router works, all parameter captures happens
-    between [/] characters and the end of the path (or the [?] character,
-    whichever comes first). Eg, [/foo/%s/bar/%d] is valid, but [/foo/%s.%s] (note
-    the dot character) is not a valid capture.
+    ⚠️ Due to the way Dream's router works, all parameter captures happen between
+    [/] characters and the end of the path (or the [?] character, whichever
+    comes first). Eg, [/foo/%s/bar/%d] is valid, but [/foo/%s.%s] (note the dot
+    character) is not a valid capture.
 
-    ⚠️ If a route is matched but the data type does not match, a [400 Bad Request]
-    response will be returned. The following type conversion specs are supported:
+    ⚠️ If a route is matched but the data type does not match, a
+    [400 Bad Request] response will be returned. The following type conversion
+    specs are supported:
 
     [%s] capture a [string] and pass it to the handler
 
-    [%*s] capture the rest of the path and pass the captured length and string to
-    the handler
+    [%*s] capture the rest of the path and pass the captured length and string
+    to the handler
 
     [%c] capture a [char]
 
@@ -496,22 +514,22 @@ val path :
     ⚠️ We are actually using Dream's built-in router, not our own, and Dream's
     router doesn't distinguish between parameter types. So, to Dream both [/%s]
     and [/%d] are the same path. It will route the request to whichever happens
-    to be first in the route list, and that one will succeed or fail depending on
-    its type and the request target.
+    to be first in the route list, and that one will succeed or fail depending
+    on its type and the request target.
 
     @since 3.9.0 *)
 
 val path_attr : 'p string_attr -> (_, 'p) path -> 'p
-(** [path_attr attr path] is an HTML attribute with the path parameters filled in
-    from the given values. Eg,
+(** [path_attr attr path] is an HTML attribute with the path parameters filled
+    in from the given values. Eg,
 
     {[
-    let%path order = "/orders/%s"
+      let%path order = "/orders/%s"
 
-    open Dream_html
-    open HTML
+      open Dream_html
+      open HTML
 
-    a [path_attr href order "yzxyzc"] [txt "My Order"]
+      a [path_attr href order "yzxyzc"] [txt "My Order"]
     ]}
 
     Renders: [<a href="/orders/yzxyzc">My Order</a>]
@@ -532,13 +550,13 @@ val get : (_, _) route
 (** Type-safe wrappers for [Dream.get] and so on. Using the PPX, eg:
 
     {[
-    let%path order = "/orders/%s"
+      let%path order = "/orders/%s"
 
-    let get_order = get order (fun request order_id ->
-      ...
-      a [path_attr href order order_id] [txt "Your order"]
-      ...
-    )
+      let get_order = get order (fun request order_id ->
+        ...
+        a [path_attr href order order_id] [txt "Your order"]
+        ...
+      )
     ]}
 
     @since 3.9.0 *)
@@ -571,8 +589,8 @@ val any : (_, _) route
 (** @since 3.9.0 *)
 
 val use : Dream.middleware list -> Dream.route list -> Dream.route
-(** [use middlewares routes] is a route that is composed of all the given [routes]
-    with the [middlewares] attached to them.
+(** [use middlewares routes] is a route that is composed of all the given
+    [routes] with the [middlewares] attached to them.
 
     @since 3.9.0 *)
 
@@ -604,33 +622,27 @@ val static_asset : (Dream.response Dream.promise, _) path -> Dream.route
     subdirectory. Suppose you have the following directory tree:
 
     {[
-    static/
-      dune
-      assets/
-        css/
-          app.css
-        js/
-          app.js
+      static / dune assets / css / app.css js / app.js
     ]}
 
     The [dune] file defines a [library] component that will make the following
     module available:
 
     {[
-    module Static : sig
-      val routes : Dream.route
-      (** This route will serve all of the following paths. *)
+      module Static : sig
+        val routes : Dream.route
+        (** This route will serve all of the following paths. *)
 
-      module Assets : sig
-        module Css : sig
-          val app_css : (Dream.response Dream.promise, attr) path
-        end
+        module Assets : sig
+          module Css : sig
+            val app_css : (Dream.response Dream.promise, attr) path
+          end
 
-        module Js : sig
-          val app_js : (Dream.response Dream.promise, attr) path
+          module Js : sig
+            val app_js : (Dream.response Dream.promise, attr) path
+          end
         end
       end
-    end
     ]}
 
     So, you can just stick [Static.routes] in your router and it will correctly
@@ -641,21 +653,21 @@ val static_asset : (Dream.response Dream.promise, _) path -> Dream.route
     cache-busting purposes:
 
     {[
-    link [rel "stylesheet"; path_attr href Static.Assets.Css.app_css
-    (*
-    <link
-      rel="stylesheet"
-      href="/static/assets/css/app.css?rev=17fb8161afc85df86156ea1f3744c8a2"
-    >
-    *)
+      link [rel "stylesheet"; path_attr href Static.Assets.Css.app_css
+      (*
+      <link
+        rel="stylesheet"
+        href="/static/assets/css/app.css?rev=17fb8161afc85df86156ea1f3744c8a2"
+      >
+      *)
     ]}
 
     {[
-    script [path_attr src Static.Assets.Js.app_js] ""
-    (*
-    <script src="/static/assets/js/app.js?rev=677645e5ac37d683c5039a85c41c339f">
-    </script>
-    *)
+      script [path_attr src Static.Assets.Js.app_js] ""
+      (*
+      <script src="/static/assets/js/app.js?rev=677645e5ac37d683c5039a85c41c339f">
+      </script>
+      *)
     ]}
 
     You control the directory subtree under [assets]; the [dreamwork] CLI just
@@ -666,7 +678,7 @@ val static_asset : (Dream.response Dream.promise, _) path -> Dream.route
     creates [static/], [assets/], and [dune]. In the [dune] file it defines a
     code generation rule which uses the [dreamwork static] command to generate
     the OCaml code.
-    
+
     So, you just need to run [dreamwork setup] to initialize the directory
     structure and code generation. After that, you can add and remove any files
     inside [assets/] as you want and on the next dune build the [Static] module
@@ -693,19 +705,18 @@ module Livereload : sig
   (** (1) Put this in your top-level router:
 
       {[
-      let () =
-        Dream.run
-        @@ Dream.logger
-        @@ Dream.router [
-          Dream_html.Livereload.route;
-          (* ...other routes... *)
-        ]
+        let () =
+          Dream.run
+          @@ Dream.logger
+          @@ Dream.router [Dream_html.Livereload.route (* ...other routes... *)]
       ]} *)
 
   val script : node
   (** (2) Put this inside your [head]:
 
-      {[head [] [Livereload.script (* ... *)]]} *)
+      {[
+        head [] [Livereload.script (* ... *)]
+      ]} *)
 
   (** (3) And run the server with environment variable [LIVERELOAD=1].
 
