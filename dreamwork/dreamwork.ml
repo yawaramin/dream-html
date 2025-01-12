@@ -113,10 +113,10 @@ let already_setup =
   "⚠️ dreamwork integration is already set up. You can access static assets in code now."
 
 let setup_msg =
-  "✅ dreamwork integration is set up now. After building your project with 'dune
-build', you will be able to access static file paths and the static files router
-from your project code. Remember to first add the 'static' library as a
-dependency in your own dune component."
+  "✅ dreamwork integration is set  up  now.  After building your project with 'dune
+   build',  you  will  be  able  to access static file paths and the static files
+   router from your project code. Remember to first add the 'static' library as a
+   dependency in your own dune component."
 
 let dune_content =
   "; Remember to add 'static' as a dependency to your dune component's

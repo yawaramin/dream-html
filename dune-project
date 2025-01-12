@@ -45,4 +45,4 @@
   (pure-html
    (= :version))
   (dream
-   (>= 1.0.0~alpha7))))
+   (>= 1.0.0~alpha8))))

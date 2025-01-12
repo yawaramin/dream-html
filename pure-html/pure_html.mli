@@ -416,6 +416,10 @@ module HTML : sig
     to_attr
 
   val id : _ string_attr
+
+  val inert : attr
+  (** @since 3.10.0 *)
+
   val integrity : _ string_attr
 
   val inputmode :
@@ -464,6 +468,18 @@ module HTML : sig
   val ping : _ string_attr
   val placeholder : _ string_attr
   val playsinline : attr
+
+  val popover : [< `auto | `manual] to_attr
+  (** @since 3.10.0 *)
+
+  val popovertarget : _ string_attr
+  (** @since 3.10.0 *)
+
+  val popovertargetaction : [< `hide | `show] to_attr
+  (** [toggle] is the default.
+
+      @since 3.10.0 *)
+
   val poster : _ string_attr
   val preload : [< `none | `metadata | `auto] to_attr
   val readonly : attr
@@ -632,18 +648,22 @@ module HTML : sig
       ]} *)
 
   val null : node list -> node
-  (** A tag that will not be rendered in the markup. Useful for containing a bunch
-      of child nodes inside a single node without having to litter the DOM with an
-      actual node. Also may be called 'splicing'.
+  (** A tag that will not be rendered in the markup. Useful for containing a
+      bunch of child nodes inside a single node without having to litter the DOM
+      with an actual node. Also may be called 'splicing'.
 
-      {[null [
-          p [] [txt "This paragraph."];
-          p [] [txt "And this paragraph."];
-          p [] [txt "Are spliced directly into the document without a containing node."];
-        ]]}
+      {[
+        null
+          [ p [] [txt "This paragraph."];
+            p [] [txt "And this paragraph."];
+            p []
+              [ txt
+                  "Are spliced directly into the document without a containing node."
+              ] ]
+      ]}
 
       Also useful for constructing a completely empty node that is erased when
-      printing: {[null []]} *)
+      printing: [null []]. *)
 
   val a : std_tag
   val address : std_tag
@@ -735,8 +755,15 @@ module HTML : sig
   val script : _ text_tag
   (** Note that the content of this tag is not escaped. *)
 
+  val search : std_tag
+  (** @since 3.10.0 *)
+
   val section : std_tag
   val select : std_tag
+
+  val selectedoption : std_tag
+  (** @since 3.10.0 *)
+
   val slot : std_tag
   val small : std_tag
   val source : void_tag

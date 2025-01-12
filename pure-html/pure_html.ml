@@ -434,6 +434,7 @@ module HTML = struct
       | `refresh -> "refresh" )
 
   let id fmt = string_attr "id" fmt
+  let inert = attr "inert"
   let integrity fmt = string_attr "integrity" fmt
 
   let inputmode value =
@@ -484,6 +485,21 @@ module HTML = struct
   let ping fmt = string_attr "ping" fmt
   let placeholder fmt = string_attr "placeholder" fmt
   let playsinline = attr "playsinline"
+
+  let popover value =
+    ( "popover",
+      match value with
+      | `auto -> "auto"
+      | `manual -> "manual" )
+
+  let popovertarget fmt = string_attr "popovertarget" fmt
+
+  let popovertargetaction value =
+    ( "popovertargetaction",
+      match value with
+      | `hide -> "hide"
+      | `show -> "show" )
+
   let poster fmt = uri_attr "poster" fmt
 
   let preload value =
@@ -713,8 +729,10 @@ module HTML = struct
   let s = std_tag "s"
   let samp = std_tag "samp"
   let script attrs fmt = text_tag "script" ~raw:true attrs fmt
+  let search = std_tag "search"
   let section = std_tag "section"
   let select = std_tag "select"
+  let selectedoption = std_tag "selectedoption"
   let slot = std_tag "slot"
   let small = std_tag "small"
   let source = void_tag "source"
