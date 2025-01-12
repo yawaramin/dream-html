@@ -958,6 +958,13 @@ module RSS : sig
   (** {3 Attributes} *)
 
   val domain : _ string_attr
+  val length : int to_attr
+  val path : _ string_attr
+  val port : int to_attr
+  val protocol : _ string_attr
+  val register_procedure : _ string_attr
+  val type_ : _ string_attr
+  val url_ : _ string_attr
   val version_2 : attr
 
   (** {3 Tags} *)
@@ -965,12 +972,16 @@ module RSS : sig
   val author : _ text_tag
   val channel : std_tag
   val category : _ text_tag
+  val cloud : void_tag
   val comments : _ text_tag
   val copyright : _ text_tag
   val description : _ text_tag
   val docs : _ text_tag
+  val enclosure : std_tag
   val generator : _ text_tag
   val guid : _ text_tag
+  val height : _ text_tag
+  val image : std_tag
   val item : std_tag
   val language : _ text_tag
   val last_build_date : _ text_tag
@@ -980,7 +991,9 @@ module RSS : sig
   val rss : std_tag
   val title : _ text_tag
   val ttl : _ text_tag
+  val url : _ text_tag
   val web_master : _ text_tag
+  val width : _ text_tag
 end
 
 (** {2 htmx} *)

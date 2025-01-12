@@ -930,17 +930,33 @@ module Atom = struct
 end
 
 module RSS = struct
+  (* Attributes *)
+
   let domain fmt = uri_attr "domain" fmt
+  let length v = int_attr "length" v
+  let path fmt = uri_attr "path" fmt
+  let port v = int_attr "name" v
+  let protocol fmt = string_attr "protocol" fmt
+  let register_procedure fmt = string_attr "registerProcedure" fmt
+  let type_ = HTML.type_
+  let url_ fmt = uri_attr "url" fmt
   let version_2 = "version", "2.0"
+
+  (* Tags *)
+
   let author attrs fmt = text_tag "author" attrs fmt
   let channel = std_tag "channel"
   let category attrs fmt = text_tag "category" attrs fmt
+  let cloud attrs = void_tag "cloud" attrs
   let comments attrs fmt = uri_tag "comments" attrs fmt
   let copyright attrs fmt = text_tag "copyright" attrs fmt
   let description attrs fmt = text_tag "description" attrs fmt
   let docs attrs fmt = text_tag "docs" attrs fmt
+  let enclosure = std_tag "enclosure"
   let generator attrs fmt = text_tag "generator" attrs fmt
   let guid attrs fmt = text_tag "guid" attrs fmt
+  let height attrs fmt = text_tag "height" attrs fmt
+  let image = std_tag "image"
   let item = std_tag "item"
   let language attrs fmt = text_tag "language" attrs fmt
   let last_build_date attrs fmt = text_tag "lastBuildDate" attrs fmt
@@ -950,7 +966,9 @@ module RSS = struct
   let rss = std_tag "rss"
   let title attrs fmt = text_tag "title" attrs fmt
   let ttl attrs fmt = text_tag "ttl" attrs fmt
+  let url attrs fmt = uri_tag "url" attrs fmt
   let web_master attrs fmt = text_tag "webMaster" attrs fmt
+  let width attrs fmt = text_tag "width" attrs fmt
 end
 
 module Hx = struct
