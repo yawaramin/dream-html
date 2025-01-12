@@ -20,6 +20,11 @@ jobs:
         uses: ocaml/setup-ocaml@v3
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
+      - name: Restore cache
+        uses: actions/cache@v4
+        with:
+          path: _opam
+          key: v3.10.0-${{ matrix.ocaml-compiler }}-${{ matrix.os }}-${{ hashFiles('dune-project') }}
       - run: opam install . --deps-only --with-test
       - run: opam exec -- dune build
       - run: opam exec -- dune runtest
