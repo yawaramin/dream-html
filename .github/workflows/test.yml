@@ -1,7 +1,8 @@
-name: dream-html
+name: Builds, tests & co
 
 on:
   - push
+  - pull_request
 
 permissions: read-all
 
@@ -10,8 +11,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        ocaml-compiler: [5, 4]
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        ocaml-compiler:
+          - 5
+          - 4
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout tree
@@ -20,11 +26,28 @@ jobs:
         uses: ocaml/setup-ocaml@v3
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
-      - name: Restore cache
-        uses: actions/cache@v4
-        with:
-          path: _opam
-          key: v3.10.0-${{ matrix.ocaml-compiler }}-${{ matrix.os }}-${{ hashFiles('dune-project') }}
       - run: opam install . --deps-only --with-test
       - run: opam exec -- dune build
       - run: opam exec -- dune runtest
+
+  lint-fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tree
+        uses: actions/checkout@v4
+      - name: Set-up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: 5
+      - uses: ocaml/setup-ocaml/lint-fmt@v3
+
+  lint-opam:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tree
+        uses: actions/checkout@v4
+      - name: Set-up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: 5
+      - uses: ocaml/setup-ocaml/lint-opam@v3
