@@ -5,17 +5,17 @@ let oob node =
   node +@ Hx.swap_oob "true"
 
 let hx_request = "Hx-Request"
-let hx_history_request_request = "Hx-History-Restore-Request"
+let hx_history_restore_request = "Hx-History-Restore-Request"
 
 (* Check for htmx request *)
 let is_htmx req =
   Dream.has_header req hx_request
-  && not (Dream.has_header req hx_history_request_request)
+  && not (Dream.has_header req hx_history_restore_request)
 
 let vary req ~fragment full =
   let open Lwt.Syntax in
   let+ resp = if is_htmx req then fragment () else full () in
-  Dream.set_header resp "Vary" (hx_request ^ ", " ^ hx_history_request_request);
+  Dream.set_header resp "Vary" (hx_request ^ ", " ^ hx_history_restore_request);
   resp
 
 (* Middleware to handle errors *)
@@ -89,7 +89,7 @@ module Todos = struct
       [ id "todos-%d" todo_id;
         style_ "text-decoration:none";
         path_attr href Path.todo todo_id;
-        path_attr Hx.get Path.todo todo_id;
+        Hx.boost true;
         Hx.target "#%s" todo;
         Hx.push_url "true" ]
       [article [] [msg; footer [] [txt "#%d" todo_id]]]
