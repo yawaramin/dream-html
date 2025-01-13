@@ -589,6 +589,16 @@ module HTML : sig
   val sandbox : _ string_attr
   val scope : _ string_attr
   val selected : attr
+
+  val shadowrootclonable : attr
+  (** @since 3.10.0 *)
+
+  val shadowrootdelegatesfocus : attr
+  (** @since 3.10.0 *)
+
+  val shadowrootmode : [`open_ | `closed] to_attr
+  (** @since 3.10.0 *)
+
   val shape : _ string_attr
 
   val size : _ string_attr

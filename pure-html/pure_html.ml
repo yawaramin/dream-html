@@ -609,6 +609,15 @@ module HTML = struct
   let sandbox fmt = string_attr "sandbox" fmt
   let scope fmt = string_attr "scope" fmt
   let selected = attr "selected"
+  let shadowrootclonable = attr "shadowrootclonable"
+  let shadowrootdelegatesfocus = attr "shadowrootdelegatesfocus"
+
+  let shadowrootmode value =
+    ( "shadowrootmode",
+      match value with
+      | `open_ -> "open"
+      | `closed -> "closed" )
+
   let shape fmt = string_attr "shape" fmt
   let size fmt = string_attr "size" fmt
   let sizes fmt = string_attr "sizes" fmt
