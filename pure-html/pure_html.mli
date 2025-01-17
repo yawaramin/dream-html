@@ -163,6 +163,12 @@ val comment : string -> node
 (** A comment that will be embedded in the rendered HTML, i.e.
     [<!-- comment -->]. The text is HTML-escaped. *)
 
+val concat : node -> node list -> node
+(** [concat node list] is the [list] of nodes joined together into a single
+    node, with each element separated by [node].
+
+    @since 3.10.0 *)
+
 (** {2 Accessors for tags} *)
 
 val ( +@ ) : node -> attr -> node

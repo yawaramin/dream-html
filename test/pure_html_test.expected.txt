@@ -44,6 +44,19 @@
 
 
 
+🔎 Concat HTML - empty list
+
+
+
+🔎 Concat HTML - singleton list
+<a href="/">Home</a>
+
+
+
+🔎 Concat HTML - list
+<a href="/">Home</a>, <a href="/a">a</a>
+
+
 🔎 SVG
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -502,6 +515,7 @@
 
 
 🔎 RSS
+<?xml version="1.0" encoding="UTF-8"?>
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
   <channel>
     <title>NASA Space Station News</title>

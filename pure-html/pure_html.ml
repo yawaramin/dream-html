@@ -770,6 +770,11 @@ module HTML = struct
   let wbr = void_tag "wbr"
 end
 
+let rec concat sep = function
+  | [] -> HTML.null []
+  | [node] -> node
+  | node :: nodes -> HTML.null [node; sep; concat sep nodes]
+
 module SVG = struct
   (* Attributes *)
   let d fmt = string_attr "d" fmt
