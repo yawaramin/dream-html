@@ -111,9 +111,9 @@ parameters:
 
 ```ocaml
 module Path = struct
-  let page = [%path "/"]
-  let todos = [%path "/todos"]
-  let todo = [%path "/todos/%d"]
+  let%path page = "/"
+  let%path todos = "/todos"
+  let%path todo = "/todos/%d"
 end
 ```
 
