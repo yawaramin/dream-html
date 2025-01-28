@@ -621,9 +621,15 @@ val static_asset : (Dream.response Dream.promise, _) path -> Dream.route
     inside a dune component called [static] and in the [static/assets]
     subdirectory. Suppose you have the following directory tree:
 
-    {[
-      static / dune assets / css / app.css js / app.js
-    ]}
+    {v
+static/
+  dune
+  assets/
+    css/
+      app.css
+    js/
+      app.js
+    v}
 
     The [dune] file defines a [library] component that will make the following
     module available:
