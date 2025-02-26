@@ -1063,7 +1063,8 @@ module Hx : sig
   val trigger : _ string_attr
   (** Note that the value of this attribute is not escaped. *)
 
-  val vals : _ string_attr
+  val vals : string to_attr
+  (** Note that the value of this attribute is not escaped. *)
 
   (** {3 Additional attributes} *)
 
@@ -1081,7 +1082,9 @@ module Hx : sig
   (** Hardcoding of the [hx-encoding] attribute to [multipart/form-data]. *)
 
   val ext : _ string_attr
-  val headers : _ string_attr
+
+  val headers : string to_attr
+  (** Note that the value of this attribute is not escaped. *)
 
   val history_false : attr
   (** Hardcoding of the [hx-history] attribute to [false]. *)
@@ -1102,7 +1105,10 @@ module Hx : sig
   val prompt : _ string_attr
   val put : _ string_attr
   val replace_url : _ string_attr
-  val request : _ string_attr
+
+  val request : string to_attr
+  (** Note that the value of this attribute is not escaped. *)
+
   val sync : _ string_attr
   val validate : attr
 

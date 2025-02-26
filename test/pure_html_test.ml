@@ -44,7 +44,7 @@ let () =
                   p [] [txt "Test para 2."];
                   a [href "/a?b=cd:efg/hij"] [txt "cd:efg/hij"];
                   a [href "/foo?a=1&b=2 3&c=4<5&d=6>5"] [txt "Test"];
-                  a [href "/😉"] [txt "wink"];
+                  a [href "/😉"; Hx.headers {|{"foo": 1}|}] [txt "wink"];
                   MathML.math [style_ ""] [] ];
               input
                 [ type_ "text";
