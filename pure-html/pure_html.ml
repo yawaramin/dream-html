@@ -197,7 +197,7 @@ let attr name = name, ""
 
 (* Helper to encode attribute values which contain double-quote characters and
    therefore MUST be quoted with single-quotes. *)
-let sqattr name value = attr (name ^ "='" ^ value ^ "'")
+let sqattr name fmt = Printf.ksprintf (fun s -> name ^ "='" ^ s ^ "'", "") fmt
 
 let string_attr name ?(raw = false) fmt =
   Printf.ksprintf (fun s -> name, attr_escape raw s) fmt
@@ -1003,7 +1003,7 @@ module Hx = struct
   let encoding_formdata = "data-hx-encoding", "multipart/form-data"
   let ext fmt = string_attr "data-hx-ext" fmt
   let get fmt = uri_attr "data-hx-get" fmt
-  let headers = sqattr "data-hx-headers"
+  let headers fmt = sqattr "data-hx-headers" fmt
   let history_false = "data-hx-history", "false"
   let history_elt = attr "data-hx-history-elt"
   let include_ fmt = string_attr "data-hx-include" fmt
@@ -1020,7 +1020,7 @@ module Hx = struct
   let push_url fmt = uri_attr "data-hx-push-url" fmt
   let put fmt = uri_attr "data-hx-put" fmt
   let replace_url fmt = string_attr "data-hx-replace-url" fmt
-  let request = sqattr "data-hx-request"
+  let request fmt = sqattr "data-hx-request" fmt
   let select fmt = string_attr ~raw:true "data-hx-select" fmt
   let select_oob fmt = string_attr ~raw:true "data-hx-select-oob" fmt
   let sse_close fmt = string_attr "data-sse-close" fmt
@@ -1032,7 +1032,7 @@ module Hx = struct
   let target fmt = string_attr ~raw:true "data-hx-target" fmt
   let trigger fmt = string_attr "data-hx-trigger" ~raw:true fmt
   let validate = attr "data-hx-validate"
-  let vals = sqattr "data-hx-vals"
+  let vals fmt = sqattr "data-hx-vals" fmt
   let ws_connect fmt = string_attr "data-ws-connect" fmt
   let ws_send = attr "data-ws-send"
 end
