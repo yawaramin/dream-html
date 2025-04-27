@@ -13,7 +13,8 @@ let () =
 let parse filename =
   In_channel.with_open_bin filename (fun inc ->
       Scanf.bscanf (Scanf.Scanning.from_channel inc) "%d %B %s"
-        (fun id completed desc -> { id; completed; desc }))
+        (fun id completed desc ->
+          { id; completed; desc = Dream.from_percent_encoded desc }))
 
 let list () =
   let todos = Sys.readdir dir in
@@ -26,7 +27,8 @@ let find id = parse (dir_todo id)
 
 let write ({ id; completed; desc } as todo) =
   Out_channel.with_open_bin (dir_todo id) (fun outc ->
-      Printf.fprintf outc "%d %B %s" id completed desc);
+      Printf.fprintf outc "%d %B %s" id completed
+        (Dream.to_percent_encoded desc));
   todo
 
 let add desc =
