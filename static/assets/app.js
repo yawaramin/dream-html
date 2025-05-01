@@ -21,3 +21,13 @@ document.addEventListener('htmx:responseError', evt => {
   if (toast == null) return;
   toast.outerHTML = `<span id="toast" class="error">${evt.detail.xhr.responseText}</span>`;
 });
+
+document.querySelectorAll('input').forEach(inp => {
+  inp.addEventListener('blur', () => {
+    if (inp.validity.valid) {
+      inp.removeAttribute('aria-invalid');
+    } else {
+      inp.setAttribute('aria-invalid', 'true');
+    }
+  });
+});
