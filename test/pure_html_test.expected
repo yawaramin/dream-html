@@ -1,6 +1,6 @@
 
 
-🔎 HTML
+✔︎ HTML
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -37,24 +37,37 @@
 
 
 
-🔎 HTML pretty print corner cases
+✔︎ HTML pretty print corner cases
 <div>
   <p translate="yes"></p>
 </div>
 
 
 
-🔎 Concat HTML - empty list
+✔︎ Concat HTML - empty list
 
 
 
-🔎 Concat HTML - singleton list
+✔︎ Concat HTML - singleton list
 <a href="/">Home</a>
 
 
 
-🔎 Concat HTML - list
+✔︎ Concat HTML - list
 <a href="/">Home</a>, <a href="/a">a</a>
+
+
+✔︎ test raise on adding duplicate attribute
+
+
+✔︎ add class attribute to existing
+<div class="foo bar"></div>
+
+
+
+✔︎ add new attribute
+<div class="bar" id="foo"></div>
+
 
 
 🔎 SVG

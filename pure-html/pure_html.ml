@@ -225,9 +225,23 @@ let txt ?(raw = false) fmt =
 
 let comment str = Comment (txt_escape false str)
 
-let ( +@ ) node attr =
+let ( +@ ) node ((name, value) as attr) =
   match node with
-  | Tag t -> Tag { t with attrs = attr :: t.attrs }
+  | Tag t -> (
+    match List.find_opt (fun (n, _) -> n = name) t.attrs, name with
+    | Some (_, classes), "class" ->
+      let new_attr = string_attr "class" "%s %s" classes value in
+      Tag
+        { t with
+          attrs =
+            List.map
+              (function
+                | "class", _ -> new_attr
+                | attr -> attr)
+              t.attrs
+        }
+    | Some _, _ -> Printf.ksprintf invalid_arg "duplicate attribute: %s" name
+    | None, _ -> Tag { t with attrs = attr :: t.attrs })
   | _ -> invalid_arg "cannot add attribute to non-tag node"
 
 let ( -@ ) node attr =

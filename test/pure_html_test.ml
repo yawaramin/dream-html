@@ -17,7 +17,7 @@
 
 open Pure_html
 
-let test_html msg node = Format.printf "\n\n🔎 %s\n%a\n" msg pp node
+let test_html msg node = Format.printf "\n\n✔︎ %s\n%a\n" msg pp node
 
 let test_xml ?header msg node =
   Format.printf "\n\n🔎 %s\n%a\n" msg (pp_xml ?header) node
@@ -77,6 +77,21 @@ let () =
     (concat (txt ", ") [a [href "/"] [txt "Home"]]);
   test_html "Concat HTML - list"
     (concat (txt ", ") [a [href "/"] [txt "Home"]; a [href "/a"] [txt "a"]])
+
+let () =
+  let open HTML in
+  try ignore (div [id "foo"] [] +@ id "bar")
+  with Invalid_argument _ ->
+    Format.printf "\n\n✔︎ test raise on adding duplicate attribute\n"
+
+let () =
+  let open HTML in
+  test_html "add class attribute to existing"
+    (div [class_ "foo"] [] +@ class_ "bar")
+
+let () =
+  let open HTML in
+  test_html "add new attribute" (div [id "foo"] [] +@ class_ "bar")
 
 let () =
   test_xml ~header:true "SVG"
