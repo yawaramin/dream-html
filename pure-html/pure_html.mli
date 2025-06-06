@@ -179,8 +179,22 @@ val ( +@ ) : node -> attr -> node
       let toast_oob = toast "ok." +@ Hx.swap_oob "true"
     ]}
 
+    If adding the [class] attribute to a tag which already has a [class]
+    attribute, join together the values of the CSS classes:
+
+    {[
+      p [class_ "foo"] [] +@ class_ "bar"
+    ]}
+
+    Result:
+
+    {[
+      <p class="foo bar"></p>
+    ]}
+
     @raise Invalid_argument
-      if the node is not a tag (i.e. if it is a text or comment node).
+      if the node is not a tag (i.e. if it is a text or comment node), or if it
+      is a duplicate attribute other than [class].
     @since 0.0.3. *)
 
 val ( -@ ) : node -> string -> node
