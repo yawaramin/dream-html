@@ -102,7 +102,7 @@ utop # p [] [txt "%s" user_input];;
 - : node = <p>&lt;script&gt;alert('You have been pwned')&lt;/script&gt;</p>
 
 utop # div [title_ {|"%s|} user_input] [];;
-- : node = <div title="&quot;<script>alert('You have been pwned')</script>"></div>
+- : node = <div title="&quot;&lt;script&gt;alert('You have been pwned')&lt;/script&gt;"></div>
 ```
 
 ## How to install

@@ -49,6 +49,7 @@ let () =
               input
                 [ type_ "text";
                   autocomplete `name;
+                  title_ "<script>alert('oops')";
                   onblur "if (1 > 0) alert(this.value)" ];
               null
                 [ comment "oops --><script>alert('lol')</script>";

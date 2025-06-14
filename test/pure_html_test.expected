@@ -17,7 +17,7 @@
         <a href="/%F0%9F%98%89" data-hx-headers='{"foo": 1}'>wink</a>
         <math style=""></math>
       </article>
-      <input type="text" autocomplete="name" onblur="if (1 > 0) alert(this.value)">
+      <input type="text" autocomplete="name" title="&lt;script&gt;alert('oops')" onblur="if (1 > 0) alert(this.value)">
       <!-- oops --&gt;&lt;script&gt;alert('lol')&lt;/script&gt; -->
       <dialog open title="&quot;hello&quot;">
         <div></div>

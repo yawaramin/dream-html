@@ -183,6 +183,8 @@ let txt_escape raw s =
 let attr_escape buffer = function
   | '&' -> Buffer.add_string buffer "&amp;"
   | '"' -> Buffer.add_string buffer "&quot;"
+  | '<' -> Buffer.add_string buffer "&lt;"
+  | '>' -> Buffer.add_string buffer "&gt;"
   | c -> Buffer.add_char buffer c
 
 let attr_escape raw s =
