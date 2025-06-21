@@ -262,14 +262,7 @@ module HTML : sig
       ]}
 
       However, boolean attributes which may be inherited and toggled on/off in
-      children, are constructed by passing in a value:
-
-      {[
-        div
-          [contenteditable true]
-          [ p [] [txt "Edit me!"];
-            p [contenteditable false] [txt "Can't edit me!"] ]
-      ]}
+      children, are constructed by passing in a value.
 
       Enumerated attributes accept specific values:
 
@@ -393,7 +386,10 @@ module HTML : sig
   val cols : int to_attr
   val colspan : int to_attr
   val content : _ string_attr
-  val contenteditable : bool to_attr
+
+  val contenteditable : [< `true_ | `false_ | `plaintext_only] to_attr
+  (** @since 3.10.2 added [`plaintext_only] *)
+
   val contextmenu : _ string_attr
   val controls : attr
   val coords : _ string_attr

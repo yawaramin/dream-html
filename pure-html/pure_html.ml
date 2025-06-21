@@ -374,7 +374,14 @@ module HTML = struct
   let cols = int_attr "cols"
   let colspan = int_attr "colspan"
   let content fmt = string_attr "content" fmt
-  let contenteditable = bool_attr "contenteditable"
+
+  let contenteditable value =
+    ( "contenteditable",
+      match value with
+      | `true_ -> "true"
+      | `false_ -> "false"
+      | `plaintext_only -> "plaintext-only" )
+
   let contextmenu fmt = string_attr "contextmenu" fmt
   let controls = attr "controls"
   let coords fmt = string_attr "coords" fmt
