@@ -24,8 +24,10 @@
 
     These are the types of the final values which get rendered. *)
 
-type attr
-(** E.g. [id="toast"]. *)
+type attr = string * string
+(** E.g. [id="toast"].
+
+    @since 3.11.0 reveal the type definition in the interface. *)
 
 type node
 (** Either a tag, a comment, or text data in the markup. *)

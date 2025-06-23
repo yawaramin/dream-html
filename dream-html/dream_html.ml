@@ -91,6 +91,10 @@ let options path = dream_method Dream.options path
 let trace path = dream_method Dream.trace path
 let patch path = dream_method Dream.patch path
 let any path = dream_method Dream.any path
+
+let redirect ?status ?code ?headers req (_, location) =
+  Dream.redirect ?status ?code ?headers req location
+
 let use = Dream.scope "/"
 
 let static_asset path =

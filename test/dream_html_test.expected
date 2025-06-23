@@ -39,10 +39,19 @@
 
 🔎 Indent CSRF tag correctly
 200 OK
+Content-Type: text/html; charset=utf-8
+Set-Cookie: *****
 
 <form method="post" action="/">
   <input value="token-value" name="dream.csrf" type="hidden">
   <input name="id">
   <button type="submit">Add</button>
 </form>
+
+
+
+🔎 Redirect
+303 See Other
+Location: /todos/abcd
+
 

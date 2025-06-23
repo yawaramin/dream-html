@@ -58,6 +58,15 @@ let pp_form pp fmt = function
   | Ok user -> pp fmt user
   | Error e -> Dream_html.Form.pp_error fmt e
 
+let pp_header ppf ((name, _) as v) =
+  let pp =
+    Fmt.pair ~sep:(Fmt.any ": ") Fmt.string
+      (if name = "Set-Cookie" then Fmt.any "*****" else Fmt.string)
+  in
+  pp ppf v
+
+let pp_headers = Fmt.list ~sep:(Fmt.any "\n") pp_header
+
 open Dream_html.Form
 
 let user_form =
@@ -82,15 +91,15 @@ let invoice =
   let+ items = multiple item_count item in
   { item_count; items }
 
-let test_handler handler target =
+let test_handler target handler =
   Lwt_main.run
     (let open Lwt.Syntax in
      let* resp = handler (Dream.request ~target "") in
      let+ b = Dream.body resp in
      let st = Dream.status resp in
-     Format.printf "%d %s\n\n%s\n" (Dream.status_to_int st)
+     Format.printf "%d %s\n%a\n\n%s\n" (Dream.status_to_int st)
        (Dream.status_to_string st)
-       b)
+       pp_headers (Dream.all_headers resp) b)
 
 let test msg output =
   Printf.printf "\n\n🔎 %s\n%!" msg;
@@ -136,15 +145,20 @@ let () =
 
 let () =
   test "Indent CSRF tag correctly" @@ fun () ->
-  let handler =
-    Dream.memory_sessions (fun req ->
-        let open Dream_html in
-        let open HTML in
-        respond
-          (form
-             [method_ `POST; action "/"]
-             [ csrf_tag req -@ "value" +@ value "token-value";
-               input [name "id"];
-               button [type_ "submit"] [txt "Add"] ]))
-  in
-  test_handler handler "/"
+  test_handler "/"
+    (Dream.memory_sessions (fun req ->
+         let open Dream_html in
+         let open HTML in
+         respond
+           (form
+              [method_ `POST; action "/"]
+              [ csrf_tag req -@ "value" +@ value "token-value";
+                input [name "id"];
+                button [type_ "submit"] [txt "Add"] ])))
+
+let todo = Dream_html.path "/todos/%s" "/todos/%s"
+
+let () =
+  test "Redirect" @@ fun () ->
+  let open Dream_html in
+  test_handler "/" (fun req -> redirect req (path_attr HTML.href todo "abcd"))

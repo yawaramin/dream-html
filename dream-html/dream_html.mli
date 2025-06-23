@@ -588,6 +588,27 @@ val patch : (_, _) route
 val any : (_, _) route
 (** @since 3.9.0 *)
 
+val redirect :
+  ?status:[< Dream.redirection] ->
+  ?code:int ->
+  ?headers:(string * string) list ->
+  Dream.request ->
+  attr ->
+  Dream.response Dream.promise
+(** [redirect ?status ?code ?headers req href] is the same as [Dream.redirect]
+    but instead of taking a string location to redirect to, it takes an
+    attribute (you'll usually want to use [href]). The reason for taking an
+    attribute is that we can construct correct route paths in attributes without
+    having to hard-code strings. Eg,
+
+    {[
+      let%path order = "/orders/%s"
+      ...
+      Dream_html.redirect req (path_attr href order "yzxyzc")
+    ]}
+
+    @since 3.11.0 *)
+
 val use : Dream.middleware list -> Dream.route list -> Dream.route
 (** [use middlewares routes] is a route that is composed of all the given
     [routes] with the [middlewares] attached to them.
