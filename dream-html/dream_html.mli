@@ -15,7 +15,11 @@
    You should have received a copy of the GNU General Public License along with
    dream-html. If not, see <https://www.gnu.org/licenses/>. *)
 
-(** {2 Form handling} *)
+(** [dream-html] is a library of useful functionality needed for making robust
+    and maintainable server-driven web applications using the Dream web
+    framework.
+
+    {2 Form handling} *)
 
 (** Typed, extensible HTML form decoder with error reporting for form field
     validation failures. Powerful chained decoding functionality–the validation
@@ -410,9 +414,17 @@ val query :
 
     @since 3.8.0 *)
 
-(** {2 HTML and other markup} *)
+(** {2 HTML and other markup}
+
+    Correct construction of markup with the help of type-safe helpers and
+    combinators. *)
 
 include module type of Pure_html
+
+(** {2 Dream wrappers}
+
+    Convenience wrappers that use dream-html attributes and nodes instead of raw
+    strings. *)
 
 val respond :
   ?status:[< Dream.status] ->
@@ -420,6 +432,28 @@ val respond :
   ?headers:(string * string) list ->
   node ->
   Dream.response Dream.promise
+
+val redirect :
+  ?status:[< Dream.redirection] ->
+  ?code:int ->
+  ?headers:(string * string) list ->
+  Dream.request ->
+  attr ->
+  Dream.response Dream.promise
+(** [redirect ?status ?code ?headers req href] is the same as [Dream.redirect]
+    but instead of taking a string location to redirect to, it takes an
+    attribute (you'll usually want to use [href]). The reason for taking an
+    attribute is that we can construct correct route paths in attributes without
+    having to hard-code the entire path. Eg,
+
+    {[
+      let%path order = "/orders/%s"
+      ...
+      let order_id = ... in
+      Dream_html.redirect req (path_attr href order order_id)
+    ]}
+
+    @since 3.11.0 *)
 
 val send :
   ?text_or_binary:[< Dream.text_or_binary] ->
@@ -447,6 +481,46 @@ val csrf_tag : Dream.request -> node
         [action "/foo"]
         [csrf_tag req; input [name "bar"]; input [type_ "submit"]]
     ]} *)
+
+(** {2 Conditional requests}
+
+    Helpers for managing HTTP conditional requests. Note that the ETag values
+    derived from the [key] parameters are not using cryptographically secure
+    hashing. *)
+
+val if_none_match :
+  ?weak:bool ->
+  Dream.request ->
+  string ->
+  (unit -> Dream.response Dream.promise) ->
+  Dream.response Dream.promise
+(** [if_none_match ?weak req key refresh] checks the [If-None-Match] header of
+    [req] to see if it contains an ETag corresponding to the [key]. If so, it
+    responds with [304 Not Modified]. Otherwise, it re-fetches the resource
+    corresponding to [key] using [refresh ()], and sets the ETag in the response
+    header.
+
+    @param weak
+      allows specifying whether the ETag uses a weak validator. The default is
+      [true], meaning we don't expect the resource to match byte-for-byte.
+
+    @since 3.11.0 *)
+
+val if_match :
+  ?weak:bool ->
+  Dream.request ->
+  string ->
+  (unit -> Dream.response Dream.promise) ->
+  Dream.response Dream.promise
+(** [if_match ?weak req key save] checks if the [If-Match] header of [req]
+    matches the ETag derived from the [key]. If so, it calls [save ()].
+    Otherwise, it responds with an error [412 Precondition Failed].
+
+    @param weak
+      allows specifying whether the ETag uses a weak validator. The default is
+      [false], meaning we expect the resource to match byte-for-byte.
+
+    @since 3.11.0 *)
 
 (** {2 Type-safe routing}
 
@@ -587,27 +661,6 @@ val patch : (_, _) route
 
 val any : (_, _) route
 (** @since 3.9.0 *)
-
-val redirect :
-  ?status:[< Dream.redirection] ->
-  ?code:int ->
-  ?headers:(string * string) list ->
-  Dream.request ->
-  attr ->
-  Dream.response Dream.promise
-(** [redirect ?status ?code ?headers req href] is the same as [Dream.redirect]
-    but instead of taking a string location to redirect to, it takes an
-    attribute (you'll usually want to use [href]). The reason for taking an
-    attribute is that we can construct correct route paths in attributes without
-    having to hard-code strings. Eg,
-
-    {[
-      let%path order = "/orders/%s"
-      ...
-      Dream_html.redirect req (path_attr href order "yzxyzc")
-    ]}
-
-    @since 3.11.0 *)
 
 val use : Dream.middleware list -> Dream.route list -> Dream.route
 (** [use middlewares routes] is a route that is composed of all the given

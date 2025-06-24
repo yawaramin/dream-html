@@ -69,6 +69,38 @@ let csrf_tag req =
   let open HTML in
   input [name "dream.csrf"; type_ "hidden"; value "%s" (Dream.csrf_token req)]
 
+let etag weak key =
+  (if weak then {|W/"|} else "") ^ Digest.(key |> string |> to_hex) ^ {|"|}
+
+let if_none_match ?(weak = true) req key refresh =
+  let new_etag = etag weak key in
+  let set_etag () =
+    ()
+    |> refresh
+    |> Lwt.map (fun resp ->
+           Dream.set_header resp "ETag" new_etag;
+           resp)
+  in
+  match Dream.header req "If-None-Match" with
+  | Some list -> (
+    match
+      list
+      |> String.split_on_char ','
+      |> List.find_opt (fun s -> String.trim s = new_etag)
+    with
+    | Some _ -> Dream.empty `Not_Modified
+    | None -> set_etag ())
+  | None -> set_etag ()
+
+let if_match ?(weak = false) req key save =
+  match Dream.header req "If-Match" with
+  | Some old_etag ->
+    if old_etag = etag weak key then
+      save ()
+    else
+      Dream.empty `Precondition_Failed
+  | None -> save ()
+
 module Path = Path
 
 type ('r, 'p) path = ('r, 'p) Path.t
