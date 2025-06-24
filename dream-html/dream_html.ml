@@ -72,7 +72,7 @@ let csrf_tag req =
 let etag weak key =
   (if weak then {|W/"|} else "") ^ Digest.(key |> string |> to_hex) ^ {|"|}
 
-let if_none_match ?(weak = true) req key refresh =
+let if_none_match req ?(weak = true) key refresh =
   let new_etag = etag weak key in
   let set_etag () =
     ()
@@ -92,7 +92,7 @@ let if_none_match ?(weak = true) req key refresh =
     | None -> set_etag ())
   | None -> set_etag ()
 
-let if_match ?(weak = false) req key save =
+let if_match req ?(weak = false) key save =
   match Dream.header req "If-Match" with
   | Some old_etag ->
     if old_etag = etag weak key then

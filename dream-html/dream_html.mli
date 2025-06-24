@@ -489,12 +489,12 @@ val csrf_tag : Dream.request -> node
     hashing. *)
 
 val if_none_match :
-  ?weak:bool ->
   Dream.request ->
+  ?weak:bool ->
   string ->
   (unit -> Dream.response Dream.promise) ->
   Dream.response Dream.promise
-(** [if_none_match ?weak req key refresh] checks the [If-None-Match] header of
+(** [if_none_match req ?weak key refresh] checks the [If-None-Match] header of
     [req] to see if it contains an ETag derived from the [key]. If so, it
     responds with [304 Not Modified]. Otherwise, it re-fetches the resource
     corresponding to [key] using [refresh ()], and sets the ETag in the response
@@ -507,12 +507,12 @@ val if_none_match :
     @since 3.11.0 *)
 
 val if_match :
-  ?weak:bool ->
   Dream.request ->
+  ?weak:bool ->
   string ->
   (unit -> Dream.response Dream.promise) ->
   Dream.response Dream.promise
-(** [if_match ?weak req key save] checks if the [If-Match] header of [req]
+(** [if_match req ?weak key save] checks if the [If-Match] header of [req]
     matches the ETag derived from the [key]. If so, it calls [save ()].
     Otherwise, it responds with an error [412 Precondition Failed].
 
