@@ -486,7 +486,19 @@ val csrf_tag : Dream.request -> node
 
     Helpers for managing HTTP conditional requests. Note that the ETag values
     derived from the [key] parameters are not using cryptographically secure
-    hashing. *)
+    hashing. For example, for a key [foo], we currently derive an ETag of
+    ["acbd18db4cc2f85cedef654fccc4a4d8"]. It is your responsibility to provide a
+    key that uniquely identifies the version of the resource and changes when
+    the resource is updated.
+
+    Eg, the last modified date of a file is a reasonable key for the contents of
+    the file because it is guaranteed to change when the file is changed. Of
+    course, you may prefer other even better ways to generate keys for
+    resources.
+
+    See
+    {{:https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/ETag#examples}
+     MDN documentation} for examples of idiomatic usage of these headers. *)
 
 val if_none_match :
   Dream.request ->
@@ -513,8 +525,9 @@ val if_match :
   (unit -> Dream.response Dream.promise) ->
   Dream.response Dream.promise
 (** [if_match req ?weak key save] checks if the [If-Match] header of [req]
-    matches the ETag derived from the [key]. If so, it calls [save ()].
-    Otherwise, it responds with an error [412 Precondition Failed].
+    matches the ETag derived from the [key]. If so, it calls [save ()] and
+    returns the response. Otherwise, it responds with an error
+    [412 Precondition Failed].
 
     @param weak
       allows specifying whether the ETag uses a weak validator. The default is
