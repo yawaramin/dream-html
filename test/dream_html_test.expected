@@ -50,6 +50,43 @@ Set-Cookie: *****
 
 
 
+🔎 if_none_match - set ETag
+200 OK
+Content-Type: text/html; charset=utf-8
+ETag: W/"acbd18db4cc2f85cedef654fccc4a4d8"
+
+bar
+
+
+🔎 if_none_match - match ETag
+304 Not Modified
+
+
+
+
+
+🔎 if_none_match - no match ETag
+200 OK
+Content-Type: text/html; charset=utf-8
+ETag: W/"acbd18db4cc2f85cedef654fccc4a4d8"
+
+bar
+
+
+🔎 if_match - match ETag
+200 OK
+Content-Type: text/html; charset=utf-8
+
+bar
+
+
+🔎 if_match - no match ETag
+412 Precondition Failed
+
+
+
+
+
 🔎 Redirect
 303 See Other
 Location: /todos/abcd

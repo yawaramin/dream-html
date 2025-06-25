@@ -70,7 +70,10 @@ let csrf_tag req =
   input [name "dream.csrf"; type_ "hidden"; value "%s" (Dream.csrf_token req)]
 
 let etag weak key =
-  (if weak then {|W/"|} else "") ^ Digest.(key |> string |> to_hex) ^ {|"|}
+  (if weak then {|W/|} else "")
+  ^ {|"|}
+  ^ Digest.(key |> string |> to_hex)
+  ^ {|"|}
 
 let if_none_match req ?(weak = true) key refresh =
   let new_etag = etag weak key in

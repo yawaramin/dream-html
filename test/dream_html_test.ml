@@ -91,10 +91,10 @@ let invoice =
   let+ items = multiple item_count item in
   { item_count; items }
 
-let test_handler target handler =
+let test_handler ?headers target handler =
   Lwt_main.run
     (let open Lwt.Syntax in
-     let* resp = handler (Dream.request ~target "") in
+     let* resp = handler (Dream.request ?headers ~target "") in
      let+ b = Dream.body resp in
      let st = Dream.status resp in
      Format.printf "%d %s\n%a\n\n%s\n" (Dream.status_to_int st)
@@ -156,9 +156,43 @@ let () =
                 input [name "id"];
                 button [type_ "submit"] [txt "Add"] ])))
 
-let todo = Dream_html.path "/todos/%s" "/todos/%s"
+let () =
+  let open Dream_html in
+  let key = "foo"
+  and value = "bar"
+  and etag = {|"acbd18db4cc2f85cedef654fccc4a4d8"|} in
+  let weak_etag = "W/" ^ etag in
+
+  test "if_none_match - set ETag" (fun () ->
+      test_handler "/" (fun req ->
+          if_none_match req key (fun () -> Dream.html value)));
+
+  test "if_none_match - match ETag" (fun () ->
+      test_handler
+        ~headers:["If-None-Match", weak_etag]
+        "/"
+        (fun req -> if_none_match req key (fun () -> Dream.html value)));
+
+  test "if_none_match - no match ETag" (fun () ->
+      test_handler
+        ~headers:["If-None-Match", etag]
+        "/"
+        (fun req -> if_none_match req key (fun () -> Dream.html value)));
+
+  test "if_match - match ETag" (fun () ->
+      test_handler
+        ~headers:["If-Match", etag]
+        "/"
+        (fun req -> if_match req key (fun () -> Dream.html value)));
+
+  test "if_match - no match ETag" (fun () ->
+      test_handler
+        ~headers:["If-Match", weak_etag]
+        "/"
+        (fun req -> if_match req key (fun () -> Dream.html value)))
 
 let () =
+  let todo = Dream_html.path "/todos/%s" "/todos/%s" in
   test "Redirect" @@ fun () ->
   let open Dream_html in
   test_handler "/" (fun req -> redirect req (path_attr HTML.href todo "abcd"))
