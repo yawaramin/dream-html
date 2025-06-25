@@ -23,16 +23,23 @@ let list () =
   |> Array.to_list
   |> List.map (fun todo -> parse (Filename.concat dir todo))
 
-let last_modified id =
-  let st = Unix.stat (dir_todo id) in
+let last_modified ?id () =
+  let st =
+    Unix.stat
+      (match id with
+      | Some i -> dir_todo i
+      | None -> dir)
+  in
   string_of_float st.st_mtime
 
 let find id = parse (dir_todo id)
 
 let write ({ id; completed; desc } as todo) =
-  Out_channel.with_open_bin (dir_todo id) (fun outc ->
+  let tmpname = Filename.temp_file ~temp_dir:dir (string_of_int id) "" in
+  Out_channel.with_open_bin tmpname (fun outc ->
       Printf.fprintf outc "%d %B %s" id completed
         (Dream.to_percent_encoded desc));
+  Sys.rename tmpname (dir_todo id);
   todo
 
 let add desc =

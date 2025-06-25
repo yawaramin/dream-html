@@ -15,7 +15,8 @@ let is_htmx req =
 let vary req ~fragment full =
   let open Lwt.Syntax in
   let+ resp = if is_htmx req then fragment () else full () in
-  Dream.set_header resp "Vary" (hx_request ^ ", " ^ hx_history_restore_request);
+  Dream.set_header resp "Vary"
+    (Printf.sprintf "%s, %s" hx_request hx_history_restore_request);
   resp
 
 (* Middleware to handle errors *)
@@ -46,7 +47,7 @@ module Page = struct
   open HTML
 
   (* Helper to build a title prefixed with the name of the app. *)
-  let title_tag str = title [] "todos · %s" str
+  let title_tag str = title [] "%s · todos" str
   let toast_id = "toast"
   let toast msg = span [id "%s" toast_id; Aria.live `polite] [txt "%s" msg]
 
@@ -119,12 +120,13 @@ module Todos = struct
         div [id "%s" todo] [child] ]
 
   let get =
-    get Path.todos (fun _ ->
-        []
-        |> null
-        |> render ~todos:(Repo.list ())
-        |> Page.render ~title_str:"all"
-        |> respond)
+    get Path.todos (fun req ->
+        if_none_match req (Repo.last_modified ()) (fun () ->
+            []
+            |> null
+            |> render ~todos:(Repo.list ())
+            |> Page.render ~title_str:"all"
+            |> respond))
 
   let post =
     post Path.todos (fun req ->
@@ -134,16 +136,11 @@ module Todos = struct
         | `Ok [("desc", "")] -> invalid_arg "need todo description"
         | `Ok [("desc", desc)] ->
           let todo = Repo.add desc in
-          let trgt = Dream.target req in
           vary req
             ~fragment:(fun () ->
               respond ~status:`Created
                 (null [render_one todo; oob (Page.toast "added todo")]))
-            (fun () ->
-              todo.id
-              |> string_of_int
-              |> Filename.concat trgt
-              |> Dream.redirect req)
+            (fun () -> redirect req (path_attr HTML.href Path.todo todo.id))
         | _ -> invalid_arg "could not add todo")
 end
 
@@ -196,38 +193,40 @@ module Todo = struct
 
   let get =
     get Path.todo (fun req id ->
-        if_none_match req (Repo.last_modified id) (fun () ->
-            let todo = Repo.find id in
-            let rendered = render ~todo in
-            vary req
-              ~fragment:(fun () ->
-                respond (null [rendered; Page.title_tag todo.desc]))
-              (fun () ->
-                respond
-                  (Page.render ~title_str:todo.desc
-                     (Todos.render ~todos:(Repo.list ()) rendered)))))
+        let todo = Repo.find id in
+        let rendered = render ~todo in
+        vary req
+          ~fragment:(fun () ->
+            if_none_match req (Repo.last_modified ~id ()) (fun () ->
+                respond (null [rendered; Page.title_tag todo.desc])))
+          (fun () ->
+            respond
+              (Page.render ~title_str:todo.desc
+                 (Todos.render ~todos:(Repo.list ()) rendered))))
 
   let post =
     post Path.todo (fun req _ ->
-        let trgt = Dream.target req in
+        let redir id () = redirect req (path_attr HTML.href Path.todo id) in
         let open Lwt.Syntax in
         let* frm = Dream.form ~csrf:false req in
         match frm with
         | `Ok [("desc", desc); ("id", idval)] ->
-          let todo = Repo.edit (int_of_string idval) desc in
-          vary req
-            ~fragment:(fun () ->
-              respond
-                (null
-                   [ Todos.render_one todo;
-                     Page.title_tag desc;
-                     oob (Page.toast "updated description") ]))
-            (fun () -> Dream.redirect req trgt)
+          let id = int_of_string idval in
+          if_match req (Repo.last_modified ~id ()) (fun () ->
+              let todo = Repo.edit id desc in
+              vary req
+                ~fragment:(fun () ->
+                  respond
+                    (null
+                       [ Todos.render_one todo;
+                         Page.title_tag desc;
+                         oob (Page.toast "updated description") ]))
+                (redir todo.id))
         | `Ok [("id", idval)] ->
           let todo = Repo.toggle (int_of_string idval) in
           vary req
             ~fragment:(fun () -> respond (render_toggled todo))
-            (fun () -> Dream.redirect req trgt)
+            (redir todo.id)
         | _ -> invalid_arg "There was an error")
 end
 
