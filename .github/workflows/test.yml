@@ -1,9 +1,9 @@
 name: dream-html
 
 on:
-  - push:
-      branches:
-        - main
+  push:
+    branches:
+      - main
 
 permissions: read-all
 
