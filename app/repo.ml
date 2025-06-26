@@ -24,13 +24,15 @@ let list () =
   |> List.map (fun todo -> parse (Filename.concat dir todo))
 
 let last_modified ?id () =
-  let st =
-    Unix.stat
-      (match id with
-      | Some i -> dir_todo i
-      | None -> dir)
-  in
-  string_of_float st.st_mtime
+  try
+    let st =
+      Unix.stat
+        (match id with
+        | Some i -> dir_todo i
+        | None -> dir)
+    in
+    Some (string_of_float st.st_mtime)
+  with Unix.Unix_error (ENOENT, _, _) -> None
 
 let find id = parse (dir_todo id)
 

@@ -5,7 +5,7 @@ type t =
   }
 
 val list : unit -> t list
-val last_modified : ?id:int -> unit -> string
+val last_modified : ?id:int -> unit -> string option
 val find : int -> t
 val add : string -> t
 val toggle : int -> t

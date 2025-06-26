@@ -19,6 +19,9 @@ let vary req ~fragment full =
     (Printf.sprintf "%s, %s" hx_request hx_history_restore_request);
   resp
 
+let weak = Option.map (fun s -> `weak, s)
+let strong = Option.map (fun s -> `strong, s)
+
 (* Middleware to handle errors *)
 let dreamcatcher next req =
   Lwt.catch
@@ -121,7 +124,9 @@ module Todos = struct
 
   let get =
     get Path.todos (fun req ->
-        if_none_match req (Repo.last_modified ()) (fun () ->
+        if_none_match req
+          ~key:(weak (Repo.last_modified ()))
+          (fun () ->
             []
             |> null
             |> render ~todos:(Repo.list ())
@@ -146,17 +151,18 @@ end
 
 module Todo = struct
   open Dream_html
-  open HTML
 
   let complete_btn todo =
     let completion =
       if todo.Repo.completed then "un-complete" else "complete"
     in
+    let open HTML in
     input [id "todo-complete"; type_ "submit"; value "%s" completion]
 
   let todo_desc = "todo-desc"
 
   let render ~todo =
+    let open HTML in
     let input_id = input [type_ "hidden"; name "id"; value "%d" todo.Repo.id] in
     div
       [style_ "position:sticky;top:0"]
@@ -189,6 +195,7 @@ module Todo = struct
 
   let render_toggled todo =
     let msg = if todo.Repo.completed then "completed" else "un-completed" in
+    let open HTML in
     null [Todos.render_one todo; oob (complete_btn todo); oob (Page.toast msg)]
 
   let get =
@@ -197,8 +204,10 @@ module Todo = struct
         let rendered = render ~todo in
         vary req
           ~fragment:(fun () ->
-            if_none_match req (Repo.last_modified ~id ()) (fun () ->
-                respond (null [rendered; Page.title_tag todo.desc])))
+            if_none_match req
+              ~key:(weak (Repo.last_modified ~id ()))
+              (fun () ->
+                respond (HTML.null [rendered; Page.title_tag todo.desc])))
           (fun () ->
             respond
               (Page.render ~title_str:todo.desc
@@ -212,12 +221,14 @@ module Todo = struct
         match frm with
         | `Ok [("desc", desc); ("id", idval)] ->
           let id = int_of_string idval in
-          if_match req (Repo.last_modified ~id ()) (fun () ->
+          if_match req
+            ~key:(strong (Repo.last_modified ~id ()))
+            (fun () ->
               let todo = Repo.edit id desc in
               vary req
                 ~fragment:(fun () ->
                   respond
-                    (null
+                    (HTML.null
                        [ Todos.render_one todo;
                          Page.title_tag desc;
                          oob (Page.toast "updated description") ]))
