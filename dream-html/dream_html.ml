@@ -69,37 +69,47 @@ let csrf_tag req =
   let open HTML in
   input [name "dream.csrf"; type_ "hidden"; value "%s" (Dream.csrf_token req)]
 
-let etag weak key =
-  (if weak then "W/" else "") ^ {|"|} ^ Digest.(key |> string |> to_hex) ^ {|"|}
-
-let if_none_match req ?(weak = true) key refresh =
-  let new_etag = etag weak key in
-  let set_etag () =
-    ()
-    |> refresh
-    |> Lwt.map (fun resp ->
-           Dream.set_header resp "ETag" new_etag;
-           resp)
+let etag (strength, str) =
+  let weak =
+    match strength with
+    | `weak -> "W/"
+    | `strong -> ""
   in
-  match Dream.header req "If-None-Match" with
-  | Some list -> (
-    match
-      list
-      |> String.split_on_char ','
-      |> List.find_opt (fun s -> String.trim s = new_etag)
-    with
-    | Some _ -> Dream.empty `Not_Modified
-    | None -> set_etag ())
-  | None -> set_etag ()
+  weak ^ {|"|} ^ Digest.(str |> string |> to_hex) ^ {|"|}
 
-let if_match req ?(weak = false) key save =
-  match Dream.header req "If-Match" with
-  | Some old_etag ->
-    if old_etag = etag weak key then
-      save ()
-    else
-      Dream.empty `Precondition_Failed
-  | None -> save ()
+let find_etag et str =
+  str |> String.split_on_char ',' |> List.find_opt (fun s -> String.trim s = et)
+
+let if_none_match req ~key refresh =
+  match key with
+  | None -> Dream.empty `Not_Found
+  | Some k -> (
+    let new_etag = etag k in
+    let set_etag () =
+      ()
+      |> refresh
+      |> Lwt.map (fun resp ->
+             Dream.set_header resp "ETag" new_etag;
+             resp)
+    in
+    match Dream.header req "If-None-Match" with
+    | Some list -> (
+      match find_etag new_etag list with
+      | Some _ -> Dream.empty `Not_Modified
+      | None -> set_etag ())
+    | None -> set_etag ())
+
+let if_match req ~key save =
+  let condition =
+    match Dream.header req "If-Match", key with
+    | None, _ | _, None -> true
+    | Some "*", Some _ -> true
+    | Some list, Some k -> (
+      match find_etag (etag k) list with
+      | Some _ -> true
+      | None -> false)
+  in
+  if condition then save () else Dream.empty `Precondition_Failed
 
 module Path = Path
 

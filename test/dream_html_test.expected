@@ -87,6 +87,13 @@ bar
 
 
 
+🔎 if_match - no such resource
+200 OK
+Content-Type: text/html; charset=utf-8
+
+bar
+
+
 🔎 Redirect
 303 See Other
 Location: /todos/abcd

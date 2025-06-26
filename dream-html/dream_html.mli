@@ -502,36 +502,34 @@ val csrf_tag : Dream.request -> node
 
 val if_none_match :
   Dream.request ->
-  ?weak:bool ->
-  string ->
+  key:([< `strong | `weak] * string) option ->
   (unit -> Dream.response Dream.promise) ->
   Dream.response Dream.promise
-(** [if_none_match req ?weak key refresh] checks the [If-None-Match] header of
-    [req] to see if it contains an ETag derived from the [key]. If so, it
-    responds with [304 Not Modified]. Otherwise, it re-fetches the resource
-    corresponding to [key] using [refresh ()], and sets the ETag in the response
-    header.
+(** [if_none_match req ~key refresh] checks the [If-None-Match] header of [req]
+    to see if it contains an ETag derived from the [key]. If so, it responds
+    with [304 Not Modified]. Otherwise, it re-fetches the resource corresponding
+    to [key] using [refresh ()], and sets the ETag in the response header.
 
-    @param weak
-      allows specifying whether the ETag uses a weak validator. The default is
-      [true], meaning we don't expect the resource to match byte-for-byte.
+    @param key
+      (eg a timestamp) is used to derive an ETag, together with the strength of
+      its validator. If [None], the server does not know about the resource and
+      responds with a [404 Not Found].
 
     @since 3.11.0 *)
 
 val if_match :
   Dream.request ->
-  ?weak:bool ->
-  string ->
+  key:([< `strong | `weak] * string) option ->
   (unit -> Dream.response Dream.promise) ->
   Dream.response Dream.promise
-(** [if_match req ?weak key save] checks if the [If-Match] header of [req]
-    matches the ETag derived from the [key]. If so, it calls [save ()] and
-    returns the response. Otherwise, it responds with an error
-    [412 Precondition Failed].
+(** [if_match req ~key save] checks if the [If-Match] header of [req] matches
+    the ETag derived from the [key]. If so, it calls [save ()] and returns the
+    response. Otherwise, it responds with an error [412 Precondition Failed].
 
-    @param weak
-      allows specifying whether the ETag uses a weak validator. The default is
-      [false], meaning we expect the resource to match byte-for-byte.
+    @param key
+      (eg a timestamp) is used to derive an ETag, together with the strength of
+      its validator. If [None], the server does not know about the resource and
+      thus allows it to be updated with [save ()].
 
     @since 3.11.0 *)
 

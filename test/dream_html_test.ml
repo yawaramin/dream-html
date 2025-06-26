@@ -159,37 +159,43 @@ let () =
 let () =
   let open Dream_html in
   let key = "foo"
-  and value = "bar"
+  and resp () = Dream.html "bar"
   and etag = {|"acbd18db4cc2f85cedef654fccc4a4d8"|} in
   let weak_etag = "W/" ^ etag in
 
   test "if_none_match - set ETag" (fun () ->
       test_handler "/" (fun req ->
-          if_none_match req key (fun () -> Dream.html value)));
+          if_none_match req ~key:(Some (`weak, key)) resp));
 
   test "if_none_match - match ETag" (fun () ->
       test_handler
         ~headers:["If-None-Match", weak_etag]
         "/"
-        (fun req -> if_none_match req key (fun () -> Dream.html value)));
+        (fun req -> if_none_match req ~key:(Some (`weak, key)) resp));
 
   test "if_none_match - no match ETag" (fun () ->
       test_handler
         ~headers:["If-None-Match", etag]
         "/"
-        (fun req -> if_none_match req key (fun () -> Dream.html value)));
+        (fun req -> if_none_match req ~key:(Some (`weak, key)) resp));
 
   test "if_match - match ETag" (fun () ->
       test_handler
         ~headers:["If-Match", etag]
         "/"
-        (fun req -> if_match req key (fun () -> Dream.html value)));
+        (fun req -> if_match req ~key:(Some (`strong, key)) resp));
 
   test "if_match - no match ETag" (fun () ->
       test_handler
         ~headers:["If-Match", weak_etag]
         "/"
-        (fun req -> if_match req key (fun () -> Dream.html value)))
+        (fun req -> if_match req ~key:(Some (`strong, key)) resp));
+
+  test "if_match - no such resource" (fun () ->
+      test_handler
+        ~headers:["If-Match", weak_etag]
+        "/"
+        (fun req -> if_match ~key:None req resp))
 
 let () =
   let todo = Dream_html.path "/todos/%s" "/todos/%s" in
