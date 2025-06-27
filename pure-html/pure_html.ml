@@ -36,6 +36,13 @@ let is_null = function
   | Tag { name = ""; _ } -> true
   | _ -> false
 
+let rec fold ~tag ~txt ~comment value = function
+  | Tag { name; attrs; children = None } -> tag name attrs value
+  | Tag { name; attrs; children = Some c } ->
+    c |> List.fold_left (fold ~tag ~txt ~comment) value |> tag name attrs
+  | Txt t -> txt t value
+  | Comment c -> comment c value
+
 type 'a to_attr = 'a -> attr
 type 'a string_attr = ('a, unit, string, attr) format4 -> 'a
 type std_tag = attr list -> node list -> node
