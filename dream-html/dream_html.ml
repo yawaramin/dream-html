@@ -69,23 +69,28 @@ let csrf_tag req =
   let open HTML in
   input [name "dream.csrf"; type_ "hidden"; value "%s" (Dream.csrf_token req)]
 
-let etag (strength, str) =
-  let weak =
-    match strength with
-    | `weak -> "W/"
-    | `strong -> ""
-  in
-  weak ^ {|"|} ^ Digest.(str |> string |> to_hex) ^ {|"|}
+let etag str = {|"|} ^ Digest.(str |> string |> to_hex) ^ {|"|}
+
+let etag = function
+  | `Strong k -> etag k
+  | `Weak k -> "W/" ^ etag k
+
+let max_header_len = 8190
 
 let find_etag et str =
-  str |> String.split_on_char ',' |> List.find_opt (fun s -> String.trim s = et)
+  if String.length str > max_header_len then
+    invalid_arg "ETag too long"
+  else
+    str
+    |> String.split_on_char ','
+    |> List.find_opt (fun s -> String.trim s = et)
 
 let if_none_match req ~key refresh =
   match key with
-  | None -> Dream.empty `Not_Found
-  | Some k -> (
+  | `None -> Dream.empty `Not_Found
+  | (`Strong _ | `Weak _) as k -> (
     let new_etag = etag k in
-    let set_etag () =
+    let refresh () =
       ()
       |> refresh
       |> Lwt.map (fun resp ->
@@ -96,20 +101,19 @@ let if_none_match req ~key refresh =
     | Some list -> (
       match find_etag new_etag list with
       | Some _ -> Dream.empty `Not_Modified
-      | None -> set_etag ())
-    | None -> set_etag ())
+      | None -> refresh ())
+    | None -> refresh ())
 
 let if_match req ~key save =
-  let condition =
+  if
     match Dream.header req "If-Match", key with
-    | None, _ | _, None -> true
-    | Some "*", Some _ -> true
-    | Some list, Some k -> (
-      match find_etag (etag k) list with
-      | Some _ -> true
-      | None -> false)
-  in
-  if condition then save () else Dream.empty `Precondition_Failed
+    | None, _ | _, `None | Some "*", (`Strong _ | `Weak _) -> true
+    | Some list, ((`Strong _ | `Weak _) as k) ->
+      list |> find_etag (etag k) |> Option.is_some
+  then
+    save ()
+  else
+    Dream.empty `Precondition_Failed
 
 module Path = Path
 
@@ -134,7 +138,8 @@ let trace path = dream_method Dream.trace path
 let patch path = dream_method Dream.patch path
 let any path = dream_method Dream.any path
 
-let redirect ?status ?code ?headers req (_, location) =
+let redirect ?status ?code ?headers ?flash req (_, location) =
+  Option.iter (Dream.add_flash_message req "flash") flash;
   Dream.redirect ?status ?code ?headers req location
 
 let use = Dream.scope "/"

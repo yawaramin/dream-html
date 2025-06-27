@@ -437,14 +437,15 @@ val redirect :
   ?status:[< Dream.redirection] ->
   ?code:int ->
   ?headers:(string * string) list ->
+  ?flash:string ->
   Dream.request ->
   attr ->
   Dream.response Dream.promise
-(** [redirect ?status ?code ?headers req href] is the same as [Dream.redirect]
-    but instead of taking a string location to redirect to, it takes an
-    attribute (you'll usually want to use [href]). The reason for taking an
-    attribute is that we can construct correct route paths in attributes without
-    having to hard-code the entire path. Eg,
+(** [redirect ?status ?code ?headers ?flash req href] is the same as
+    [Dream.redirect] but instead of taking a string location to redirect to, it
+    takes an attribute (you'll usually want to use [href]). The reason for
+    taking an attribute is that we can construct correct route paths in
+    attributes without having to hard-code the entire path. Eg,
 
     {[
       let%path order = "/orders/%s"
@@ -452,6 +453,10 @@ val redirect :
       let order_id = ... in
       Dream_html.redirect req (path_attr href order order_id)
     ]}
+
+    @param flash
+      convenience to add a flash message under the key [flash]. Internally just
+      calls [Dream.add_flash_message].
 
     @since 3.11.0 *)
 
@@ -502,24 +507,25 @@ val csrf_tag : Dream.request -> node
 
 val if_none_match :
   Dream.request ->
-  key:([< `strong | `weak] * string) option ->
+  key:[< `None | `Strong of string | `Weak of string] ->
   (unit -> Dream.response Dream.promise) ->
   Dream.response Dream.promise
 (** [if_none_match req ~key refresh] checks the [If-None-Match] header of [req]
     to see if it contains an ETag derived from the [key]. If so, it responds
-    with [304 Not Modified]. Otherwise, it re-fetches the resource corresponding
-    to [key] using [refresh ()], and sets the ETag in the response header.
+    with [304 Not Modified] and an empty body. Otherwise, it re-fetches the
+    resource corresponding to [key] using [refresh ()], and sets the ETag in the
+    response header.
 
     @param key
-      (eg a timestamp) is used to derive an ETag, together with the strength of
-      its validator. If [None], the server does not know about the resource and
-      responds with a [404 Not Found].
+      (eg a timestamp) together with the strength of its validator, is used to
+      derive an ETag. If [`None], the server does not know about the resource
+      and responds with a [404 Not Found].
 
     @since 3.11.0 *)
 
 val if_match :
   Dream.request ->
-  key:([< `strong | `weak] * string) option ->
+  key:[< `None | `Strong of string | `Weak of string] ->
   (unit -> Dream.response Dream.promise) ->
   Dream.response Dream.promise
 (** [if_match req ~key save] checks if the [If-Match] header of [req] matches
@@ -527,9 +533,9 @@ val if_match :
     response. Otherwise, it responds with an error [412 Precondition Failed].
 
     @param key
-      (eg a timestamp) is used to derive an ETag, together with the strength of
-      its validator. If [None], the server does not know about the resource and
-      thus allows it to be updated with [save ()].
+      (eg a timestamp) together with the strength of its validator, is used to
+      derive an ETag. If [`None], the server does not know about the resource
+      and thus allows it to be updated with [save ()].
 
     @since 3.11.0 *)
 
