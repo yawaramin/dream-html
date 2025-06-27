@@ -19,9 +19,6 @@ let vary req ~fragment full =
     (Printf.sprintf "%s, %s" hx_request hx_history_restore_request);
   resp
 
-let weak = Option.map (fun s -> `weak, s)
-let strong = Option.map (fun s -> `strong, s)
-
 (* Middleware to handle errors *)
 let dreamcatcher next req =
   Lwt.catch
@@ -124,9 +121,7 @@ module Todos = struct
 
   let get =
     get Path.todos (fun req ->
-        if_none_match req
-          ~key:(weak (Repo.last_modified ()))
-          (fun () ->
+        if_none_match req ~key:(Repo.key ()) (fun () ->
             []
             |> null
             |> render ~todos:(Repo.list ())
@@ -204,9 +199,7 @@ module Todo = struct
         let rendered = render ~todo in
         vary req
           ~fragment:(fun () ->
-            if_none_match req
-              ~key:(weak (Repo.last_modified ~id ()))
-              (fun () ->
+            if_none_match req ~key:(Repo.key ~id ()) (fun () ->
                 respond (HTML.null [rendered; Page.title_tag todo.desc])))
           (fun () ->
             respond
@@ -221,9 +214,7 @@ module Todo = struct
         match frm with
         | `Ok [("desc", desc); ("id", idval)] ->
           let id = int_of_string idval in
-          if_match req
-            ~key:(strong (Repo.last_modified ~id ()))
-            (fun () ->
+          if_match req ~key:(Repo.key ~id ()) (fun () ->
               let todo = Repo.edit id desc in
               vary req
                 ~fragment:(fun () ->
