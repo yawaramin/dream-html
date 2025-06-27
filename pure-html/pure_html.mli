@@ -239,11 +239,13 @@ val fold :
   node ->
   'a
 (** [fold ~tag ~txt ~comment value node] is the value resulting from 'folding
-    over' the [node] with an initial [value] and the following callbacks:
+    over' the [node] with an initial [value] and calling the following callbacks
+    for each child in the node's tree:
 
     @param tag
-      [tag name children value] is the value resulting from processing the given
-      node's [name], [children], and the [value] calculated up until now.
+      [tag name attrs value] is the value resulting from processing the given
+      tag node's [name], [attrs], and the [value] calculated recursively from
+      the tag's children.
     @param txt
       [txt string value] is the value resulting from processing the given text
       node's [string] and the [value] calculated up until now.
@@ -254,14 +256,12 @@ val fold :
     Eg calculate a list of all the classes used by a node and its children:
 
     {[
-      fold
-        ~tag:(fun _name attrs classes ->
-          match List.find_opt (fun (n, _) -> n = "class") attrs with
-          | Some (_name, c) -> c :: classes
-          | None -> classes)
-        ~txt:(fun _string c -> c)
-        ~comment:(fun _string c -> c)
-        [] node
+      let tag _name attrs classes =
+        match List.find_opt (fun (n, _) -> n = "class") attrs with
+        | Some (_name, c) -> c :: classes
+        | None -> classes
+      and txt_or_comment _string classes = classes in
+      fold ~tag ~txt:txt_or_comment ~comment:txt_or_comment [] node
     ]}
 
     @since 3.11.0 *)

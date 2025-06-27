@@ -39,13 +39,9 @@ let is_null = function
 let rec fold ~tag ~txt ~comment value = function
   | Tag { name; attrs; children = None } -> tag name attrs value
   | Tag { name; attrs; children = Some c } ->
-    c
-    |> List.fold_left
-         (fun value child -> fold ~tag ~txt ~comment value child)
-         value
-    |> tag name attrs
+    c |> List.fold_left (fold ~tag ~txt ~comment) value |> tag name attrs
   | Txt t -> txt t value
-  | Comment t -> comment t value
+  | Comment c -> comment c value
 
 type 'a to_attr = 'a -> attr
 type 'a string_attr = ('a, unit, string, attr) format4 -> 'a
