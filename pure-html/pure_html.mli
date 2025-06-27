@@ -231,6 +231,41 @@ val is_null_ : attr -> bool
 
     @since 1.2.0. *)
 
+val fold :
+  tag:(string -> attr list -> 'a -> 'a) ->
+  txt:(string -> 'a -> 'a) ->
+  comment:(string -> 'a -> 'a) ->
+  'a ->
+  node ->
+  'a
+(** [fold ~tag ~txt ~comment value node] is the value resulting from 'folding
+    over' the [node] with an initial [value] and the following callbacks:
+
+    @param tag
+      [tag name children value] is the value resulting from processing the given
+      node's [name], [children], and the [value] calculated up until now.
+    @param txt
+      [txt string value] is the value resulting from processing the given text
+      node's [string] and the [value] calculated up until now.
+    @param comment
+      [comment string value] is the value resulting from processing the given
+      comment node's [string] and the [value] calculated up until now.
+
+    Eg calculate a list of all the classes used by a node and its children:
+
+    {[
+      fold
+        ~tag:(fun _name attrs classes ->
+          match List.find_opt (fun (n, _) -> n = "class") attrs with
+          | Some (_name, c) -> c :: classes
+          | None -> classes)
+        ~txt:(fun _string c -> c)
+        ~comment:(fun _string c -> c)
+        [] node
+    ]}
+
+    @since 3.11.0 *)
+
 (** {2 HTML} *)
 
 (** All standard HTML attributes and tags. Some attributes and tags have the

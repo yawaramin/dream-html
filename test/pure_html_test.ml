@@ -95,6 +95,22 @@ let () =
   test_html "add new attribute" (div [id "foo"] [] +@ class_ "bar")
 
 let () =
+  let node =
+    let open HTML in
+    div [class_ "a b c"] [p [class_ "d e f"] []; p [class_ "g h i"] []]
+  in
+  node
+  |> fold
+       ~tag:(fun _name attrs classes ->
+         match List.find_opt (fun (n, _) -> n = "class") attrs with
+         | Some (_name, c) -> classes ^ " " ^ c
+         | None -> classes)
+       ~txt:(fun _string c -> c)
+       ~comment:(fun _string c -> c)
+       ""
+  |> Printf.printf "\n\n✔︎ fold node: %s\n"
+
+let () =
   test_xml ~header:true "SVG"
   @@
   let open SVG in
