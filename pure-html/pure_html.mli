@@ -257,8 +257,8 @@ val fold :
 
     {[
       let tag _name attrs classes =
-        match List.find_opt (fun (n, _) -> n = "class") attrs with
-        | Some (_name, c) -> c :: classes
+        match List.assoc_opt "class" attrs with
+        | Some c -> c :: classes
         | None -> classes
       and txt_or_comment _string classes = classes in
       fold ~tag ~txt:txt_or_comment ~comment:txt_or_comment [] node

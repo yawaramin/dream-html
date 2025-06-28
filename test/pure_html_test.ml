@@ -102,8 +102,8 @@ let () =
   node
   |> fold
        ~tag:(fun _name attrs classes ->
-         match List.find_opt (fun (n, _) -> n = "class") attrs with
-         | Some (_name, c) -> classes ^ " " ^ c
+         match List.assoc_opt "class" attrs with
+         | Some c -> classes ^ " " ^ c
          | None -> classes)
        ~txt:(fun _string c -> c)
        ~comment:(fun _string c -> c)
