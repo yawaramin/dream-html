@@ -20,11 +20,12 @@ let methods_add meth handler m =
   | `POST -> { m with post = handler }
   | `PUT -> { m with put = handler }
   | `DELETE -> { m with delete = handler }
-  | `PATCH -> { m with patch = handler }
+  | `Other "PATCH" -> { m with patch = handler }
   | `OPTIONS -> { m with options = handler }
   | `HEAD -> { m with head = handler }
   | `TRACE -> { m with trace = handler }
   | `CONNECT -> { m with connect = handler }
+  | _ -> failwith "unknown HTTP method"
 
 let methods_new ~not_allowed meth handler =
   let m =
@@ -48,19 +49,25 @@ type handlers =
 let handlers_new ~not_allowed meth handler =
   match meth with
   | `ANY -> Any handler
-  | `GET
-  | `POST
-  | `PUT
-  | `DELETE
-  | `PATCH
-  | `OPTIONS
-  | `HEAD
-  | `TRACE
-  | `CONNECT -> Methods (methods_new ~not_allowed meth handler)
+  | _ -> Methods (methods_new ~not_allowed meth handler)
 
 let handlers_add meth handler = function
-  | Any _ -> failwith "cannot add handler when 'any' handler is set"
+  | Any _ -> failwith "cannot add a handler when 'any' handler is set"
   | Methods m -> Methods (methods_add meth handler m)
+
+let handlers_find ~not_allowed meth h =
+  match meth, h with
+  | _, Any h -> h
+  | `GET, Methods m -> m.get
+  | `POST, Methods m -> m.post
+  | `PUT, Methods m -> m.put
+  | `DELETE, Methods m -> m.delete
+  | `Other "PATCH", Methods m -> m.patch
+  | `OPTIONS, Methods m -> m.options
+  | `HEAD, Methods m -> m.head
+  | `TRACE, Methods m -> m.trace
+  | `CONNECT, Methods m -> m.connect
+  | _ -> not_allowed
 
 type segment =
   { handlers : handlers option;
@@ -76,26 +83,16 @@ let get path handler = `GET, path, Path.handler path.Path.rfmt handler
 let post path handler = `POST, path, Path.handler path.Path.rfmt handler
 let put path handler = `PUT, path, Path.handler path.Path.rfmt handler
 let delete path handler = `DELETE, path, Path.handler path.Path.rfmt handler
-let patch path handler = `PATCH, path, Path.handler path.Path.rfmt handler
+
+let patch path handler =
+  `Other "PATCH", path, Path.handler path.Path.rfmt handler
+
 let options path handler = `OPTIONS, path, Path.handler path.Path.rfmt handler
 let head path handler = `HEAD, path, Path.handler path.Path.rfmt handler
 let trace path handler = `TRACE, path, Path.handler path.Path.rfmt handler
 let connect path handler = `CONNECT, path, Path.handler path.Path.rfmt handler
 let any path handler = `ANY, path, Path.handler path.Path.rfmt handler
 let root = Segment { handlers = None; statics = Static.empty; param = None }
-
-let add_method m meth handler =
-  match meth with
-  | `GET -> { m with get = handler }
-  | `POST -> { m with post = handler }
-  | `PUT -> { m with put = handler }
-  | `DELETE -> { m with delete = handler }
-  | `PATCH -> { m with delete = handler }
-  | `OPTIONS -> { m with delete = handler }
-  | `HEAD -> { m with delete = handler }
-  | `TRACE -> { m with delete = handler }
-  | `CONNECT -> { m with delete = handler }
-
 let fail_rest () = failwith "rest parameter must be last segment of path"
 
 let router ?(not_found = fun _ -> Response.empty `Not_found)
@@ -132,16 +129,9 @@ let router ?(not_found = fun _ -> Response.empty `Not_found)
     | static :: path_segments -> (
       match router with
       | Rest _ -> fail_rest ()
-      | Segment ({ statics; _ } as s) ->
+      | Segment s ->
         let static_router = add_route router path_segments meth handler in
-        Segment
-          { s with
-            statics =
-              (if Static.is_empty statics then
-                 Static.singleton static static_router
-               else
-                 Static.add static static_router statics)
-          })
+        Segment { s with statics = Static.add static static_router s.statics })
     | [] -> (
       match router with
       | Rest _ -> router
@@ -158,34 +148,21 @@ let router ?(not_found = fun _ -> Response.empty `Not_found)
              (path.Path.rfmt |> string_of_format |> String.split_on_char '/')
              meth handler)
   in
-  let rec finder path_segments router =
-    match router with
+  let rec find meth path_segments router =
+    match path_segments, router with
+    | _, Rest handlers -> handlers_find ~not_allowed meth handlers
+    | path_segment :: path_segments, Segment { statics; param; handlers = _ }
+      -> (
+      match Static.find_opt path_segment statics with
+      | Some router -> find meth path_segments router
+      | None -> (
+        match param with
+        | Some router -> find meth path_segments router
+        | None -> not_found))
+    | [], Segment { handlers = Some h; _ } -> handlers_find ~not_allowed meth h
+    | [], Segment { handlers = None; _ } -> not_found
+  in
   fun req ->
-    let path_segments = req |> Piaf.Request.target |> String.split_on_char '/' in
-
-
-
-(*
-GET /
-GET /todos
-POST /todos
-GET /todos/%d
-POST /todos/%d ->
-
-Segment {
-  param = None;
-  statics =
-    Static.empty
-    |> Static.add "todos" (Segment {
-      param = Some (Segment {
-        handlers = By_method { get = ignore; post = ignore; ... };
-        statics = Static.empty;
-        param = None;
-      });
-      statics = Static.empty;
-      handlers = By_method { get = ignore; post = ignore; ... };
-    });
-  handlers = By_method { get = ignore; ... };
-}
-
-*)
+    find (Piaf.Request.meth req)
+      (req |> Piaf.Request.target |> String.split_on_char '/')
+      router req
