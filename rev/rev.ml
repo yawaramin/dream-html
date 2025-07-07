@@ -15,6 +15,28 @@
    You should have received a copy of the GNU General Public License along with
    dream-html. If not, see <https://www.gnu.org/licenses/>. *)
 
+type request = Piaf.Request.t
+type response = Piaf.Response.t
+type handler = Router.handler
+type middleware = handler -> handler
+type method_ = Piaf.Method.t
+
+let method_to_string = Piaf.Method.to_string
+let string_to_method = Piaf.Method.of_string
+let methods_equal = Method.equal
+let normalize_method = Method.normalize
+
+type informational = Piaf.Status.informational
+type successful = Piaf.Status.successful
+type redirection = Piaf.Status.redirection
+type client_error = Piaf.Status.client_error
+type server_error = Piaf.Status.server_error
+type standard_status = Piaf.Status.standard
+type status = Piaf.Status.t
+
+let status_to_string = Piaf.Status.to_string
+let status_to_reason = Status.to_reason
+
 include Pure_html
 module Form = Form
 
@@ -87,7 +109,7 @@ let find_etag et str =
 
 let if_none_match req ~key refresh =
   match key with
-  | `None -> Dream.empty `Not_Found
+  | `None -> Response.empty `Not_found
   | (`Strong _ | `Weak _) as k -> (
     let new_etag = etag k in
     let refresh () =
@@ -100,7 +122,7 @@ let if_none_match req ~key refresh =
     match Dream.header req "If-None-Match" with
     | Some list -> (
       match find_etag new_etag list with
-      | Some _ -> Dream.empty `Not_Modified
+      | Some _ -> Response.empty `Not_modified
       | None -> refresh ())
     | None -> refresh ())
 
@@ -113,12 +135,10 @@ let if_match req ~key save =
   then
     save ()
   else
-    Dream.empty `Precondition_Failed
-
-module Path = Path
+    Response.empty `Precondition_failed
 
 type ('r, 'p) path = ('r, 'p) Path.t
-type ('r, 'p) route = ('r, 'p) Path.t -> (Dream.request -> 'r) -> Dream.route
+type ('r, 'p) route = ('r, 'p) Path.t -> (Piaf.Request.t -> 'r) -> Router.route
 
 let path rfmt afmt = { Path.rfmt; afmt }
 let path_attr attr { Path.afmt; _ } = attr afmt

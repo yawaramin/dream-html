@@ -1,6 +1,6 @@
 (lang dune 3.0)
 
-(name dream-html)
+(name rev)
 
 (version v3.11.0)
 
@@ -16,7 +16,7 @@
  (github yawaramin/dream-html))
 
 (package
- (name pure-html)
+ (name rev-html)
  (synopsis "HTML generator eDSL")
  (description
   "Write HTML directly in your OCaml source files with editor support.")
@@ -29,20 +29,20 @@
     (< 5.0.0)))))
 
 (package
- (name dream-html)
+ (name rev)
  (synopsis "HTML generator eDSL for Dream")
  (description
   "Write HTML directly in your OCaml source files with editor support.")
  (documentation "https://yawaramin.github.io/dream-html/")
  (tags (org:yawaramin))
  (depends
-  (ocaml
-   (>= 4.14.0))
   (ppxlib
    (and
     (>= 0.33.0)
     (< 1.0.0)))
-  (pure-html
+  (rev-html
    (= :version))
-  (dream
-   (>= 1.0.0~alpha8))))
+  (piaf
+   (and
+    (>= 0.2.0)
+    (< 1.0.0)))))

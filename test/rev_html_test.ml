@@ -15,7 +15,7 @@
    You should have received a copy of the GNU General Public License along with
    dream-html. If not, see <https://www.gnu.org/licenses/>. *)
 
-open Pure_html
+open Rev_html
 
 let test_html msg node = Format.printf "\n\n✔︎ %s\n%a\n" msg pp node
 
@@ -384,7 +384,7 @@ let () =
 let () =
   test_xml ~header:true "RSS"
   @@
-  let open Pure_html in
+  let open Rev_html in
   let open RSS in
   rss [Atom.xmlns; version_2]
     [ channel []

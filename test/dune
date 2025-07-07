@@ -1,19 +1,19 @@
 (test
- (name pure_html_test)
- (package pure-html)
- (libraries pure-html)
- (modules pure_html_test))
+ (name rev_html_test)
+ (package rev-html)
+ (libraries rev-html)
+ (modules rev_html_test))
 
 (test
- (name dream_html_test)
- (package dream-html)
- (libraries dream-html)
- (modules dream_html_test))
+ (name rev_test)
+ (package rev)
+ (libraries rev)
+ (modules rev_test))
 
 (test
  (name route_test)
- (package dream-html)
- (libraries dream_html)
+ (package rev)
+ (libraries rev)
  (modules route_test)
  (preprocess
-  (pps dream-html.ppx)))
+  (pps rev.ppx)))

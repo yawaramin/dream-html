@@ -1,0 +1,4 @@
+(executable
+ (name rev_cli)
+ (public_name rev-cli)
+ (package rev))

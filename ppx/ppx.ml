@@ -19,8 +19,7 @@ open Ppxlib
 open Ast_builder.Default
 
 let expansion ~loc s =
-  pexp_apply ~loc
-    (evar ~loc "Dream_html.path")
+  pexp_apply ~loc (evar ~loc "Rev.path")
     [Nolabel, estring ~loc s; Nolabel, estring ~loc s]
 
 let binding_extender =
@@ -45,5 +44,4 @@ let path_binding = Context_free.Rule.extension binding_extender
 let path_expr = Context_free.Rule.extension expr_extender
 
 let () =
-  Driver.register_transformation ~rules:[path_binding; path_expr]
-    "dream-html.ppx"
+  Driver.register_transformation ~rules:[path_binding; path_expr] "rev.ppx"

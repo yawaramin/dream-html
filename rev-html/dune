@@ -1,0 +1,4 @@
+(library
+ (name rev_html)
+ (public_name rev-html)
+ (libraries uri))
