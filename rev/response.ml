@@ -6,6 +6,8 @@ let status' status code =
   | None, Some c -> Piaf.Status.of_code c
   | None, None -> `OK
 
+let headers rep = rep |> Piaf.Response.headers |> Piaf.Headers.to_list
+
 let empty ?headers status =
   Piaf.Response.create ?headers:(headers' headers) status
 
