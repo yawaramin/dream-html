@@ -1,4 +1,4 @@
-module Static = Map.Make (String)
+module SM = Map.Make (String)
 
 type handler = Piaf.Request.t -> Piaf.Response.t
 type route = Route : Piaf.Method.t * (_, _) Path.t * handler -> route
@@ -85,9 +85,8 @@ let handlers_find ~not_allowed meth = function
     | _ -> not_allowed)
 
 type segment =
-  { handlers : handlers option;
-    statics : t Static.t;
-    param : t option
+  { names : t SM.t;
+    handlers : handlers option
   }
 
 and t =
@@ -118,7 +117,7 @@ let connect path handler =
 let any path handler =
   Route (`Other "ANY", path, Path.handler path.Path.rfmt handler)
 
-let root = Segment { handlers = None; statics = Static.empty; param = None }
+let root = Segment { handlers = None; names = SM.empty }
 let fail_rest () = failwith "rest parameter must be last segment of path"
 
 (* If a static segment needs to start with the literal '%' character, escape it
@@ -130,14 +129,13 @@ let remove_pct str =
   else
     str
 
+(* We are guaranteed to not have this be a valid segment name *)
+let param_name = "/"
+
 let rec router_add path_segments meth handler router =
   match path_segments with
   | [""] | [""; ""] ->
-    Segment
-      { handlers = Some (handlers_new meth handler);
-        statics = Static.empty;
-        param = None
-      }
+    Segment { handlers = Some (handlers_new meth handler); names = SM.empty }
   | "" :: path_segments -> router_add path_segments meth handler router
   | ["%*s"] -> Rest (handlers_new meth handler)
   | "%*s" :: _ -> fail_rest ()
@@ -155,17 +153,24 @@ let rec router_add path_segments meth handler router =
     :: path_segments -> (
     match router with
     | Rest _ -> fail_rest ()
-    | Segment { param = Some _; _ } -> failwith "duplicate parameter segment"
-    | Segment ({ param = None; _ } as s) ->
-      Segment
-        { s with param = Some (router_add path_segments meth handler router) })
+    | Segment s -> (
+      match SM.find_opt param_name s.names with
+      | Some _ -> failwith "duplicate parameter segment"
+      | None ->
+        Segment
+          { s with
+            names =
+              SM.add param_name
+                (router_add path_segments meth handler router)
+                s.names
+          }))
   | static :: path_segments -> (
     let static = remove_pct static in
     match router with
     | Rest _ -> fail_rest ()
     | Segment s ->
       let static_router = router_add path_segments meth handler router in
-      Segment { s with statics = Static.add static static_router s.statics })
+      Segment { s with names = SM.add static static_router s.names })
   | [] -> (
     match router with
     | Rest _ -> router
@@ -178,12 +183,14 @@ let rec router_find ~not_allowed ~not_found meth path_segments router =
   match path_segments, router with
   | _, Rest handlers -> handlers_find ~not_allowed meth handlers
   | path_segment :: path_segments, Segment s -> (
-    match Static.find_opt path_segment s.statics, s.param with
-    | Some router, _ ->
+    match SM.find_opt path_segment s.names with
+    | Some router ->
       router_find ~not_allowed ~not_found meth path_segments router
-    | None, Some router ->
-      router_find ~not_allowed ~not_found meth path_segments router
-    | None, None -> not_found)
+    | None -> (
+      match SM.find_opt param_name s.names with
+      | Some router ->
+        router_find ~not_allowed ~not_found meth path_segments router
+      | None -> not_found))
   | [], Segment { handlers = Some h; _ } -> handlers_find ~not_allowed meth h
   | [], Segment { handlers = None; _ } -> not_found
 
