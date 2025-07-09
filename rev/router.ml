@@ -169,8 +169,12 @@ let rec router_add path_segments meth handler router =
     match router with
     | Rest _ -> fail_rest ()
     | Segment s ->
-      let static_router = router_add path_segments meth handler router in
-      Segment { s with names = SM.add static static_router s.names })
+      let router =
+        match SM.find_opt static s.names with
+        | Some router -> router_add path_segments meth handler router
+        | None -> router_add path_segments meth handler router
+      in
+      Segment { s with names = SM.add static router s.names })
   | [] -> (
     match router with
     | Rest _ -> router
