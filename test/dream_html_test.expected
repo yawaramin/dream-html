@@ -13,16 +13,16 @@
   "permissions" = ["r"] }
 
 🔎 Error without name
-[name, error.required]
+[("name", "error.required")]
 
 🔎 Error with too low age and empty name
-[age, error.range; name, Must not be empty]
+[("age", "error.range"); ("name", "Must not be empty")]
 
 🔎 Error too many permissions
-[permissions, error.length]
+[("permissions", "error.length")]
 
 🔎 Error can't have permissions if not accept TOS
-[permissions, error.length]
+[("permissions", "error.length")]
 
 🔎 OK multiple nested values inside form
 { "item_count" = 2;
@@ -35,7 +35,7 @@
       "discount" = 0 }] }
 
 🔎 Error missing required fields of nested values
-[item[0].id, error.required; item[1].qty, error.required]
+[("item[0].id", "error.required"); ("item[1].qty", "error.required")]
 
 🔎 Indent CSRF tag correctly
 200 OK
