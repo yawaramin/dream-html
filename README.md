@@ -130,29 +130,29 @@ opam pin add dream-html git+https://github.com/yawaramin/dream-html
 
 ## Usage
 
-A convenience is provided to respond with an HTML node from a handler:
+Respond with an HTML node from a handler:
 
 ```ocaml
 Dream_html.respond greeting
 ```
 
-You can compose multiple HTML nodes together into a single node without an extra
-DOM node, like [React fragments](https://react.dev/reference/react/Fragment):
+Compose multiple HTML nodes together into a single node without an extra DOM
+node, like [React fragments](https://react.dev/reference/react/Fragment):
 
 ```ocaml
 let view = null [p [] [txt "Hello"]; p [] [txt "World"]]
 ```
 
-You can do string interpolation of text nodes using `txt` and any attribute which
-takes a string value:
+String interpolation of text nodes using `txt` and any attribute which takes a
+string value:
 
 ```ocaml
 let greet name = p [id "greet-%s" name] [txt "Hello, %s!" name]
 ```
 
-You can conditionally render an attribute, and
-[void elements](https://developer.mozilla.org/en-US/docs/Glossary/Void_element)
-are statically enforced as childless:
+Conditionally render an attribute, and statically enforce [void
+elements](https://developer.mozilla.org/en-US/docs/Glossary/Void_element) as
+childless:
 
 ```ocaml
 let entry =
@@ -164,23 +164,14 @@ let entry =
   ]
 ```
 
-You can also embed HTML comments in the generated document:
+Embed HTML comments in the generated document:
 
 ```ocaml
 div [] [comment "TODO: xyz."; p [] [txt "Hello!"]]
 (* <div><!-- TODO: xyz. -->Hello!</div> *)
 ```
 
-You have precise control over whitespace in the rendered HTML; dream-html does
-not insert any whitespace by itself–all whitespace must be inserted inside text
-nodes explicitly:
-
-```ocaml
-p [] [txt "hello, "; txt "world!"];;
-(* <p>hello, world!</p> *)
-```
-
-You can also conveniently hot-reload the webapp in the browser using the
+Conveniently hot-reload the webapp in the browser using the
 `Dream_html.Livereload` module. See the API reference for details.
 
 ## Form validation
