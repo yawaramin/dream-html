@@ -815,6 +815,7 @@ module SVG = struct
   (* Attributes *)
   let d fmt = string_attr "d" fmt
   let fill fmt = string_attr "fill" fmt
+  let height = float_attr "height"
   let stroke fmt = string_attr "stroke" fmt
 
   let stroke_linecap value =
@@ -838,11 +839,15 @@ module SVG = struct
   let viewbox ~min_x ~min_y ~width ~height =
     "viewbox", Printf.sprintf "%d %d %d %d" min_x min_y width height
 
+  let width = float_attr "width"
+  let x = float_attr "width"
   let xmlns = "xmlns", "http://www.w3.org/2000/svg"
+  let y = float_attr "width"
 
   (* Tags *)
   let path = std_tag "path"
   let svg = std_tag "svg"
+  let use = void_tag "use"
 end
 
 module Aria = struct
