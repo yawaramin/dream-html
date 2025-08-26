@@ -754,6 +754,39 @@ td.def-doc *:first-child {
 .at-tags li { padding-left: 3ex; text-indent: -3ex; }
 .at-tags .at-tag { text-transform: capitalize }
 
+.parameter {
+  > .at-tag {
+    display: none;
+  }
+
+  > .value::before {
+    content: '⚙️ ' / 'parameter';
+  }
+
+  > .value {
+    font-family: "Aptos Mono", monospace;
+    background-color: var(--code-background);
+  }
+
+  > p:first-of-type {
+    display: inline;
+  }
+}
+
+.raises {
+  > .at-tag {
+    display: none;
+  }
+
+  > code::before {
+    content: '⚠️ ' / 'raises';
+  }
+
+  > p:first-of-type {
+    display: inline;
+  }
+}
+
 /* Alert emoji */
 
 .alert::before, .deprecated::before {

@@ -243,15 +243,15 @@ val fold :
     for each child in the node's tree:
 
     @param tag
-      [tag name attrs value] is the value resulting from processing the given
-      tag node's [name], [attrs], and the [value] calculated recursively from
-      the tag's children.
+      [name attrs value] is the value resulting from processing the given tag
+      node's [name], [attrs], and the [value] calculated recursively from the
+      tag's children.
     @param txt
-      [txt string value] is the value resulting from processing the given text
+      [string value] is the value resulting from processing the given text
       node's [string] and the [value] calculated up until now.
     @param comment
-      [comment string value] is the value resulting from processing the given
-      comment node's [string] and the [value] calculated up until now.
+      [string value] is the value resulting from processing the given comment
+      node's [string] and the [value] calculated up until now.
 
     Eg calculate a list of all the classes used by a node and its children:
 
