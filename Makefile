@@ -1,10 +1,9 @@
 DOCPATH=$(PWD)/_build/default/_doc/_html
+ODOC_SUPPORT=$(DOCPATH)/odoc.support
 
 .PHONY : publish_doc
 publish_doc : odoc
-	@chmod 644 $(DOCPATH)/index.html &&\
-	cp index.html $(DOCPATH)/ &&\
-	git checkout gh-pages &&\
+	@git checkout gh-pages &&\
 	cp -R $(DOCPATH)/* . &&\
 	git add . &&\
 	git commit --amend -mdocs &&\
@@ -21,4 +20,9 @@ doc : odoc
 
 .PHONY : odoc
 odoc :
-	@dune build @doc
+	@dune build @doc &&\
+	chmod 644 $(DOCPATH)/index.html &&\
+  /bin/rm -rf $(ODOC_SUPPORT) &&\
+	cp index.html $(DOCPATH)/ &&\
+	cp -R odoc.support $(ODOC_SUPPORT)
+
