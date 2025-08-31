@@ -27,7 +27,8 @@ let binding_extender =
   Extension.V3.declare "path" Extension.Context.structure_item
     Ast_pattern.(
       pstr
-        (pstr_value drop (value_binding ~pat:__ ~expr:(estring __) ^:: nil)
+        (pstr_value drop
+           (value_binding ~constraint_:drop ~pat:__ ~expr:(estring __) ^:: nil)
         ^:: nil))
     (fun ~ctxt pat s ->
       let loc = Expansion_context.Extension.extension_point_loc ctxt in

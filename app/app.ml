@@ -12,10 +12,11 @@ let is_htmx req =
   Dream.has_header req hx_request
   && not (Dream.has_header req hx_history_restore_request)
 
+let await = Lwt_direct.await
+
 let vary req ~fragment full =
-  let open Lwt.Syntax in
-  let+ resp = if is_htmx req then fragment () else full () in
-  Dream.set_header resp "Vary"
+  let resp = if is_htmx req then fragment () else full () in
+  Dream.set_header (await resp) "Vary"
     (Printf.sprintf "%s, %s" hx_request hx_history_restore_request);
   resp
 
@@ -23,18 +24,16 @@ let vary req ~fragment full =
 let dreamcatcher next req =
   Lwt.catch
     (fun () -> next req)
-    begin
-      fun exn ->
-        let status, msg =
-          match exn with
-          | Not_found -> `Not_Found, "not found"
-          | Failure msg | Assert_failure (msg, _, _) -> `Bad_Request, msg
-          | Invalid_argument msg -> `Status 422, msg
-          | _ -> `Internal_Server_Error, "something went wrong"
-        in
-        Dream.error (fun log -> log "%s" @@ Printexc.to_string exn);
-        Dream.respond ~status msg
-    end
+    (fun exn ->
+      let status, msg =
+        match exn with
+        | Not_found -> `Not_Found, "not found"
+        | Failure msg | Assert_failure (msg, _, _) -> `Bad_Request, msg
+        | Invalid_argument msg -> `Status 422, msg
+        | _ -> `Internal_Server_Error, "something went wrong"
+      in
+      Dream.error (fun log -> log "%s" @@ Printexc.to_string exn);
+      Dream.respond ~status msg)
 
 module Path = struct
   let%path page = "/"
@@ -130,9 +129,7 @@ module Todos = struct
 
   let post =
     post Path.todos (fun req ->
-        let open Lwt.Syntax in
-        let* frm = Dream.form ~csrf:false req in
-        match frm with
+        match await (Dream.form ~csrf:false req) with
         | `Ok [("desc", "")] -> invalid_arg "need todo description"
         | `Ok [("desc", desc)] ->
           let todo = Repo.add desc in
@@ -209,9 +206,7 @@ module Todo = struct
   let post =
     post Path.todo (fun req _ ->
         let redir id () = redirect req (path_attr HTML.href Path.todo id) in
-        let open Lwt.Syntax in
-        let* frm = Dream.form ~csrf:false req in
-        match frm with
+        match await (Dream.form ~csrf:false req) with
         | `Ok [("desc", desc); ("id", idval)] ->
           let id = int_of_string idval in
           if_match req ~key:(Repo.key ~id ()) (fun () ->
@@ -239,6 +234,8 @@ let stop =
   promise
 
 open Dream
+
+let router routes req = Lwt_direct.run (fun () -> await (router routes req))
 
 let () =
   run ~stop
