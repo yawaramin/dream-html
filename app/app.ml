@@ -235,6 +235,19 @@ let stop =
 
 open Dream
 
+let todos_xml =
+  get "/xml" (fun _ ->
+      stream
+        ~headers:["Content-Type", "application/xml"]
+        (fun stream ->
+          await (write stream "<todos>");
+          await (write stream {|<todo id=1 href="/todos/1" />|});
+          await (flush stream);
+          await (Lwt_unix.sleep 2.);
+          await (write stream "</todos>");
+          await (flush stream);
+          close stream))
+
 let router routes req = Lwt_direct.run (fun () -> await (router routes req))
 
 let () =
@@ -244,6 +257,7 @@ let () =
   @@ router
        [ Dream_html.Livereload.route;
          Static.routes;
+         todos_xml;
          Page.get;
          Todos.get;
          Todos.post;
