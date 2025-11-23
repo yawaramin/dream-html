@@ -2,7 +2,7 @@
 
 (name dream-html)
 
-(version v3.11.1)
+(version v3.11.2)
 
 (generate_opam_files true)
 
@@ -41,7 +41,7 @@
   (ppxlib
    (and
     (>= 0.36.0)
-    (< 0.37.0)))
+    (< 1.0.0)))
   (pure-html
    (= :version))
   (dream
