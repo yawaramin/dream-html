@@ -12,7 +12,7 @@ publish_doc : odoc
 
 .PHONY : publish_opam
 publish_opam :
-	@dune-release distrib && dune-release publish distrib && dune-release opam pkg -y && dune-release opam submit -y
+	@dune-release distrib && dune-release publish && dune-release opam pkg -y && dune-release opam submit -y
 
 .PHONY : doc
 doc : odoc
