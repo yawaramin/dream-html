@@ -50,6 +50,12 @@ Account: yxzefac, version: 2
 
 
 
+🔎 Target with encoded Unicode character
+200 OK
+Content-Type: text/html; charset=utf-8
+
+Account: 👍, version: 1
+
 🔎 Empty target
 404 Not Found
 

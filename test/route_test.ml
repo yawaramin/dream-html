@@ -76,6 +76,9 @@ let () =
     [get_order; get_account_version]
     "/accounts/yxzefac/versions/2";
   test "Route not found" [get_order; get_account_version] "/v2/orders/yzlkjh";
+  test "Target with encoded Unicode character" [get_account_version]
+    "/accounts/%F0%9F%91%8D/versions/1";
+  (* 👍 *)
   test "Empty target" [get_order] "";
   test "Rest param after /"
     [Dream_html.any [%path "/%*s"] (fun _ _ s -> Dream.html s)]

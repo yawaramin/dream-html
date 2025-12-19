@@ -95,7 +95,7 @@ let rec handler' : type r.
   | _ -> Dream.respond ~status:`Not_Found path
 
 let handler (CamlinternalFormatBasics.Format (fmt, _)) hdlr req =
-  let path = Dream.target req in
+  let path = req |> Dream.target |> Uri.pct_decode in
   handler' ~len:(String.length path) path fmt (hdlr req)
 
 let to_dream rfmt =
