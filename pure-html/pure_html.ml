@@ -380,6 +380,8 @@ module HTML = struct
   let color fmt = string_attr "color" fmt
   let cols = int_attr "cols"
   let colspan = int_attr "colspan"
+  let command fmt = string_attr "command" fmt
+  let commandfor fmt = string_attr "commandfor" fmt
   let content fmt = string_attr "content" fmt
 
   let contenteditable value =

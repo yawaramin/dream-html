@@ -2,7 +2,7 @@
 
 (name dream-html)
 
-(version v3.11.2)
+(version v3.12.0)
 
 (generate_opam_files true)
 

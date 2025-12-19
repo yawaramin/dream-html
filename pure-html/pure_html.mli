@@ -422,6 +422,8 @@ module HTML : sig
 
   val cols : int to_attr
   val colspan : int to_attr
+  val command : _ string_attr
+  val commandfor : _ string_attr
   val content : _ string_attr
 
   val contenteditable : [< `true_ | `false_ | `plaintext_only] to_attr
