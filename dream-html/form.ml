@@ -135,7 +135,7 @@ let char ?(min = min_char) ?(max = max_char) s =
   else
     Error error_expected_char
 
-let float ?(min = -.Float.min_float) ?(max = Float.max_float) s =
+let float ?(min = -.Float.max_float) ?(max = Float.max_float) s =
   match float_of_string s with
   | i when min <= i && i <= max -> Ok i
   | _ -> Error error_range
