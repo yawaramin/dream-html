@@ -37,7 +37,7 @@
  (tags (org:yawaramin))
  (depends
   (ocaml
-   (>= 4.14.0))
+   (>= 5.3.0))
   (ppxlib
    (and
     (>= 0.36.0)
