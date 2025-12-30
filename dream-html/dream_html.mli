@@ -177,12 +177,6 @@ module Form : sig
   val error_expected_int : string
   (** Please enter a valid integer. *)
 
-  val error_expected_int32 : string
-  (** Please enter a valid 32-bit integer. *)
-
-  val error_expected_int64 : string
-  (** Please enter a valid 64-bit integer. *)
-
   val error_expected_number : string
   (** Please enter a valid number. *)
 
@@ -650,34 +644,64 @@ val get : (_, _) route
       )
     ]}
 
-    @since 3.9.0 *)
+    @since 3.9.0
+    @since 4.0.0
+    @raise Failure if a path parameter could not be parsed to the expected type.
+*)
 
 val post : (_, _) route
-(** @since 3.9.0 *)
+(** @since 3.9.0
+    @since 4.0.0
+    @raise Failure if a path parameter could not be parsed to the expected type.
+*)
 
 val put : (_, _) route
-(** @since 3.9.0 *)
+(** @since 3.9.0
+    @since 4.0.0
+    @raise Failure if a path parameter could not be parsed to the expected type.
+*)
 
 val delete : (_, _) route
-(** @since 3.9.0 *)
+(** @since 3.9.0
+    @since 4.0.0
+    @raise Failure if a path parameter could not be parsed to the expected type.
+*)
 
 val head : (_, _) route
-(** @since 3.9.0 *)
+(** @since 3.9.0
+    @since 4.0.0
+    @raise Failure if a path parameter could not be parsed to the expected type.
+*)
 
 val connect : (_, _) route
-(** @since 3.9.0 *)
+(** @since 3.9.0
+    @since 4.0.0
+    @raise Failure if a path parameter could not be parsed to the expected type.
+*)
 
 val options : (_, _) route
-(** @since 3.9.0 *)
+(** @since 3.9.0
+    @since 4.0.0
+    @raise Failure if a path parameter could not be parsed to the expected type.
+*)
 
 val trace : (_, _) route
-(** @since 3.9.0 *)
+(** @since 3.9.0
+    @since 4.0.0
+    @raise Failure if a path parameter could not be parsed to the expected type.
+*)
 
 val patch : (_, _) route
-(** @since 3.9.0 *)
+(** @since 3.9.0
+    @since 4.0.0
+    @raise Failure if a path parameter could not be parsed to the expected type.
+*)
 
 val any : (_, _) route
-(** @since 3.9.0 *)
+(** @since 3.9.0
+    @since 4.0.0
+    @raise Failure if a path parameter could not be parsed to the expected type.
+*)
 
 val use : Dream.middleware list -> Dream.route list -> Dream.route
 (** [use middlewares routes] is a route that is composed of all the given

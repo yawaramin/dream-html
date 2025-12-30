@@ -24,7 +24,9 @@ let sub = StringLabels.sub
 
 let rec parse_string' ~pos ~len str buf =
   if pos < len then (
-    match str.[pos] with
+    match
+      str.[pos]
+    with
     | '/' | '?' -> pos
     | ch ->
       Buffer.add_char buf ch;
@@ -59,31 +61,21 @@ let rec handler' : type r.
     let s, pos = parse_string ~pos ~len path in
     handler' ~pos ~len path fmt (hdlr s)
   | Int ((Int_d | Int_i | Int_x | Int_X | Int_o), No_padding, No_precision, fmt)
-    -> (
+    ->
     let s, pos = parse_string ~pos ~len path in
-    match int_of_string_opt s with
-    | Some i -> handler' ~pos ~len path fmt (hdlr i)
-    | None -> Dream.respond ~status:`Bad_Request path)
-  | Int32 (Int_d, No_padding, No_precision, fmt) -> (
+    s |> int_of_string |> hdlr |> handler' ~pos ~len path fmt
+  | Int32 (Int_d, No_padding, No_precision, fmt) ->
     let s, pos = parse_string ~pos ~len path in
-    match Int32.of_string_opt s with
-    | Some i -> handler' ~pos ~len path fmt (hdlr i)
-    | None -> Dream.respond ~status:`Bad_Request path)
-  | Int64 (Int_d, No_padding, No_precision, fmt) -> (
+    s |> Int32.of_string |> hdlr |> handler' ~pos ~len path fmt
+  | Int64 (Int_d, No_padding, No_precision, fmt) -> 
     let s, pos = parse_string ~pos ~len path in
-    match Int64.of_string_opt s with
-    | Some i -> handler' ~pos ~len path fmt (hdlr i)
-    | None -> Dream.respond ~status:`Bad_Request path)
-  | Float ((Float_flag_, Float_f), No_padding, No_precision, fmt) -> (
+    s |> Int64.of_string |> hdlr |> handler' ~pos ~len path fmt
+  | Float ((Float_flag_, Float_f), No_padding, No_precision, fmt) ->
     let s, pos = parse_string ~pos ~len path in
-    match Float.of_string_opt s with
-    | Some f -> handler' ~pos ~len path fmt (hdlr f)
-    | None -> Dream.respond ~status:`Bad_Request path)
-  | Bool (No_padding, fmt) -> (
+    s |> float_of_string |> hdlr |> handler' ~pos ~len path fmt
+  | Bool (No_padding, fmt) ->
     let s, pos = parse_string ~pos ~len path in
-    match bool_of_string_opt s with
-    | Some b -> handler' ~pos ~len path fmt (hdlr b)
-    | None -> Dream.respond ~status:`Bad_Request path)
+    s |> bool_of_string |> hdlr |> handler' ~pos ~len path fmt
   | String_literal (lit, fmt) ->
     handler' ~pos:(pos + String.length lit) ~len path fmt hdlr
   | Char_literal ('/', String (Arg_padding Right, End_of_format)) ->
@@ -92,7 +84,7 @@ let rec handler' : type r.
       (hdlr remaining_len (sub path ~pos:(pos + 1) ~len:remaining_len))
   | Char_literal (_, fmt) -> handler' ~pos:(succ pos) ~len path fmt hdlr
   | End_of_format -> hdlr
-  | _ -> Dream.respond ~status:`Not_Found path
+  | _ -> raise Not_found
 
 let handler (CamlinternalFormatBasics.Format (fmt, _)) hdlr req =
   let path = req |> Dream.target |> Uri.pct_decode in
@@ -103,10 +95,10 @@ let to_dream rfmt =
   |> string_of_format
   |> String.split_on_char '/'
   |> List.mapi (fun i s ->
-         if s = "%*s" then
-           "**"
-         else if String.starts_with ~prefix:"%" s then
-           Printf.sprintf ":param%d" i
-         else
-           s)
+      if s = "%*s" then
+        "**"
+      else if String.starts_with ~prefix:"%" s then
+        Printf.sprintf ":param%d" i
+      else
+        s)
   |> String.concat "/"
