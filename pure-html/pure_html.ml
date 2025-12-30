@@ -813,9 +813,96 @@ let rec concat sep = function
 
 module SVG = struct
   (* Attributes *)
+
+  let attributeName fmt = string_attr "attributeName" fmt
+  let azimuth = float_attr "azimuth"
+  let baseFrequency fmt = string_attr "baseFrequency" fmt
+  let bias = float_attr "bias"
+  let by fmt = string_attr "by" fmt
+  let clipPathUnits_objectBoundingBox = "clipPathUnits", "objectBoundingBox"
+  let cx fmt = string_attr "cx" fmt
+  let cy fmt = string_attr "cy" fmt
   let d fmt = string_attr "d" fmt
+  let diffuseConstant = float_attr "diffuseConstant"
+  let divisor = float_attr "divisor"
+  let dur fmt = string_attr "dur" fmt
+  let dx fmt = string_attr "dx" fmt
+  let dy fmt = string_attr "dy" fmt
+  let edgeMode fmt = string_attr "edgeMode" fmt
+  let elevation = float_attr "elevation"
   let fill fmt = string_attr "fill" fmt
-  let height = float_attr "height"
+  let filterUnits_userSpaceOnUse = "filterUnits", "userSpaceOnUse"
+  let flood_color fmt = string_attr "flood-color" fmt
+  let flood_opacity fmt = string_attr "flood-opacity" fmt
+  let from fmt = string_attr "from" fmt
+  let height fmt = string_attr "height" fmt
+  let in_ fmt = string_attr "in" fmt
+  let in2 fmt = string_attr "in2" fmt
+  let k1 = float_attr "k1"
+  let k2 = float_attr "k2"
+  let k3 = float_attr "k3"
+  let k4 = float_attr "k4"
+  let kernelMatrix fmt = string_attr "kernelMatrix" fmt
+  let kernelUnitLength fmt = string_attr "kernelUnitLength" fmt
+  let keyPoints fmt = string_attr "keyPoints" fmt
+  let limitingConeAngle = float_attr "limitingConeAngle"
+
+  let mode value =
+    ( "mode",
+      match value with
+      | `normal -> "normal"
+      | `darken -> "darken"
+      | `multiply -> "multiply"
+      | `color_burn -> "color-burn"
+      | `lighten -> "lighten"
+      | `screen -> "screen"
+      | `color_dodge -> "color-dodge"
+      | `overlay -> "overlay"
+      | `soft_light -> "soft-light"
+      | `hard_light -> "hard-light"
+      | `difference -> "difference"
+      | `exclusion -> "exclusion"
+      | `hue -> "hue"
+      | `saturation -> "saturation"
+      | `color -> "color"
+      | `luminosity -> "luminosity" )
+
+  let numOctaves = int_attr "numOctaves"
+
+  let operator value =
+    ( "operator",
+      match value with
+      | `over -> "over"
+      | `in_ -> "in"
+      | `out -> "out"
+      | `atop -> "atop"
+      | `xor -> "xor"
+      | `lighter -> "lighter"
+      | `arithmetic -> "arithmetic"
+      | `erode -> "erode"
+      | `dilate -> "dilate" )
+
+  let order fmt = string_attr "order" fmt
+  let path fmt = string_attr "path" fmt
+  let pathLength = int_attr "pathLength"
+  let pointsAtX = float_attr "pointsAtX"
+  let pointsAtY = float_attr "pointsAtY"
+  let pointsAtZ = float_attr "pointsAtZ"
+  let preserveAlpha = "preserveAlpha", "true"
+  let preserveAspectRatio fmt = string_attr "preserveAspectRatio" fmt
+  let primitiveUnits_objectBoundingBox = "primitiveUnits", "objectBoundingBox"
+  let r fmt = string_attr "r" fmt
+  let radius fmt = string_attr "radius" fmt
+  let result fmt = string_attr "result" fmt
+  let ry fmt = string_attr "ry" fmt
+  let rotate fmt = string_attr "rotate" fmt
+  let repeatCount fmt = string_attr "repeatCount" fmt
+  let scale = float_attr "scale"
+  let seed = float_attr "seed"
+  let specularConstant = float_attr "specularConstant"
+  let specularExponent = float_attr "specularExponent"
+  let stdDeviation fmt = string_attr "stdDeviation" fmt
+  let stitchTiles = "stitchTiles", "stitch"
   let stroke fmt = string_attr "stroke" fmt
 
   let stroke_linecap value =
@@ -835,16 +922,65 @@ module SVG = struct
       | `round -> "round" )
 
   let stroke_width fmt = string_attr "stroke-width" fmt
+  let surfaceScale = float_attr "surfaceScale"
+  let targetX = int_attr "targetX"
+  let targetY = int_attr "targetY"
+  let to_ fmt = string_attr "to" fmt
 
   let viewbox ~min_x ~min_y ~width ~height =
     "viewbox", Printf.sprintf "%d %d %d %d" min_x min_y width height
 
-  let width = float_attr "width"
-  let x = float_attr "width"
+  let values fmt = string_attr "values" fmt
+  let width fmt = string_attr "width" fmt
+  let x fmt = string_attr "x" fmt
+
+  let channel_selector = function
+    | `R -> "R"
+    | `G -> "G"
+    | `B -> "B"
+
+  let xChannelSelector value = "xChannelSelector", channel_selector value
   let xmlns = "xmlns", "http://www.w3.org/2000/svg"
-  let y = float_attr "width"
+  let y fmt = string_attr "y" fmt
+  let yChannelSelector value = "yChannelSelector", channel_selector value
+  let z = float_attr "z"
 
   (* Tags *)
+
+  let animate = std_tag "animate"
+  let animateMotion = std_tag "animateMotion"
+  let circle = std_tag "circle"
+  let clipPath = std_tag "clipPath"
+  let defs = std_tag "defs"
+  let desc = std_tag "desc"
+  let ellipse = std_tag "ellipse"
+  let feBlend = std_tag "feBlend"
+  let feColorMatrix = std_tag "feColorMatrix"
+  let feComponentTransfer = std_tag "feComponentTransfer"
+  let feComposite = std_tag "feComposite"
+  let feConvolveMatrix = std_tag "feConvolveMatrix"
+  let feDiffuseLighting = std_tag "feDiffuseLighting"
+  let feDisplacementMap = std_tag "feDisplacementMap"
+  let feDistantLight = std_tag "feDistantLight"
+  let feDropShadow = std_tag "feDropShadow"
+  let feFlood = std_tag "feFlood"
+  let feFuncA = std_tag "feFuncA"
+  let feFuncB = std_tag "feFuncB"
+  let feFuncG = std_tag "feFuncG"
+  let feFuncR = std_tag "feFuncR"
+  let feGaussianBlur = std_tag "feGaussianBlur"
+  let feImage = std_tag "feImage"
+  let feMerge = std_tag "feMerge"
+  let feMergeNode = std_tag "feMergeNode"
+  let feMorphology = std_tag "feMorphology"
+  let feOffset = std_tag "feOffset"
+  let fePointLight = std_tag "fePointLight"
+  let feSpecularLighting = std_tag "feSpecularLighting"
+  let feSpotLight = std_tag "feSpotLight"
+  let feTile = std_tag "feTile"
+  let feTurbulence = std_tag "feTurbulence"
+  let filter = std_tag "filter"
+  let foreignObject = std_tag "foreignObject"
   let path = std_tag "path"
   let svg = std_tag "svg"
   let use = void_tag "use"
