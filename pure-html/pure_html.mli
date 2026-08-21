@@ -1209,3 +1209,16 @@ module Hx : sig
   [@@ocaml.deprecated "See https://htmx.org/attributes/hx-on/#hx-on-deprecated"]
   (** Note that the value of this attribute is not escaped. *)
 end
+
+(** {2 datastar} *)
+
+val data_attr : string -> _ string_attr
+(** [data_attr suffix] constructs [data-{suffix}="…"].
+
+    Covers all {{:https://data-star.dev/reference/attributes}datastar}
+    attributes: [data_attr "bind:foo"],
+    [data_attr "on:click" "$count++"], [data_attr "text" "$foo"],
+    [data_attr "attr:disabled" "$_fetching"], modifiers too:
+    [data_attr "on:click__debounce.500ms.leading"].
+
+    Note that the value is not escaped. *)

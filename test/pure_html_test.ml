@@ -111,6 +111,42 @@ let () =
   |> Printf.printf "\n\n✔︎ fold node: %s\n"
 
 let () =
+  test_html "Datastar attributes"
+  @@
+  let open HTML in
+  null
+    [ input
+        [ type_ "checkbox";
+          data_attr "bind:_all" "";
+          data_attr "on:change" "$selections = Array(4).fill($_all)";
+          data_attr "effect" "$selections; $_all = $selections.every(Boolean)";
+          data_attr "attr:disabled" "$_fetching" ];
+      input [ data_attr "text" "$foo" ];
+      input [ data_attr "show" "$loading" ];
+      div
+        [ data_attr "class:font-bold" "$isStrong";
+          data_attr "style:display" "$hiding && 'none'";
+          data_attr "signals:foo.bar" "1";
+          data_attr "ref:myDiv" "";
+          data_attr "init" "$count = 1" ]
+        [];
+      div [ data_attr "signals" "{foo: 1}" ] [];
+      button
+        [ data_attr "on:click__debounce.500ms.leading" "$foo = ''";
+          data_attr "indicator:fetching" "";
+          data_attr "ignore-morph" "" ]
+        [];
+      div [ data_attr "ignore" "" ]
+        [ p [ data_attr "on-intersect" "$seen = true" ] [] ];
+      div [ data_attr "on-interval" "$count++" ] [];
+      div [ data_attr "on-signal-patch" "console.log('changed')" ] [];
+      div [ data_attr "on-signal-patch-filter" "{include: /^counter$/}" ] [];
+      div [ data_attr "json-signals" "{include: /user/}" ] [];
+      details [ data_attr "preserve-attr" "open" ]
+        [ summary [] [txt "Title"] ];
+      div [ data_attr "computed:foo" "$bar + $baz" ] [] ]
+
+let () =
   test_xml ~header:true "SVG"
   @@
   let open SVG in

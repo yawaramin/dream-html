@@ -1074,6 +1074,8 @@ module Hx = struct
   let ws_send = attr "data-ws-send"
 end
 
+let data_attr suffix fmt = string_attr ~raw:true ("data-" ^ suffix) fmt
+
 module MathML = struct
   (* Attributes *)
   let accent = bool_attr "accent"
