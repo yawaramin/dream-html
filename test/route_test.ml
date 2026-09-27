@@ -15,12 +15,10 @@
    You should have received a copy of the GNU General Public License along with
    dream-html. If not, see <https://www.gnu.org/licenses/>. *)
 
-open Lwt.Syntax
-
 let spf = Printf.sprintf
 
 let debug resp =
-  let* b = Dream.body resp in
+  let%lwt b = Dream.body resp in
   let st = Dream.status resp
   and headers =
     resp
@@ -33,10 +31,9 @@ let debug resp =
     headers b
 
 let v2_header prev req =
-  let open Lwt.Syntax in
-  let+ resp = prev req in
+  let%lwt resp = prev req in
   Dream.add_header resp "X-Api-Version" "2";
-  resp
+  Lwt.return resp
 
 let%path account_version = "/accounts/%s/versions/%d"
 let%path order = "/orders/%s"
@@ -49,9 +46,11 @@ let get_order = Dream_html.get order (fun _ id -> Dream.html id)
 
 let test ?method_ msg routes target =
   Lwt_main.run
-    (let* () = Lwt_io.printlf "🔎 %s" msg in
-     let* resp = Dream.router routes (Dream.request ?method_ ~target "") in
-     debug resp)
+    (Lwt_io.printlf "🔎 %s" msg;%lwt
+     try%lwt
+      let%lwt resp = Dream.router routes (Dream.request ?method_ ~target "") in
+      debug resp
+     with ex -> Lwt_io.printlf "%s\n" (Printexc.to_string ex))
 
 let handle_int _ i = Dream.html (string_of_int i)
 

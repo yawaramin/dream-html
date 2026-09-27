@@ -29,9 +29,7 @@ Content-Type: text/html; charset=utf-8
 420
 
 🔎 Parse number fail
-400 Bad Request
-
-/accounts/a1/versions/two
+Failure("int_of_string")
 
 🔎 Path params of different types
 200 OK

@@ -16,4 +16,4 @@
  (libraries dream_html)
  (modules route_test)
  (preprocess
-  (pps dream-html.ppx)))
+  (pps lwt_ppx dream-html.ppx)))
