@@ -2,7 +2,7 @@
 
 (name dream-html)
 
-(version v4.0.0)
+(version v4.0.1)
 
 (generate_opam_files true)
 
@@ -37,7 +37,7 @@
  (tags (org:yawaramin))
  (depends
   (ocaml
-   (>= 5.3.0))
+   (>= 4.14.2))
   (ppxlib
    (and
     (>= 0.36.0)

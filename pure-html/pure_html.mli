@@ -424,10 +424,10 @@ module HTML : sig
   val colspan : int to_attr
 
   val command : _ string_attr
-  (** @since 3.12.0 *)
+  (** @since 4.0.0 *)
 
   val commandfor : _ string_attr
-  (** @since 3.12.0 *)
+  (** @since 4.0.0 *)
 
   val content : _ string_attr
 
@@ -873,7 +873,7 @@ module SVG : sig
   val fill : _ string_attr
 
   val height : float to_attr
-  (** @since 3.12.0. *)
+  (** @since 4.0.0. *)
 
   val stroke : _ string_attr
   val stroke_linecap : [< `butt | `round | `square] to_attr
@@ -885,21 +885,21 @@ module SVG : sig
   val viewbox : min_x:int -> min_y:int -> width:int -> height:int -> attr
 
   val width : float to_attr
-  (** @since 3.12.0. *)
+  (** @since 4.0.0. *)
 
   val x : float to_attr
-  (** @since 3.12.0. *)
+  (** @since 4.0.0. *)
 
   val xmlns : attr
 
   val y : float to_attr
-  (** @since 3.12.0. *)
+  (** @since 4.0.0. *)
 
   val path : std_tag
   val svg : std_tag
 
   val use : void_tag
-  (** @since 3.12.0. *)
+  (** @since 4.0.0. *)
 end
 
 (** {2 MathML} *)
